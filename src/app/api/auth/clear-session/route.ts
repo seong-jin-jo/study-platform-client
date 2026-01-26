@@ -1,0 +1,33 @@
+import { cookies } from 'next/headers';
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const redirectTo = searchParams.get('redirect') || '/login';
+
+  // 쿠키 삭제
+  const cookieStore = await cookies();
+  cookieStore.delete('accessToken');
+  cookieStore.delete('memberId');
+  cookieStore.delete('socialImageURL');
+
+  // 절대 URL 생성: 요청의 origin을 우선 사용 (이미 protocol 포함)
+  // origin이 없으면 host + protocol 조합, 그래도 없으면 환경 변수 사용
+  const origin = request.headers.get('origin');
+
+  const baseUrl =
+    origin || // origin은 이미 protocol 포함 (예: https://test.zeroone.it.kr)
+    (() => {
+      const host = request.headers.get('host');
+      const protocol = request.headers.get('x-forwarded-proto') || 'https';
+
+      return host ? `${protocol}://${host}` : null;
+    })() ||
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.NEXT_PUBLIC_API_PROD_BASE_URL?.replace('/api/v1', '') ||
+    process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api/v1', '') ||
+    request.url.split('/api')[0];
+
+  // 리다이렉트
+  return NextResponse.redirect(new URL(redirectTo, baseUrl));
+}

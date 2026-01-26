@@ -1,0 +1,17 @@
+# 운영환경(main branch)에서 사용하는 docker-compose.yml
+
+version: '3.8'
+
+services:
+  frontend:
+    container_name: frontend-dev
+    image: zerooneitkr/frontend:develop
+    # 도커허브에서 이미지 받아오니까 빌드과정은 빠짐
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile.dev
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+    restart: unless-stopped
