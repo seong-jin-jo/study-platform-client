@@ -2,7 +2,7 @@
 
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Suspense } from 'react';
-import Button from '@/components/ui/button';
+import Button from '@/components/common/ui/button';
 
 // 토스페이먼츠 에러 코드별 사용자 친화적 메시지
 const ERROR_MESSAGES: Record<string, { title: string; message: string }> = {
@@ -116,9 +116,9 @@ function PaymentFailContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const code = searchParams.get('code');
-  const message = searchParams.get('message');
-  const groupStudyId = searchParams.get('groupStudyId');
+  const code = searchParams.get('code') ?? undefined;
+  const message = searchParams.get('message') ?? undefined;
+  const type = searchParams.get('type');
 
   const errorInfo = getErrorInfo(code, message);
 
@@ -127,11 +127,12 @@ function PaymentFailContent() {
   };
 
   const handleConfirm = () => {
-    if (groupStudyId) {
-      router.push(`/group-study/${groupStudyId}`);
-    } else {
-      router.push('/');
+    if (type === 'course') {
+      router.push('/class');
+      return;
     }
+
+    router.push('/');
   };
 
   return (
@@ -176,7 +177,7 @@ export default function PaymentFailPage() {
       fallback={
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="rounded-150 bg-fill-neutral-subtle-default w-[400px] p-600">
-            <div className="border-border-default mx-auto mb-400 h-12 w-12 animate-spin rounded-full border-4 border-t-transparent" />
+            <div className="border-border-default mx-auto mb-400 h-600 w-600 animate-spin rounded-full border-4 border-t-transparent" />
           </div>
         </div>
       }

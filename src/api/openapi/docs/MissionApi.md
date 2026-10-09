@@ -55,7 +55,7 @@ const { status, data } = await apiInstance.createMission(
 ### HTTP request headers
 
  - **Content-Type**: application/json
- - **Accept**: application/json
+ - **Accept**: application/json, */*
 
 
 ### HTTP response details
@@ -63,9 +63,10 @@ const { status, data } = await apiInstance.createMission(
 |-------------|-------------|------------------|
 |**201** | 미션 생성 성공 |  -  |
 |**400** | 잘못된 요청 (validation 실패 또는 미션 생성 실패) - NULL_TO_NOT_NULL_FIELD, EMPTY_TO_NOT_EMPTY_FIELD, DATE_REVERSED, NOT_ALLOWED_TODAY, LENGTH_EXCEEDED |  -  |
-|**403** | Mission creator not leader (MIS006) |  -  |
+|**403** | You are authenticated but not allowed authorization |  -  |
 |**404** | 그룹스터디를 찾을 수 없음 (GSM001) |  -  |
 |**409** | 미션 기간 중복 |  -  |
+|**401** | Bearer Token is invalid or no bearer token |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -110,7 +111,7 @@ const { status, data } = await apiInstance.deleteMission(
 ### HTTP request headers
 
  - **Content-Type**: Not defined
- - **Accept**: application/json
+ - **Accept**: application/json, */*
 
 
 ### HTTP response details
@@ -118,16 +119,17 @@ const { status, data } = await apiInstance.deleteMission(
 |-------------|-------------|------------------|
 |**204** | 미션 삭제 성공 |  -  |
 |**400** | 미션 삭제 실패 - 미션이 이미 시작됨 (MIS003) |  -  |
-|**403** | 미션에 대한 불법적인 접근 (MIS007) |  -  |
+|**403** | You are authenticated but not allowed authorization |  -  |
 |**404** | 미션을 찾을 수 없음 (MIS002) |  -  |
 |**409** | 미션 기간 중복 |  -  |
+|**401** | Bearer Token is invalid or no bearer token |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **getMission**
 > MissionResponse getMission()
 
-미션 ID를 통해 특정 미션의 상세 정보를 조회합니다.  **[권한]** - 인증된 사용자만 접근 가능  **[Request]** - PathVariable: missionId (필수) - 미션 ID 
+미션 ID를 통해 특정 미션의 상세 정보를 조회합니다.  **[Request]** - PathVariable: missionId (필수) - 미션 ID 
 
 ### Example
 
@@ -281,7 +283,7 @@ const { status, data } = await apiInstance.updateMission(
 ### HTTP request headers
 
  - **Content-Type**: application/json
- - **Accept**: application/json
+ - **Accept**: application/json, */*
 
 
 ### HTTP response details
@@ -289,9 +291,10 @@ const { status, data } = await apiInstance.updateMission(
 |-------------|-------------|------------------|
 |**204** | 미션 수정 성공 |  -  |
 |**400** | 잘못된 요청 (validation 실패, 미션 수정 실패, 또는 파라미터 검증 실패) - NULL_TO_NOT_NULL_FIELD, EMPTY_TO_NOT_EMPTY_FIELD, DATE_REVERSED, NOT_ALLOWED_TODAY, LENGTH_EXCEEDED |  -  |
-|**403** | 미션에 대한 비인가 접근 (MIS007) |  -  |
+|**403** | You are authenticated but not allowed authorization |  -  |
 |**404** | 미션을 찾을 수 없음 (MIS002) |  -  |
 |**409** | 미션 기간 중복 |  -  |
+|**401** | Bearer Token is invalid or no bearer token |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

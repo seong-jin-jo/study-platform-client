@@ -4,7 +4,7 @@ All URIs are relative to *https://test-api.zeroone.it.kr*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**deleteMemberPermanently**](#deletememberpermanently) | **GET** /api/v1/members/{memberId}/permanently | |
+|[**deleteMemberPermanently**](#deletememberpermanently) | **DELETE** /api/v1/members/{memberId}/permanently | |
 
 # **deleteMemberPermanently**
 > BaseResponseVoid deleteMemberPermanently()

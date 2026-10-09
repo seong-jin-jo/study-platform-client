@@ -1,23 +1,33 @@
 import '../global.css';
 
-import Clarity from '@microsoft/clarity';
 import { GoogleTagManager } from '@next/third-parties/google';
-import { clsx } from 'clsx';
 import type { Metadata } from 'next';
-import localFont from 'next/font/local';
-import PageViewTracker from '@/components/analytics/page-view-tracker';
+import { GlobalOnboardingGate } from '@/components/auth/modals/onboarding-modal/global-onboarding-gate';
+import ClarityScript from '@/components/common/analytics/clarity-script';
+import { GoogleAnalyticsCookieSafe } from '@/components/common/analytics/google-analytics-cookie-safe';
+import PageViewTracker from '@/components/common/analytics/page-view-tracker';
+import { Footer } from '@/components/common/layout/footer';
+import Header from '@/components/common/layout/home-header';
+import MobileTabBar from '@/components/common/layout/mobile-tab-bar';
+import { JsonLd } from '@/components/common/seo/json-ld';
+import FloatingClassActionButtons from '@/components/common/ui/floating-class-action-buttons';
+import GlobalToast from '@/components/common/ui/global-toast';
+import { createAuthHydrationSession } from '@/features/auth/model/auth-hydration-session';
+import { readServerAuthSession } from '@/features/auth/model/server-auth-session';
 import MainProvider from '@/providers';
 import { getOrganizationSchema, getWebsiteSchema } from '@/utils/seo';
-import Header from '@/widgets/home/header';
 
 export const metadata: Metadata = {
-  title: 'ZERO-ONE - 1:1 기상 스터디 플랫폼',
-  description:
-    '매일 아침을 함께 시작하는 1:1 기상 스터디 플랫폼. 현직 멘토와 함께 성장하세요.',
-  keywords: ['스터디', '기상', '멘토링', '1:1 스터디', '개발자', '면접 준비'],
-  icons: {
-    icon: '/favicon.ico',
-  },
+  title: 'ZERO ONE IT',
+  description: '코딩 몰라도 OK. 따라만 하면 나도 AI 시대의 경쟁력 UP!',
+  keywords: [
+    '바이브코딩',
+    '노베이스 코딩',
+    'AI 개발',
+    '비개발자',
+    '클로드 코드',
+    '입문 강의',
+  ],
   robots: {
     index: true,
     follow: true,
@@ -29,79 +39,56 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'ko_KR',
     url: 'https://www.zeroone.it.kr',
-    siteName: 'ZERO-ONE',
-    title: 'ZERO-ONE - 1:1 기상 스터디 플랫폼',
-    description: '매일 아침을 함께 시작하는 1:1 기상 스터디 플랫폼',
+    siteName: 'ZERO ONE IT',
+    title: 'ZERO ONE IT | Built by people who started at zero.',
+    description: '코딩 몰라도 OK. 따라만 하면 나도 AI 시대의 경쟁력 UP!',
     images: [
       {
-        url: 'https://www.zeroone.it.kr/images/banner.png',
+        url: 'https://www.zeroone.it.kr/images/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'ZERO-ONE',
+        alt: 'ZERO ONE IT',
       },
     ],
   },
-  alternates: {
-    canonical: 'https://www.zeroone.it.kr',
-  },
 };
 
-const pretendard = localFont({
-  src: '../../../public/fonts/PretendardVariable.woff2',
-  variable: '--font-pretendard',
-  display: 'swap',
-});
-
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
-const CLARITY_PROJECT_ID = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID;
+const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
-export default function LandingPageLayout({
+export default async function LandingPageLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  if (typeof window !== 'undefined' && CLARITY_PROJECT_ID) {
-    Clarity.init(CLARITY_PROJECT_ID);
-  }
-
+  const initialSession = await readServerAuthSession();
+  const initialHydrationSession = createAuthHydrationSession(initialSession);
   const organizationSchema = getOrganizationSchema();
   const websiteSchema = getWebsiteSchema();
 
   return (
-    <html lang="ko">
-      <head>
-        {GTM_ID && <GoogleTagManager gtmId={GTM_ID} />}
-        {/* Organization Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(organizationSchema),
-          }}
-        />
-        {/* Website Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(websiteSchema),
-          }}
-        />
-        {/* Additional Meta Tags */}
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#000000" />
-        <link rel="manifest" href="/manifest.json" />
-      </head>
-      <body className={clsx(pretendard.className, 'h-screen w-screen')}>
-        <MainProvider>
-          <PageViewTracker />
-          <div className="w-full overflow-auto">
-            {/** 1400 + 48*2 패딩 양옆 48로 임의적용 */}
-            <div className="m-auto flex min-w-[1496px] flex-1 flex-col items-center">
-              <Header />
-              <main className="w-full">{children}</main>
-            </div>
+    <>
+      {GTM_ID && <GoogleTagManager gtmId={GTM_ID} />}
+      <ClarityScript />
+      {GA_MEASUREMENT_ID && (
+        <GoogleAnalyticsCookieSafe gaId={GA_MEASUREMENT_ID} />
+      )}
+      <JsonLd data={organizationSchema} />
+      <JsonLd data={websiteSchema} />
+      <MainProvider initialSession={initialHydrationSession}>
+        <PageViewTracker />
+        <div className="min-h-screen w-full">
+          <div className="mx-auto flex min-h-screen w-full flex-col items-center">
+            <Header />
+            <main className="pb-tabbar w-full flex-1">{children}</main>
           </div>
-        </MainProvider>
-      </body>
-    </html>
+        </div>
+        <Footer />
+        <GlobalToast />
+        <FloatingClassActionButtons />
+        <MobileTabBar />
+        <GlobalOnboardingGate />
+      </MainProvider>
+    </>
   );
 }

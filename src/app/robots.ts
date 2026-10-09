@@ -5,7 +5,17 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: '*',
-        allow: ['/', '/home', '/study', '/study/*', '/insights', '/insights/*'],
+        allow: [
+          '/',
+          '/home',
+          '/study',
+          '/study/*',
+          '/community',
+          '/community/*',
+          '/insights',
+          '/insights/*',
+          '/members/*',
+        ],
         disallow: [
           '/login',
           '/sign-up',
@@ -16,6 +26,10 @@ export default function robots(): MetadataRoute.Robots {
           '/admin',
           '/admin/*',
           '/api/',
+          '/community/write',
+          '/community/*/edit',
+          '/community/questions/write',
+          '/community/questions/*/edit',
           '/_next/',
           '/_vercel/',
         ],

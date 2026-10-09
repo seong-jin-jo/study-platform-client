@@ -12,6 +12,7 @@ Name | Type | Description | Notes
 **content** | **string** |  | [optional] [default to undefined]
 **isRead** | **boolean** |  | [optional] [default to undefined]
 **createdAt** | **string** |  | [optional] [default to undefined]
+**destination** | [**NotificationDestination**](NotificationDestination.md) |  | [optional] [default to undefined]
 
 ## Example
 
@@ -26,6 +27,7 @@ const instance: MemberNotificationResponse = {
     content,
     isRead,
     createdAt,
+    destination,
 };
 ```
 

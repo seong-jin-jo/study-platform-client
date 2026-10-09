@@ -6,9 +6,11 @@ import {
   differenceInMinutes,
   format,
   getDay,
+  isValid,
   parseISO,
   startOfWeek,
 } from 'date-fns';
+import { ko } from 'date-fns/locale';
 
 // todo: formatToKST로 통일하도록 리팩토링 필요 (getKoreaDate와 혼용 중)
 /**
@@ -64,6 +66,21 @@ export const formatHHMM = (dateString: string) => {
 export const formatKoreaYMD = (targetDate?: Date) =>
   format(getKoreaDate(targetDate), 'yyyy-MM-dd');
 
+export const MONDAY_DATE_INPUT_MIN = '1970-01-05';
+
+export const getKoreaCurrentMonday = (base?: Date) =>
+  startOfWeek(getKoreaDate(base), { weekStartsOn: 1 });
+
+export const isMondayDateString = (dateString: string) => {
+  const parsed = parseISO(dateString);
+
+  return (
+    isValid(parsed) &&
+    format(parsed, 'yyyy-MM-dd') === dateString &&
+    getDay(parsed) === 1
+  );
+};
+
 export const formatKoreaRelativeTime = (targetDateStr: string): string => {
   const targetDate = parseISO(targetDateStr);
   const koreaTarget = getKoreaDate(targetDate); // 한국 시간 변환
@@ -85,7 +102,7 @@ export const formatKoreaRelativeTime = (targetDateStr: string): string => {
 
 export const getKoreaDisplayMonday = (base?: Date) => {
   const todayKST = getKoreaDate(base);
-  const monday = startOfWeek(todayKST, { weekStartsOn: 1 }); // 월요일 시작
+  const monday = getKoreaCurrentMonday(base);
   const dow = getDay(todayKST); // 0=일, 6=토
 
   return dow === 0 || dow === 6 ? addDays(monday, 7) : monday;
@@ -104,6 +121,12 @@ export interface CreateDisabledDateMatcherForMissionOptions {
   editingMissionId?: number;
 }
 
+const toDateOnly = (date: Date | string): Date => {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  return d;
+};
+
 export const createDisabledDateMatcherForMission = (
   options: CreateDisabledDateMatcherForMissionOptions,
 ) => {
@@ -111,56 +134,60 @@ export const createDisabledDateMatcherForMission = (
     options;
 
   return (date: Date) => {
-    const normalizedDate = new Date(date);
-    normalizedDate.setHours(0, 0, 0, 0);
+    const candidateDate = toDateOnly(date);
+    const today = toDateOnly(getKoreaDate());
 
-    const today = getKoreaDate();
-    today.setHours(0, 0, 0, 0);
+    const isPastDate = candidateDate < today;
+    if (isPastDate) return true;
 
-    if (normalizedDate <= today) {
-      return true;
-    }
-
+    // 스터디 개설일 다음날부터 선택 가능
     if (studyStartDate) {
-      const startDate = new Date(studyStartDate);
-      startDate.setHours(0, 0, 0, 0);
-      // 스터디 개설일 다음날부터 선택 가능
-      const minDate = addDays(startDate, 1);
-      if (normalizedDate < minDate) {
-        return true;
-      }
+      const studyPeriodStart = addDays(toDateOnly(studyStartDate), 1);
+      const isBeforeStudyPeriod = candidateDate < studyPeriodStart;
+      if (isBeforeStudyPeriod) return true;
     }
 
     if (studyEndDate) {
-      const endDate = new Date(studyEndDate);
-      endDate.setHours(0, 0, 0, 0);
-      if (normalizedDate > endDate) {
-        return true;
-      }
+      const isAfterStudyPeriod = candidateDate > toDateOnly(studyEndDate);
+      if (isAfterStudyPeriod) return true;
     }
 
     if (existingMissions) {
-      const targetTime = normalizedDate.getTime();
+      const candidateTime = candidateDate.getTime();
       for (const mission of existingMissions) {
-        if (editingMissionId && mission.missionId === editingMissionId)
-          continue;
+        if (mission.missionId === editingMissionId) continue;
+        if (!mission.startDate || !mission.endDate) continue;
 
-        if (mission.startDate && mission.endDate) {
-          const missionStart = new Date(mission.startDate);
-          missionStart.setHours(0, 0, 0, 0);
-          const missionEnd = new Date(mission.endDate);
-          missionEnd.setHours(0, 0, 0, 0);
+        const existingmissionStartDate = toDateOnly(
+          mission.startDate,
+        ).getTime();
 
-          if (
-            targetTime >= missionStart.getTime() &&
-            targetTime <= missionEnd.getTime()
-          ) {
-            return true;
-          }
-        }
+        const existingmissionEndDate = toDateOnly(mission.endDate).getTime();
+
+        if (
+          candidateTime >= existingmissionStartDate &&
+          candidateTime <= existingmissionEndDate
+        )
+          return true;
       }
     }
 
     return false;
   };
 };
+
+export function formatDateDot(dateString: string): string {
+  if (!dateString) return '-';
+  const parsed = parseISO(dateString);
+  if (!isValid(parsed)) return '-';
+
+  return format(parsed, 'yyyy.MM.dd', { locale: ko });
+}
+
+export function formatDateTimeDot(dateString: string): string {
+  if (!dateString) return '-';
+  const parsed = parseISO(dateString);
+  if (!isValid(parsed)) return '-';
+
+  return format(parsed, 'yyyy.MM.dd HH:mm', { locale: ko });
+}

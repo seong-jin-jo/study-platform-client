@@ -4,7 +4,7 @@ All URIs are relative to *https://test-api.zeroone.it.kr*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**completeDailyStudy**](#completedailystudy) | **POST** /api/v1/study/daily/{dailyStudyId}/complete | 면접 완료 및 회고 작성|
+|[**completeDailyStudy**](#completedailystudy) | **POST** /api/v1/study/daily/{dailyStudyId}/complete | 면접 결과 확정|
 |[**deleteDailyStudy**](#deletedailystudy) | **DELETE** /api/v1/study/daily/{dailyStudyId} | 스터디 삭제|
 |[**getDailyStudies**](#getdailystudies) | **GET** /api/v1/study/daily | 특정 날짜의 스터디 전체 조회 (커서 기반)|
 |[**getMyDailyStudyByDate**](#getmydailystudybydate) | **GET** /api/v1/study/daily/mine/{studyDate} | 특정 날짜의 내 스터디 조회|
@@ -14,7 +14,7 @@ All URIs are relative to *https://test-api.zeroone.it.kr*
 # **completeDailyStudy**
 > StringResponseSchema completeDailyStudy(completeDailyStudyRequestSchema)
 
-면접 완료 후 회고를 작성합니다.  [Request] - PathVariable: dailyStudyId (면접 완료할 스터디 ID) - RequestBody: feedback (회고 내용), progressStatus (스터디 상태) - 인증 토큰 필요 (Bearer)  [Response] - BaseResponse<String>: 성공 메시지 반환  **사용 방법:** 1. 먼저 `GET /api/v1/study/daily/mine/{studyDate}` API를 호출하여 스터디 정보를 조회합니다. 2. 응답에서 `dailyStudyId`를 확인합니다. 3. 해당 `dailyStudyId`를 이 API의 경로 파라미터로 사용합니다.
+면접 결과를 완료 또는 불참으로 확정합니다.  [Request] - PathVariable: dailyStudyId (면접 완료할 스터디 ID) - RequestBody: feedback (회고 내용), progressStatus (COMPLETE 또는 ABSENT) - 인증 토큰 필요 (Bearer)  [비즈니스 규칙] - PENDING 상태에서는 호출할 수 없습니다. - COMPLETE/ABSENT에서 IN_PROGRESS로 되돌릴 수 없습니다. - feedback은 COMPLETE일 때 필수이며, ABSENT일 때는 무시됩니다.  [Response] - BaseResponse<String>: 성공 메시지 반환  **사용 방법:** 1. 먼저 `GET /api/v1/study/daily/mine/{studyDate}` API를 호출하여 스터디 정보를 조회합니다. 2. 응답에서 `dailyStudyId`를 확인합니다. 3. 해당 `dailyStudyId`를 이 API의 경로 파라미터로 사용합니다.
 
 ### Example
 
@@ -29,7 +29,7 @@ const configuration = new Configuration();
 const apiInstance = new DailyStudyApi(configuration);
 
 let dailyStudyId: number; // (default to undefined)
-let completeDailyStudyRequestSchema: CompleteDailyStudyRequestSchema; //면접 완료 및 회고 작성 정보
+let completeDailyStudyRequestSchema: CompleteDailyStudyRequestSchema; //면접 결과 확정 정보
 
 const { status, data } = await apiInstance.completeDailyStudy(
     dailyStudyId,
@@ -41,7 +41,7 @@ const { status, data } = await apiInstance.completeDailyStudy(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **completeDailyStudyRequestSchema** | **CompleteDailyStudyRequestSchema**| 면접 완료 및 회고 작성 정보 | |
+| **completeDailyStudyRequestSchema** | **CompleteDailyStudyRequestSchema**| 면접 결과 확정 정보 | |
 | **dailyStudyId** | [**number**] |  | defaults to undefined|
 
 
@@ -62,7 +62,8 @@ const { status, data } = await apiInstance.completeDailyStudy(
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-|**200** | 면접 완료 및 회고 작성 성공 |  -  |
+|**200** | 면접 결과 확정 성공 |  -  |
+|**400** | 허용되지 않은 상태 전이 또는 잘못된 요청 |  -  |
 |**403** | You are authenticated but not allowed authorization |  -  |
 |**404** | 스터디를 찾을 수 없음 |  -  |
 |**401** | Bearer Token is invalid or no bearer token |  -  |
@@ -183,7 +184,7 @@ const { status, data } = await apiInstance.getDailyStudies(
 # **getMyDailyStudyByDate**
 > GetTodayMyDailyStudyResponseSchema getMyDailyStudyByDate()
 
-인증된 사용자의 특정 날짜 스터디 정보를 상세 조회합니다.  [Request] - PathVariable: studyDate (YYYY-MM-DD 형식) - 인증 토큰 필요 (Bearer)  [Response] - TodayStudyDataResponse: dailyStudyId, interviewerId, interviewerName, ... 등 상세 정보 포함 
+인증된 사용자의 특정 날짜 스터디 정보를 상세 조회합니다.  [Request] - PathVariable: studyDate (YYYY-MM-DD 형식) - 인증 토큰 필요 (Bearer)  [Response] - TodayStudyDataResponse: dailyStudyId, interviewerId, interviewerName(닉네임), interviewerRealName(실명), intervieweeRealName(실명), ... 등 상세 정보 포함 
 
 ### Example
 

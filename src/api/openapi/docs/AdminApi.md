@@ -6,15 +6,20 @@ All URIs are relative to *https://test-api.zeroone.it.kr*
 |------------- | ------------- | -------------|
 |[**findMembers**](#findmembers) | **GET** /api/v1/admin/members | 회원 목록 조회|
 |[**getMemberAccountHistoryResponse**](#getmemberaccounthistoryresponse) | **GET** /api/v1/admin/members/{memberId}/account-histories | |
+|[**getMemberCourseStatus**](#getmembercoursestatus) | **GET** /api/v1/admin/members/{memberId}/course-status | 회원 수강 현황(관리자)|
+|[**getMemberNotificationSubscriptions**](#getmembernotificationsubscriptions) | **GET** /api/v1/admin/members/{memberId}/notification-subscriptions | 회원 알림 구독 현황(관리자)|
 |[**getMemberProfile1**](#getmemberprofile1) | **GET** /api/v1/admin/members/{memberId}/profile | [마이페이지] 회원 프로필 조회|
 |[**getSincerityTempHist**](#getsinceritytemphist) | **GET** /api/v1/admin/members/{memberId}/sincerity-temperature-histories | 성실온도 이력 조회|
 |[**updateMemberRole**](#updatememberrole) | **PATCH** /api/v1/admin/members/{memberId}/role | 회원 권한 변경|
+|[**updateMemberRoles**](#updatememberroles) | **PATCH** /api/v1/admin/members/roles | 회원 권한 일괄 변경|
 |[**updateMemberStatus**](#updatememberstatus) | **PATCH** /api/v1/admin/members/{memberId}/status | 회원 상태 변경|
+|[**updateMemberStatuses**](#updatememberstatuses) | **PATCH** /api/v1/admin/members/statuses | 회원 상태 일괄 변경|
+|[**withdrawMember**](#withdrawmember) | **POST** /api/v1/admin/members/{memberId}/withdraw | 회원 계정 탈퇴(관리자)|
 
 # **findMembers**
 > findMembers()
 
-(관리자) 회원 목록을 조회합니다.
+(관리자) 회원 목록을 조회합니다. 자동 매칭 수동 실행 화면에서는 `role-id=ROLE_ADMIN`, `member-status=ACTIVE` 필터를 사용해 관리자 dropdown 후보를 조회하는 용도로도 사용합니다. 
 
 ### Example
 
@@ -27,8 +32,8 @@ import {
 const configuration = new Configuration();
 const apiInstance = new AdminApi(configuration);
 
-let roleId: string; //권한 ID. null이거나 빈 문자열일 경우 무시 (optional) (default to undefined)
-let memberStatus: 'ACTIVE' | 'PAUSED' | 'PERM_BAN' | 'DORMANT'; //회원 상태. null일 경우 무시 (optional) (default to undefined)
+let roleId: string; //권한 ID. 자동 매칭 관리자 dropdown 조회 시에는 `ROLE_ADMIN`을 사용합니다. null이거나 빈 문자열일 경우 무시 (optional) (default to undefined)
+let memberStatus: 'ACTIVE' | 'PAUSED' | 'PERM_BAN' | 'DORMANT'; //회원 상태. 자동 매칭 관리자 dropdown 조회 시에는 `ACTIVE`를 사용합니다. null일 경우 무시 (optional) (default to undefined)
 let searchKeyword: string; //검색어. 회원의 이름으로 검색합니다. 회원의 이름이 검색어를 포함하면 회원 정보 가져옵니다. null이거나 빈 문자열일 경우 무시 (optional) (default to undefined)
 let page: number; //페이지. 1부터 시작 (optional) (default to 1)
 let pageSize: number; //페이지 사이즈 (optional) (default to 10)
@@ -46,8 +51,8 @@ const { status, data } = await apiInstance.findMembers(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **roleId** | [**string**] | 권한 ID. null이거나 빈 문자열일 경우 무시 | (optional) defaults to undefined|
-| **memberStatus** | [**&#39;ACTIVE&#39; | &#39;PAUSED&#39; | &#39;PERM_BAN&#39; | &#39;DORMANT&#39;**]**Array<&#39;ACTIVE&#39; &#124; &#39;PAUSED&#39; &#124; &#39;PERM_BAN&#39; &#124; &#39;DORMANT&#39;>** | 회원 상태. null일 경우 무시 | (optional) defaults to undefined|
+| **roleId** | [**string**] | 권한 ID. 자동 매칭 관리자 dropdown 조회 시에는 &#x60;ROLE_ADMIN&#x60;을 사용합니다. null이거나 빈 문자열일 경우 무시 | (optional) defaults to undefined|
+| **memberStatus** | [**&#39;ACTIVE&#39; | &#39;PAUSED&#39; | &#39;PERM_BAN&#39; | &#39;DORMANT&#39;**]**Array<&#39;ACTIVE&#39; &#124; &#39;PAUSED&#39; &#124; &#39;PERM_BAN&#39; &#124; &#39;DORMANT&#39;>** | 회원 상태. 자동 매칭 관리자 dropdown 조회 시에는 &#x60;ACTIVE&#x60;를 사용합니다. null일 경우 무시 | (optional) defaults to undefined|
 | **searchKeyword** | [**string**] | 검색어. 회원의 이름으로 검색합니다. 회원의 이름이 검색어를 포함하면 회원 정보 가져옵니다. null이거나 빈 문자열일 경우 무시 | (optional) defaults to undefined|
 | **page** | [**number**] | 페이지. 1부터 시작 | (optional) defaults to 1|
 | **pageSize** | [**number**] | 페이지 사이즈 | (optional) defaults to 10|
@@ -108,6 +113,112 @@ const { status, data } = await apiInstance.getMemberAccountHistoryResponse(
 ### Return type
 
 **BaseResponseMemberAccountHistoryResponseDto**
+
+### Authorization
+
+[bearer](../README.md#bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: */*
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+|**401** | Bearer Token is invalid or no bearer token |  -  |
+|**403** | You are authenticated but not allowed authorization |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **getMemberCourseStatus**
+> BaseResponseListAdminMemberCourseStatusResponse getMemberCourseStatus()
+
+회원이 접근권을 가진 코스별 진행/완주/현재 레슨 현황을 조회한다.
+
+### Example
+
+```typescript
+import {
+    AdminApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new AdminApi(configuration);
+
+let memberId: number; // (default to undefined)
+
+const { status, data } = await apiInstance.getMemberCourseStatus(
+    memberId
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **memberId** | [**number**] |  | defaults to undefined|
+
+
+### Return type
+
+**BaseResponseListAdminMemberCourseStatusResponse**
+
+### Authorization
+
+[bearer](../README.md#bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: */*
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+|**401** | Bearer Token is invalid or no bearer token |  -  |
+|**403** | You are authenticated but not allowed authorization |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **getMemberNotificationSubscriptions**
+> BaseResponseAdminMemberNotificationSubscriptionResponse getMemberNotificationSubscriptions()
+
+회원의 레슨 리마인더 설정 및 알림 구독(함께공부/오픈알림) 현황을 조회한다.
+
+### Example
+
+```typescript
+import {
+    AdminApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new AdminApi(configuration);
+
+let memberId: number; // (default to undefined)
+
+const { status, data } = await apiInstance.getMemberNotificationSubscriptions(
+    memberId
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **memberId** | [**number**] |  | defaults to undefined|
+
+
+### Return type
+
+**BaseResponseAdminMemberNotificationSubscriptionResponse**
 
 ### Authorization
 
@@ -298,6 +409,60 @@ void (empty response body)
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+# **updateMemberRoles**
+> BaseResponseVoid updateMemberRoles(bulkUpdateMemberRoleRequestDto)
+
+선택한 여러 회원의 권한을 한 번의 요청으로 변경한다.
+
+### Example
+
+```typescript
+import {
+    AdminApi,
+    Configuration,
+    BulkUpdateMemberRoleRequestDto
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new AdminApi(configuration);
+
+let bulkUpdateMemberRoleRequestDto: BulkUpdateMemberRoleRequestDto; //
+
+const { status, data } = await apiInstance.updateMemberRoles(
+    bulkUpdateMemberRoleRequestDto
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **bulkUpdateMemberRoleRequestDto** | **BulkUpdateMemberRoleRequestDto**|  | |
+
+
+### Return type
+
+**BaseResponseVoid**
+
+### Authorization
+
+[bearer](../README.md#bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: */*
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+|**401** | Bearer Token is invalid or no bearer token |  -  |
+|**403** | You are authenticated but not allowed authorization |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
 # **updateMemberStatus**
 > updateMemberStatus()
 
@@ -350,6 +515,113 @@ void (empty response body)
 |-------------|-------------|------------------|
 |**200** | 회원 상태 변경 성공 |  -  |
 |**400** | 유효하지 않은 회원 상태 값 |  -  |
+|**401** | Bearer Token is invalid or no bearer token |  -  |
+|**403** | You are authenticated but not allowed authorization |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **updateMemberStatuses**
+> BaseResponseVoid updateMemberStatuses(bulkUpdateMemberStatusRequestDto)
+
+선택한 여러 회원의 계정 상태를 한 번의 요청으로 변경한다.
+
+### Example
+
+```typescript
+import {
+    AdminApi,
+    Configuration,
+    BulkUpdateMemberStatusRequestDto
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new AdminApi(configuration);
+
+let bulkUpdateMemberStatusRequestDto: BulkUpdateMemberStatusRequestDto; //
+
+const { status, data } = await apiInstance.updateMemberStatuses(
+    bulkUpdateMemberStatusRequestDto
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **bulkUpdateMemberStatusRequestDto** | **BulkUpdateMemberStatusRequestDto**|  | |
+
+
+### Return type
+
+**BaseResponseVoid**
+
+### Authorization
+
+[bearer](../README.md#bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: */*
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+|**401** | Bearer Token is invalid or no bearer token |  -  |
+|**403** | You are authenticated but not allowed authorization |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **withdrawMember**
+> BaseResponseVoid withdrawMember()
+
+선택한 회원을 본인 탈퇴와 동일한 로직으로 익명화 탈퇴 처리한다. 되돌릴 수 없다.
+
+### Example
+
+```typescript
+import {
+    AdminApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new AdminApi(configuration);
+
+let memberId: number; // (default to undefined)
+
+const { status, data } = await apiInstance.withdrawMember(
+    memberId
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **memberId** | [**number**] |  | defaults to undefined|
+
+
+### Return type
+
+**BaseResponseVoid**
+
+### Authorization
+
+[bearer](../README.md#bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: */*
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
 |**401** | Bearer Token is invalid or no bearer token |  -  |
 |**403** | You are authenticated but not allowed authorization |  -  |
 

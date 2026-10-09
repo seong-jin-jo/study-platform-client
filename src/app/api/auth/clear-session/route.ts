@@ -1,15 +1,17 @@
-import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
+import {
+  AUTH_ROUTE_PATHS,
+  getSafeInternalRedirectPath,
+} from '@/features/auth/model/auth-route';
+import { clearServerAuthCookies } from '@/features/auth/server/middleware/auth-cookies';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
-  const redirectTo = searchParams.get('redirect') || '/login';
-
-  // 쿠키 삭제
-  const cookieStore = await cookies();
-  cookieStore.delete('accessToken');
-  cookieStore.delete('memberId');
-  cookieStore.delete('socialImageURL');
+  const rawRedirect = searchParams.get('redirect');
+  const redirectTo = getSafeInternalRedirectPath(
+    rawRedirect,
+    AUTH_ROUTE_PATHS.LOGIN,
+  );
 
   // 절대 URL 생성: 요청의 origin을 우선 사용 (이미 protocol 포함)
   // origin이 없으면 host + protocol 조합, 그래도 없으면 환경 변수 사용
@@ -28,6 +30,9 @@ export async function GET(request: NextRequest) {
     process.env.NEXT_PUBLIC_API_BASE_URL?.replace('/api/v1', '') ||
     request.url.split('/api')[0];
 
-  // 리다이렉트
-  return NextResponse.redirect(new URL(redirectTo, baseUrl));
+  const response = NextResponse.redirect(new URL(redirectTo, baseUrl));
+
+  clearServerAuthCookies(request, response);
+
+  return response;
 }

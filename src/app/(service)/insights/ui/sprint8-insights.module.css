@@ -1,0 +1,2350 @@
+/*
+ * 이 블록은 팔레트를 새로 정의하지 않는다. global.css 의 디자인 토큰에 짧은 지역
+ * 별칭만 붙인다. 색 리터럴을 여기에 다시 쓰면 토큰이 두 벌이 되어 어긋난다.
+ */
+.root {
+  --rose-50: var(--color-rose-50);
+  --rose-100: var(--color-rose-100);
+  --rose-300: var(--color-rose-300);
+  --rose-500: var(--color-rose-500);
+  --rose-600: var(--color-rose-600);
+  --gray-0: var(--color-gray-0);
+  --gray-50: var(--color-gray-50);
+  --gray-100: var(--color-gray-100);
+  --gray-200: var(--color-gray-200);
+  --gray-300: var(--color-gray-300);
+  --gray-400: var(--color-gray-400);
+  --gray-500: var(--color-gray-500);
+  --gray-600: var(--color-gray-600);
+  --gray-700: var(--color-gray-700);
+  --gray-800: var(--color-gray-800);
+  --gray-900: var(--color-gray-900);
+  --blue-50: var(--color-blue-50);
+  --blue-200: var(--color-blue-200);
+  --blue-600: var(--color-blue-600);
+  --blue-900: var(--color-blue-900);
+  --green-50: var(--color-green-50);
+  --green-200: var(--color-green-200);
+  --green-600: var(--color-green-600);
+  --green-700: var(--color-green-700);
+  --yellow-100: var(--color-yellow-100);
+  --yellow-400: var(--color-yellow-400);
+  /* 어두운 무대 위 본문 색과 면. 새 색이 아니라 기존 토큰에서 파생한 값이다. */
+  --stage-text-muted: color-mix(in srgb, var(--gray-0) 62%, transparent);
+  --stage-text-strong: color-mix(in srgb, var(--gray-0) 72%, transparent);
+  --stage-name-surface: var(--color-background-dimmer);
+  min-height: 100vh;
+  background: var(--gray-50);
+  color: var(--gray-900);
+}
+
+.seaStage {
+  position: relative;
+  display: flex;
+  height: var(--spacing-insight-ocean-stage);
+  min-height: var(--spacing-insight-ocean-stage);
+  overflow: hidden;
+  flex-direction: column;
+  background: var(--color-background-accent-blue-strong);
+  color: var(--gray-0);
+}
+
+.seaBackdrop {
+  position: absolute;
+  inset: 0;
+  background: url("/insights/worldmap/bg-web.jpg") center 58% / cover no-repeat;
+}
+
+.landBackdrop {
+  position: absolute;
+  inset: 0;
+  background: url("/insights/worldmap/bg-web.jpg") center 12% / cover no-repeat;
+  filter: brightness(0.8) saturate(0.92);
+}
+
+.seaScrim {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 88px;
+  background: linear-gradient(180deg, transparent, rgb(15 78 104 / 32%));
+}
+
+.landScrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      180deg,
+      rgb(24 29 39 / 62%) 0%,
+      rgb(24 29 39 / 10%) 13%,
+      rgb(24 29 39 / 6%) 34%,
+      rgb(24 29 39 / 34%) 52%,
+      rgb(24 29 39 / 88%) 70%,
+      var(--gray-900) 88%
+    ),
+    radial-gradient(
+      120% 78% at 50% 6%,
+      rgb(24 29 39 / 0%) 40%,
+      rgb(24 29 39 / 55%) 100%
+    );
+}
+
+.stageInner,
+.landInner {
+  position: relative;
+  display: flex;
+  width: 100%;
+  max-width: 1120px;
+  flex: 1;
+  flex-direction: column;
+  margin: 0 auto;
+  padding: 0 20px 26px;
+}
+
+.stageInner {
+  height: 100%;
+  padding: 0;
+}
+
+.stageHead {
+  display: none;
+}
+
+.stageLabel {
+  color: var(--stage-text-muted);
+}
+
+.stageName {
+  color: var(--gray-0);
+  font-size: 13px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.02em;
+}
+
+.stageCount {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  margin-left: auto;
+  color: var(--yellow-400);
+  font-size: 11px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.map {
+  position: relative;
+  height: var(--spacing-insight-ocean-stage);
+  min-height: var(--spacing-insight-ocean-stage);
+  flex: none;
+  margin: 0;
+}
+
+/* 밴드별 크기 차등은 폐기했다(회장 2026-08-22 "크기 상관없이 똑같은 위계").
+   크기는 레이아웃이 계산해 --island-size 로 내려준다. 여기서 덮어쓰지 않는다. */
+
+.island {
+  --island-hue: 0deg;
+  --island-scale: 1;
+  --island-x: 50%;
+  --island-y: 50%;
+
+  position: absolute;
+  top: var(--island-y);
+  left: var(--island-x);
+  display: flex;
+  /* 그려지는 폭은 레이아웃이 자리를 잡을 때 쓴 폭과 반드시 같아야 한다.
+     예전에는 여기서 96px 로 그리는데 레이아웃은 62px 로 계산해서, 단위테스트는
+     통과하고 실제 화면에서는 섬이 겹쳤다(2026-08-22 CI e2e "섬 버튼 8·20 겹침"). */
+  width: var(--island-cell, var(--spacing-1200));
+  min-width: 0;
+  min-height: 44px;
+  box-sizing: border-box;
+  flex-direction: column;
+  align-items: center;
+  padding: 2px 4px;
+  border-radius: 16px;
+  transform: translate(-50%, -50%);
+  transition:
+    transform 220ms cubic-bezier(0.2, 0.7, 0.3, 1),
+    filter 220ms ease;
+}
+
+.map > .island {
+  width: 72px;
+  min-height: 72px;
+  padding: 0;
+  transform: none;
+}
+
+.map > .island:nth-of-type(1) {
+  top: 24px;
+  left: 4%;
+}
+.map > .island:nth-of-type(2) {
+  top: 72px;
+  left: 28%;
+}
+.map > .island:nth-of-type(3) {
+  top: 24px;
+  left: 54%;
+}
+.map > .island:nth-of-type(4) {
+  top: 80px;
+  left: calc(97% - 72px);
+}
+.map > .island:nth-of-type(5) {
+  top: 152px;
+  left: 8%;
+}
+.map > .island:nth-of-type(6) {
+  top: 168px;
+  left: 34%;
+}
+.map > .island:nth-of-type(7) {
+  top: 144px;
+  left: 60%;
+}
+.map > .island:nth-of-type(8) {
+  top: 184px;
+  left: calc(98% - 72px);
+}
+
+.island:hover,
+.island:focus-visible {
+  outline: 2px solid var(--rose-300);
+  outline-offset: 2px;
+  transform: translateY(-5px);
+}
+
+.islandArt {
+  width: 48px;
+  height: 32px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 6px rgb(0 0 0 / 35%));
+}
+
+.islandBack {
+  z-index: 0;
+  opacity: 0.82;
+}
+
+.islandBack .islandArt {
+  opacity: 0.82;
+}
+
+.islandTone1 {
+  --island-hue: 58deg;
+}
+
+.islandTone2 {
+  --island-hue: 118deg;
+}
+
+.islandTone3 {
+  --island-hue: 198deg;
+}
+
+.islandTone4 {
+  --island-hue: 282deg;
+}
+
+/* 모든 섬이 같은 선명도를 쓴다. 밴드로 갈리지 않는다. */
+.islandOpened .islandArt,
+.islandStarted .islandArt,
+.islandFar .islandArt,
+.islandHere .islandArt {
+  filter: drop-shadow(0 4px 6px rgb(0 0 0 / 35%));
+}
+
+/* 먼 땅을 흐리게 하던 처리는 폐기했다. 전부 같은 선명도로 본다
+   (회장 2026-08-22 "똑같은 위계로 화면에서 다 보여주는거지"). */
+
+.islandName {
+  width: 100%;
+  /* 이름표는 배정된 칸을 넘지 않는다. 넘으면 옆 섬 이름과 겹쳐 둘 다 못 읽는다
+     (2026-08-22 dev 실측: 20곳 모바일에서 이름이 통째로 뭉개졌다).
+     11em 은 칸이 넉넉할 때의 상한이고, 좁아지면 칸 폭이 이긴다. */
+  max-width: 72px;
+  /* 한 줄로 묶으면 좁은 칸에서 세 글자만 남는다. 두 줄까지 허용해
+     같은 폭에서 글자를 두 배로 보여 준다(회장 2026-08-22 "섬 다 보이도록"). */
+  display: -webkit-box;
+  overflow-wrap: anywhere;
+  word-break: keep-all;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  /* 흰색 72~82% 는 어두운 바다 사진 위에서 회색으로 읽힌다(회장 메모 2026-08-23
+     "글자색이 회색인게 좀 걸리네 좀 눈에띄게 하기"). 100% 로 올린다. */
+  color: var(--gray-0);
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.02em;
+  line-height: 16px;
+  text-align: center;
+  /* 배경이 사진이라 밝기가 균일하지 않다. 밀착 겹만 진하게(98%) 누르고 바깥
+     겹은 흘려(66%) 스무 곳이 한 화면에 있어도 글자 주변이 검은 덩어리로
+     뭉치지 않는다(명세 §17.3, NN/g worst-case 기준 대비 실측). */
+  text-shadow:
+    0 0 2px rgb(24 29 39 / 98%),
+    0 1px 3px rgb(24 29 39 / 96%),
+    0 0 7px rgb(24 29 39 / 90%),
+    0 0 16px rgb(24 29 39 / 66%);
+  /* 두 줄 자르기(-webkit-line-clamp)는 줄바꿈이 허용돼야 동작한다.
+     nowrap 이 남아 있어서 한 줄로 눌린 채 "수평선 ..." 으로 잘렸다
+     (2026-08-22 dev 실측: 스무 곳 중 다섯 곳이 전부 "수평선 ..." 으로 보여
+     서로 구분이 안 됐다). */
+  white-space: normal;
+}
+
+.islandHere .islandName {
+  /* 현재 섬도 배정된 칸을 넘지 않는다. 넘으면 옆 섬 이름을 덮는다. */
+  width: 100%;
+  max-width: 72px;
+  overflow: hidden;
+  white-space: normal;
+  text-overflow: clip;
+  color: var(--gray-0);
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
+  overflow-wrap: anywhere;
+}
+
+.islandOpened .islandName {
+  color: var(--yellow-100);
+}
+
+.islandSub {
+  /* 이름만 밝고 아래 진행 문구가 회색이면 그 대비가 더 눈에 띈다(명세 §17.3). */
+  color: rgb(255 255 255 / 94%);
+  font-size: 10.5px;
+  font-weight: var(--font-weight-bold);
+  text-shadow:
+    0 0 2px rgb(24 29 39 / 98%),
+    0 1px 3px rgb(24 29 39 / 96%),
+    0 0 7px rgb(24 29 39 / 90%),
+    0 0 16px rgb(24 29 39 / 66%);
+}
+
+.popover {
+  width: min(100%, 400px);
+  padding: 24px;
+  border: 1px solid var(--gray-300);
+  border-radius: 20px;
+  background: var(--gray-0);
+  box-shadow: 0 16px 40px rgb(24 29 39 / 16%);
+  color: var(--gray-900);
+}
+
+.popoverBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: var(--stage-name-surface);
+}
+
+.popoverTitle {
+  color: var(--gray-900);
+  font-size: 22px;
+  font-weight: var(--font-weight-bold);
+}
+
+.popoverSubtitle {
+  display: block;
+  margin-top: 8px;
+  color: var(--gray-600);
+  font-size: 13px;
+  font-weight: var(--font-weight-bold);
+}
+
+.popoverLink {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  margin-top: 16px;
+  border: 1px solid var(--gray-300);
+  border-radius: 12px;
+  color: var(--gray-900);
+  font-size: 13px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.popoverLink small {
+  color: var(--gray-600);
+  font-size: 11px;
+}
+
+.popoverClose {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.heroKoan {
+  position: relative;
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px 16px 32px;
+  background: var(--gray-0);
+}
+
+.newIslands {
+  max-width: 1120px;
+  padding: 32px 20px 48px;
+  margin: 0 auto;
+}
+
+.newIslands h2 {
+  font-size: 23px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.newIslands > p {
+  margin-top: 8px;
+  color: var(--gray-600);
+  font-size: 13px;
+}
+
+.newIslandGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.newIslandTile {
+  display: flex;
+  min-width: 0;
+  min-height: 80px;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid var(--gray-300);
+  border-radius: 16px;
+  background: var(--gray-0);
+  color: var(--gray-900);
+}
+
+.newIslandTile span {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: var(--font-weight-extrabold);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recoveryPanel {
+  display: flex;
+  min-height: 360px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 32px;
+  color: var(--gray-900);
+  text-align: center;
+}
+
+.recoveryPanel h1 {
+  font-size: 30px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.recoveryPanel p {
+  max-width: 440px;
+  color: var(--gray-600);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.recoveryLoader {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: var(--rose-500);
+  animation: recovery-pulse 1400ms ease-in-out infinite;
+}
+
+.recoveryActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.recoveryPrimary,
+.recoverySecondary {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.recoveryPrimary {
+  background: var(--rose-500);
+  color: var(--gray-0);
+}
+
+.recoverySecondary {
+  border: 1px solid var(--gray-300);
+  background: var(--gray-0);
+  color: var(--gray-900);
+}
+
+.recoveryEyebrow {
+  color: var(--rose-600);
+  font-size: 13px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+@keyframes recovery-pulse {
+  50% {
+    opacity: 0.35;
+    transform: scale(0.92);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recoveryLoader {
+    animation: none;
+  }
+}
+
+.heroKicker {
+  margin: 0;
+  color: var(--rose-600);
+  font-size: 13px;
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: 0.04em;
+}
+
+.heroKicker span {
+  color: var(--stage-text-muted);
+  font-weight: var(--font-weight-bold);
+}
+
+.heroQuestion {
+  max-width: 760px;
+  margin: 0;
+  color: var(--gray-900);
+  font-size: 30px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.03em;
+  line-height: 1.22;
+}
+
+.heroDescription {
+  max-width: 680px;
+  margin: 0;
+  color: var(--gray-600);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.heroMeta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  color: var(--stage-text-strong);
+  font-size: 12px;
+  font-weight: var(--font-weight-bold);
+}
+
+.heroCta {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border: 1px solid var(--rose-500);
+  border-radius: 12px;
+  background: var(--rose-500);
+  color: var(--gray-0);
+  font-size: 14px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.heroSecondary {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border: 1px solid var(--gray-300);
+  border-radius: 12px;
+  background: var(--gray-0);
+  color: var(--gray-900);
+  font-size: 14px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.shore {
+  display: none;
+}
+
+.page {
+  max-width: 1120px;
+  padding: 6px 20px 80px;
+  margin: 0 auto;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+.sectionTitle h2 {
+  font-size: 15px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.sectionTitle span {
+  color: var(--gray-600);
+  font-size: 12px;
+  font-weight: var(--font-weight-bold);
+}
+
+.koanRows {
+  overflow: hidden;
+  margin-top: 10px;
+  border: 1px solid var(--gray-200);
+  border-radius: 16px;
+  background: var(--gray-0);
+}
+
+.koanRow {
+  display: flex;
+  min-height: 72px;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-top: 1px solid var(--gray-100);
+}
+
+.koanRow:first-child {
+  border-top: 0;
+}
+
+.koanRowQuestion {
+  font-size: 14px;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.55;
+}
+
+.categoryChip {
+  display: inline-block;
+  padding: 3px 8px;
+  margin-top: 6px;
+  border-radius: 6px;
+  background: var(--gray-100);
+  color: var(--gray-600);
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
+}
+
+.koanCount {
+  min-width: 60px;
+  margin-left: auto;
+  color: var(--gray-600);
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
+  text-align: right;
+}
+
+.koanCount b {
+  display: block;
+  color: var(--gray-900);
+  font-size: 14px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.moreLink {
+  display: flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 12px;
+  border: 1px solid var(--gray-300);
+  border-radius: 12px;
+  background: var(--gray-0);
+  color: var(--gray-700);
+  font-size: 13px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.hint {
+  padding-left: 11px;
+  margin-top: 16px;
+  border-left: 3px solid var(--gray-300);
+  color: var(--gray-700);
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.7;
+}
+
+.listPage {
+  max-width: 1240px;
+  padding: 20px 20px 80px;
+  margin: 0 auto;
+}
+
+.listMain {
+  min-width: 0;
+}
+
+.listLead h1 {
+  font-size: 24px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.035em;
+}
+
+.listLead p {
+  margin-top: 6px;
+  color: var(--gray-600);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+.listLead b {
+  color: var(--gray-800);
+  font-weight: var(--font-weight-bold);
+}
+
+.listHero {
+  padding: 22px 20px 20px;
+  margin-top: 16px;
+  border-radius: 22px;
+  background: var(--gray-900);
+  box-shadow: 0 10px 28px rgb(16 24 40 / 12%);
+  color: var(--gray-0);
+}
+
+.listHeroKicker {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--rose-300);
+  font-size: 11.5px;
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: 0.02em;
+}
+
+.listHeroKicker span {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--rose-500);
+  box-shadow: 0 0 0 4px rgb(246 61 104 / 22%);
+}
+
+.listHero h2 {
+  margin-top: 12px;
+  font-size: 23px;
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: -0.035em;
+  line-height: 1.38;
+}
+
+.listHeroMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  color: var(--gray-400);
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+}
+
+.listHeroMeta span {
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 6%);
+  color: var(--gray-300);
+  font-weight: var(--font-weight-bold);
+}
+
+.listHeroActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.listHeroActions a,
+.listHeroActions button {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  padding: 0 18px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.listHeroActions a {
+  background: var(--rose-500);
+  box-shadow: 0 6px 16px rgb(246 61 104 / 35%);
+  color: var(--gray-0);
+  font-size: 14px;
+}
+
+.listHeroActions button {
+  border: 1px solid rgb(255 255 255 / 14%);
+  background: rgb(255 255 255 / 6%);
+  color: var(--gray-300);
+  cursor: not-allowed;
+}
+
+.listHero > p {
+  margin-top: 13px;
+  color: var(--gray-400);
+  font-size: 11.5px;
+  line-height: 1.55;
+}
+
+.listAxis {
+  margin-top: 24px;
+}
+
+.listAxisHead {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+.listAxisHead h3 {
+  font-size: 16px;
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: -0.02em;
+}
+
+.listAxisHead span {
+  color: var(--gray-500);
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+}
+
+.listChips {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  padding-bottom: 3px;
+  margin-top: 11px;
+  scrollbar-width: none;
+}
+
+.listChips a {
+  display: inline-flex;
+  min-height: 40px;
+  flex: none;
+  align-items: center;
+  padding: 0 13px;
+  border: 1px solid var(--gray-300);
+  border-radius: 999px;
+  background: var(--gray-0);
+  color: var(--gray-700);
+  font-size: 12.5px;
+  font-weight: var(--font-weight-bold);
+}
+
+.listChips a[aria-current="page"] {
+  border-color: var(--gray-900);
+  background: var(--gray-900);
+  color: var(--gray-0);
+}
+
+.listBridge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 14px 15px;
+  margin-top: 11px;
+  border: 1px solid var(--gray-200);
+  border-radius: 16px;
+  background: var(--gray-0);
+}
+
+.listBridge b,
+.listBridge span {
+  display: block;
+}
+
+.listBridge b {
+  font-size: 13px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.listBridge span {
+  margin-top: 3px;
+  color: var(--gray-600);
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+}
+
+.listBridge a {
+  min-height: 44px;
+  padding: 0 14px;
+  margin-left: auto;
+  border: 1px solid var(--gray-300);
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.listWrap {
+  overflow: hidden;
+  margin-top: 22px;
+  border: 1px solid var(--gray-200);
+  border-radius: 16px;
+  background: var(--gray-0);
+}
+
+.listHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.listHeader b {
+  font-size: 13.5px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.listHeader span {
+  margin-left: auto;
+  color: var(--gray-500);
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+}
+
+.listRow {
+  display: block;
+  padding: 15px 16px;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.listRow:last-child {
+  border-bottom: 0;
+}
+
+.listQuestion {
+  color: var(--gray-900);
+  font-size: 15px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.02em;
+  line-height: 1.5;
+}
+
+.listMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 7px;
+  color: var(--gray-500);
+  font-size: 11.5px;
+  font-weight: var(--font-weight-semibold);
+}
+
+.listBadge {
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--gray-100);
+  color: var(--gray-600);
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
+}
+
+.listCount {
+  margin-left: auto;
+  color: var(--gray-600);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--font-weight-bold);
+}
+
+.listCount em {
+  color: var(--rose-600);
+  font-style: normal;
+}
+
+.listFoot {
+  margin-top: 26px;
+  color: var(--gray-400);
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.listRail {
+  display: none;
+}
+
+.listRailCard {
+  padding: 15px 16px;
+  border: 1px solid var(--gray-200);
+  border-radius: 16px;
+  background: var(--gray-0);
+}
+
+.listRailCard + .listRailCard {
+  margin-top: 12px;
+}
+
+.listRailCard h4 {
+  font-size: 13px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.listRailCard p {
+  margin-top: 7px;
+  color: var(--gray-600);
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.listRailCard > div {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-top: 11px;
+}
+
+.listRailCard a {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 12px;
+  border: 1px solid var(--gray-300);
+  border-radius: 12px;
+  color: var(--gray-800);
+  font-size: 12.5px;
+  font-weight: var(--font-weight-bold);
+}
+
+.listRailCard a small {
+  margin-left: auto;
+  color: var(--gray-500);
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+}
+
+.listPace {
+  display: flex;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.listPace i {
+  height: 6px;
+  flex: 1;
+  border-radius: 999px;
+  background: var(--gray-200);
+}
+
+.listPace i.listPaceOn {
+  background: var(--rose-500);
+}
+
+.listRailCard p.listPaceText {
+  margin-top: 8px;
+  color: var(--gray-500);
+  font-size: 11.5px;
+}
+
+.listMailButton {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 11px;
+  border: 1px solid var(--rose-500);
+  border-radius: 12px;
+  color: var(--rose-600);
+  font-size: 12.5px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.loading,
+.error,
+.empty {
+  padding: 32px 20px;
+  color: var(--gray-600);
+  font-size: 13px;
+  font-weight: var(--font-weight-bold);
+  text-align: center;
+}
+
+.land {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background: var(--gray-900);
+  color: var(--gray-0);
+}
+
+.landBackdrop {
+  filter: brightness(0.62) saturate(0.9);
+}
+
+.landScrim {
+  background: linear-gradient(
+    180deg,
+    rgb(24 29 39 / 42%) 0%,
+    rgb(24 29 39 / 78%) 42%,
+    var(--gray-900) 92%
+  );
+}
+
+.back {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  color: rgb(255 255 255 / 76%);
+  font-size: 12px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.landHead {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding-bottom: 4px;
+}
+
+.landArt {
+  width: 88px;
+  height: 88px;
+  flex: none;
+  object-fit: contain;
+  filter: saturate(1.06) drop-shadow(0 14px 22px rgb(24 29 39 / 60%));
+}
+
+.landTitle {
+  font-size: 24px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.04em;
+}
+
+.landStatus {
+  margin-top: 6px;
+  color: var(--yellow-100);
+  font-size: 12.5px;
+  font-weight: var(--font-weight-bold);
+}
+
+.landExplorers {
+  margin-top: 3px;
+  color: rgb(255 255 255 / 58%);
+  font-size: 11.5px;
+  font-weight: var(--font-weight-bold);
+}
+
+.tide {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 13px;
+  margin-top: 14px;
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: 12px;
+  background: rgb(255 255 255 / 6%);
+}
+
+.tideDots {
+  display: flex;
+  flex: none;
+  gap: 5px;
+}
+
+.tideDot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 20%);
+}
+
+.tideDotOn {
+  background: var(--yellow-400);
+}
+
+.tideText {
+  flex: 1;
+  color: var(--gray-0);
+  font-size: 12.5px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.tideText small {
+  display: block;
+  margin-top: 2px;
+  color: rgb(255 255 255 / 74%);
+  font-size: 11.5px;
+  font-weight: var(--font-weight-bold);
+}
+
+.tideHelp {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  padding: 0 11px;
+  border: 1px solid rgb(255 255 255 / 24%);
+  border-radius: 999px;
+  color: rgb(255 255 255 / 86%);
+  font-size: 11.5px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.documents {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 14px;
+}
+
+.document {
+  display: flex;
+  min-height: 70px;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 14px;
+  border: 1px solid rgb(255 255 255 / 10%);
+  border-radius: 12px;
+  background: rgb(255 255 255 / 5%);
+}
+
+.documentNumber {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  flex: none;
+  place-items: center;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 12%);
+  color: rgb(255 255 255 / 70%);
+  font-size: 11.5px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+/* 이 셋은 전부 <span> 이다. display 를 안 주면 인라인으로 흘러
+   제목 뒤에 상태 문구가 그대로 붙는다. dev 에서 실제로 그렇게 나왔다
+   (2026-08-21 캡처: "도커에서만 sharp가 사라지는 밤로그인하면 이어서 엽니다").
+   제목이 길어 두 줄이 되는 카드에서만 우연히 줄이 갈려서, 어떤 카드는
+   멀쩡해 보이고 어떤 카드는 붙어 보이는 들쭉날쭉한 화면이 됐다.
+   인라인 요소에는 margin-top 도 세로로 먹지 않아 간격 규격도 무시됐다.
+   세 요소를 블록으로 세워 시안대로 제목 / 설명 / 상태를 각 줄에 둔다. */
+/* 시안은 카드 제목을 밝게 두고, 읽은 편(62%)과 잠긴 편(56%)만 낮춰 위계를 만든다
+   (sprint8-v8.css `.doc.read .t` / `.doc.locked`). dev 는 제목에 색을 안 줘서
+   공용 버튼의 기본 글자색을 물려받았고, 그 값이 잠긴 편보다도 어두웠다.
+   그 결과 **강조해야 할 첫 편 제목이 가장 흐리게** 나왔다(2026-08-22 dev 실측).
+   기본값을 밝게 고정해 위계를 시안과 맞춘다. */
+.documentTitle {
+  display: block;
+  color: rgb(255 255 255 / 92%);
+  font-size: 14px;
+  font-weight: var(--font-weight-extrabold);
+  line-height: 1.45;
+}
+
+.documentDescription {
+  display: block;
+  margin-top: 4px;
+  color: rgb(255 255 255 / 60%);
+  font-size: 11.5px;
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.5;
+}
+
+.documentTag,
+.documentKey {
+  /* 알약 배경이 글자만 감싸야 하므로 flex + fit-content 로 둔다.
+     inline-flex 로 두면 앞 요소와 같은 줄에 앉는다. */
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  gap: 6px;
+  margin-top: 7px;
+  color: rgb(255 255 255 / 62%);
+  font-size: 10.5px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.documentKey {
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: var(--yellow-100);
+  color: var(--gray-900);
+}
+
+.documentRead {
+  border-color: rgb(255 255 255 / 8%);
+  background: rgb(255 255 255 / 3%);
+}
+
+.documentRead .documentNumber {
+  background: var(--yellow-400);
+  color: var(--gray-900);
+}
+
+.documentRead .documentTitle {
+  color: rgb(255 255 255 / 62%);
+  font-weight: var(--font-weight-bold);
+}
+
+.documentNext {
+  border-color: rgb(254 240 199 / 44%);
+  background: rgb(255 255 255 / 10%);
+}
+
+.documentNext .documentNumber {
+  background: var(--yellow-100);
+  color: var(--gray-900);
+}
+
+/* 시안 규격(sprint8-v8.css `.doc.next .tag`). 강조 카드의 안내 문구도 같은 노랑으로
+   묶어야 테두리·번호·문구가 한 덩어리로 읽힌다. 이것만 흰색이면 강조가 반만 걸린다. */
+.documentNext .documentTag {
+  color: var(--yellow-100);
+}
+
+.documentLocked {
+  border-color: rgb(255 255 255 / 7%);
+  background: rgb(255 255 255 / 2%);
+}
+
+.documentLocked .documentTitle,
+.documentLocked .documentNumber,
+.documentLocked .documentTag {
+  color: rgb(255 255 255 / 56%);
+}
+
+.crossings {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 16px;
+}
+
+.crossing {
+  display: flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 14px;
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.crossing small {
+  color: rgb(255 255 255 / 58%);
+  font-size: 11.5px;
+  text-align: right;
+}
+
+.detailPage {
+  max-width: 1200px;
+  padding: 0 20px 120px;
+  margin: 0 auto;
+}
+
+.detailMain {
+  min-width: 0;
+}
+
+.disclosure {
+  padding: 9px 13px;
+  margin-top: 14px;
+  border-left: 3px solid var(--blue-600);
+  border-radius: 0 8px 8px 0;
+  background: var(--blue-50);
+  color: var(--blue-900);
+  font-size: 12.5px;
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.55;
+}
+
+.detailTitle {
+  max-width: 22ch;
+  margin-top: 18px;
+  font-size: 25px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.035em;
+  line-height: 1.4;
+}
+
+.purpose {
+  margin-top: 12px;
+  color: var(--gray-600);
+  font-size: 14px;
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.65;
+}
+
+.detailMeta {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 10px;
+  color: var(--gray-500);
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+}
+
+.detailSection {
+  padding: 18px;
+  margin-top: 20px;
+  border: 1px solid var(--gray-200);
+  border-radius: 16px;
+  background: var(--gray-0);
+}
+
+.detailSection h2 {
+  color: var(--gray-500);
+  font-size: 13px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.detailBody {
+  margin-top: 11px;
+  color: var(--gray-800);
+  font-size: 14.5px;
+  line-height: 1.8;
+}
+
+.aiChip {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border: 1px solid var(--blue-200);
+  border-radius: 999px;
+  background: var(--blue-50);
+  color: var(--blue-900);
+  font-size: 11.5px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.detailAuthor {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.reviewedChip {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border: 1px solid var(--green-200);
+  border-radius: 999px;
+  background: var(--green-50);
+  color: var(--green-700);
+  font-size: 11.5px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.detailSection h2.answerTitle {
+  margin-top: 13px;
+  color: var(--gray-900);
+  font-size: 17px;
+  letter-spacing: -0.02em;
+}
+
+.proof {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 2px;
+  margin-top: 18px;
+  border-top: 1px solid var(--gray-200);
+  border-bottom: 1px solid var(--gray-200);
+  color: var(--gray-700);
+  font-size: 13px;
+  font-weight: var(--font-weight-bold);
+}
+
+.helpfulButton {
+  min-height: 44px;
+  padding: 0 15px;
+  margin-left: auto;
+  border: 1px solid var(--gray-300);
+  border-radius: 999px;
+  background: var(--gray-0);
+  color: var(--gray-700);
+  font-size: 12.5px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.helpfulButton[aria-pressed="true"] {
+  border-color: var(--green-600);
+  background: var(--green-50);
+  color: var(--green-700);
+}
+
+.composer {
+  overflow: hidden;
+  margin-top: 20px;
+  border: 1px solid var(--gray-300);
+  border-radius: 16px;
+  background: var(--gray-0);
+}
+
+.composerToggle {
+  display: flex;
+  width: 100%;
+  min-height: 64px;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 16px;
+  color: var(--gray-500);
+  font-size: 14px;
+  font-weight: var(--font-weight-semibold);
+  text-align: left;
+}
+
+.composerToggle b {
+  padding: 9px 14px;
+  margin-left: auto;
+  border: 1.5px solid var(--rose-500);
+  border-radius: 999px;
+  color: var(--rose-600);
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+
+.composerOpen {
+  padding: 16px;
+}
+
+.composerOpen textarea {
+  width: 100%;
+  min-height: 118px;
+  padding: 13px;
+  margin-top: 12px;
+  border: 1px solid var(--gray-300);
+  border-radius: 12px;
+  color: var(--gray-900);
+  font-size: 14px;
+  line-height: 1.7;
+  resize: vertical;
+}
+
+.submit {
+  min-height: 48px;
+  padding: 0 22px;
+  margin-top: 13px;
+  border-radius: 12px;
+  background: var(--rose-500);
+  color: var(--gray-0);
+  font-size: 14px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.answer {
+  padding: 15px 16px;
+  margin-top: 12px;
+  border: 1px solid var(--gray-200);
+  border-radius: 16px;
+  background: var(--gray-0);
+}
+
+.answerHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--gray-500);
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+}
+
+.answerHeader b {
+  color: var(--gray-900);
+  font-size: 13px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.answerBody {
+  margin-top: 9px;
+  color: var(--gray-800);
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.answerFooter {
+  display: flex;
+  gap: 8px;
+  margin-top: 11px;
+}
+
+.quietButton {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  padding: 0 14px;
+  border: 1px solid var(--gray-300);
+  border-radius: 999px;
+  background: var(--gray-0);
+  color: var(--gray-600);
+  font-size: 12px;
+  font-weight: var(--font-weight-bold);
+}
+
+.rail {
+  display: none;
+}
+
+.railCard {
+  padding: 15px 16px;
+  border: 1px solid var(--rose-100);
+  border-radius: 16px;
+  background: var(--rose-50);
+}
+
+.railCard h3 {
+  color: var(--rose-600);
+  font-size: 14.5px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.railCard p {
+  margin-top: 7px;
+  color: var(--gray-600);
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.railCta {
+  display: flex;
+  width: 100%;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 12px;
+  border-radius: 12px;
+  background: var(--rose-500);
+  color: var(--gray-0);
+  font-size: 13.5px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.relatedCard {
+  padding: 15px 16px;
+  margin-top: 12px;
+  border: 1px solid var(--gray-200);
+  border-radius: 16px;
+  background: var(--gray-0);
+}
+
+.relatedCard h3 {
+  color: var(--gray-900);
+  font-size: 13px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.relatedCard > div {
+  display: flex;
+  flex-direction: column;
+  margin-top: 6px;
+}
+
+.relatedCard a {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 10px 0;
+  border-top: 1px solid var(--gray-100);
+  color: var(--gray-800);
+  font-size: 12.5px;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.5;
+}
+
+.relatedCard a small {
+  margin-left: auto;
+  color: var(--gray-500);
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
+
+.detailBridge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 15px 16px;
+  margin-top: 24px;
+  border: 1px solid var(--gray-200);
+  border-radius: 16px;
+  background: var(--gray-0);
+}
+
+.detailBridge b,
+.detailBridge span {
+  display: block;
+}
+
+.detailBridge b {
+  font-size: 13.5px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.detailBridge span {
+  margin-top: 4px;
+  color: var(--gray-600);
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+}
+
+.detailBridge a {
+  min-height: 44px;
+  padding: 0 13px;
+  margin-left: auto;
+  border: 1px solid var(--gray-300);
+  border-radius: 999px;
+  color: var(--gray-800);
+  font-size: 12px;
+  font-weight: var(--font-weight-bold);
+}
+
+.detailMobileBar {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--gray-200);
+  background: var(--gray-0);
+  box-shadow: 0 -4px 16px rgb(16 24 40 / 6%);
+}
+
+.detailMobileBar span {
+  min-width: 0;
+  color: var(--gray-500);
+  font-size: 11.5px;
+  font-weight: var(--font-weight-bold);
+}
+
+.detailMobileBar a {
+  display: flex;
+  min-height: 46px;
+  align-items: center;
+  padding: 0 17px;
+  margin-left: auto;
+  border-radius: 12px;
+  background: var(--rose-500);
+  color: var(--gray-0);
+  font-size: 13.5px;
+  font-weight: var(--font-weight-extrabold);
+  white-space: nowrap;
+}
+
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  align-items: end;
+  background: rgb(17 24 39 / 60%);
+}
+
+@media (max-width: 767px) {
+  .root {
+    padding-top: var(--spacing-300);
+    background: var(--gray-0);
+  }
+
+  .seaStage {
+    width: auto;
+    height: auto;
+    min-height: 0;
+    margin: 0 var(--spacing-200);
+    border-radius: var(--radius-300);
+  }
+
+  .seaBackdrop {
+    background-position: center;
+  }
+
+  .seaScrim {
+    height: 100%;
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--gray-900) 54%, transparent),
+      color-mix(in srgb, var(--gray-900) 10%, transparent) 42%,
+      color-mix(in srgb, var(--gray-900) 42%, transparent)
+    );
+  }
+
+  .stageInner {
+    height: auto;
+    padding: var(--spacing-300) var(--spacing-300) var(--spacing-400);
+  }
+
+  .stageHead {
+    z-index: 1;
+    display: block;
+  }
+
+  .stageHead h2 {
+    margin-top: var(--spacing-100);
+    color: var(--gray-0);
+    word-break: keep-all;
+  }
+
+  .stageHead > p:last-child {
+    margin-top: var(--spacing-125);
+    color: var(--gray-0);
+    word-break: keep-all;
+  }
+
+  .stageLabel {
+    color: var(--rose-300);
+  }
+
+  .map {
+    display: grid;
+    height: auto;
+    min-height: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-200) var(--spacing-300);
+    margin-top: var(--spacing-300);
+  }
+
+  .map > .island,
+  .map > .island:nth-of-type(n) {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+    min-height: var(--spacing-1200);
+    justify-content: center;
+    padding: var(--spacing-50);
+    transform: none;
+  }
+
+  .map .islandArt {
+    width: var(--spacing-800);
+    height: var(--spacing-700);
+  }
+
+  .map .islandName,
+  .map .islandHere .islandName {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    margin-top: var(--spacing-50);
+    overflow-wrap: normal;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-break: keep-all;
+  }
+
+  .map .islandName,
+  .map .islandHere .islandName,
+  .map .islandSub {
+    font-size: 16px;
+    line-height: 20px;
+  }
+
+  .map .islandSub {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    margin-top: var(--spacing-50);
+    overflow-wrap: normal;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-break: keep-all;
+  }
+}
+
+/* 폰·폴드·태블릿 메타 글자는 같은 13px 하한을 쓴다. 배치 규칙은
+   기존 767px/768px 분기를 유지하고 글자 하한만 1023px까지 확장한다. */
+@media (max-width: 1023px) {
+  .stageCount,
+  .islandName,
+  .islandHere .islandName,
+  .islandSub,
+  .popoverLink small,
+  .heroMeta,
+  .sectionTitle span,
+  .categoryChip,
+  .koanCount,
+  .hint,
+  .listHeroKicker,
+  .listHeroMeta,
+  .listHero > p,
+  .listAxisHead span,
+  .listChips a,
+  .listBridge span,
+  .listBridge a,
+  .listHeader span,
+  .listMeta,
+  .listBadge,
+  .listCount,
+  .listFoot,
+  .listRailCard p,
+  .listRailCard a,
+  .listRailCard a small,
+  .listRailCard p.listPaceText,
+  .listMailButton,
+  .back,
+  .landStatus,
+  .landExplorers,
+  .tideText,
+  .tideText small,
+  .tideHelp,
+  .documentNumber,
+  .documentDescription,
+  .documentTag,
+  .documentKey,
+  .crossing small,
+  .disclosure,
+  .detailMeta,
+  .aiChip,
+  .reviewedChip,
+  .helpfulButton,
+  .composerToggle b,
+  .answerHeader,
+  .quietButton,
+  .railCard p,
+  .relatedCard a,
+  .relatedCard a small,
+  .detailBridge span,
+  .detailBridge a,
+  .detailMobileBar span {
+    font-size: 13px;
+  }
+}
+
+@media (min-width: 768px) {
+  .seaStage {
+    height: 336px;
+    min-height: 336px;
+  }
+
+  .map {
+    height: 336px;
+    min-height: 336px;
+  }
+
+  .map > .island {
+    width: 96px;
+  }
+
+  .map .islandArt {
+    width: 64px;
+    height: 48px;
+  }
+
+  .map .islandName,
+  .map .islandHere .islandName {
+    max-width: 96px;
+    font-size: 12px;
+  }
+
+  .map > .island:nth-of-type(1) {
+    top: 32px;
+    left: 8%;
+  }
+  .map > .island:nth-of-type(2) {
+    top: 96px;
+    left: 30%;
+  }
+  .map > .island:nth-of-type(3) {
+    top: 40px;
+    left: 53%;
+  }
+  .map > .island:nth-of-type(4) {
+    top: 96px;
+    left: calc(92% - 96px);
+  }
+  .map > .island:nth-of-type(5) {
+    top: 208px;
+    left: 12%;
+  }
+  .map > .island:nth-of-type(6) {
+    top: 224px;
+    left: 37%;
+  }
+  .map > .island:nth-of-type(7) {
+    top: 192px;
+    left: 62%;
+  }
+  .map > .island:nth-of-type(8) {
+    top: 232px;
+    left: calc(94% - 96px);
+  }
+
+  .heroKoan {
+    padding: 32px 24px 48px;
+  }
+
+  .heroQuestion {
+    font-size: 40px;
+  }
+
+  .newIslandGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+/* 승인 820 프레임은 데스크톱 절대좌표 지도를 축소하지 않는다. 문구를 왼쪽에,
+   섬 8개를 오른쪽 2열에 두는 태블릿 전용 카드로 재배치한다. 1024px부터는
+   아래 데스크톱 규칙이 그대로 이어진다. */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .root {
+    padding-top: var(--spacing-400);
+    background: var(--gray-0);
+  }
+
+  .seaStage {
+    width: auto;
+    height: auto;
+    min-height: 0;
+    margin: 0 var(--spacing-300);
+    border-radius: var(--radius-300);
+  }
+
+  .seaScrim {
+    height: 100%;
+    background: var(--color-background-dimmer);
+  }
+
+  .stageInner {
+    display: grid;
+    height: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-300);
+    padding: var(--spacing-500) var(--spacing-400);
+  }
+
+  .stageHead {
+    z-index: 1;
+    display: block;
+    align-self: start;
+    padding-top: var(--spacing-100);
+  }
+
+  .stageHead h2 {
+    margin-top: var(--spacing-125);
+    color: var(--gray-0);
+    word-break: keep-all;
+  }
+
+  .stageHead > p:last-child {
+    margin-top: var(--spacing-175);
+    color: var(--gray-0);
+    line-height: 1.7;
+    word-break: keep-all;
+  }
+
+  .stageLabel {
+    color: var(--rose-300);
+  }
+
+  .map {
+    display: grid;
+    height: auto;
+    min-height: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-200) var(--spacing-300);
+  }
+
+  .map > .island,
+  .map > .island:nth-of-type(n) {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+    min-height: var(--spacing-1200);
+    justify-content: center;
+    padding: var(--spacing-50);
+    transform: none;
+  }
+
+  .map .islandArt {
+    width: var(--spacing-800);
+    height: var(--spacing-700);
+  }
+
+  .map .islandName,
+  .map .islandHere .islandName,
+  .map .islandSub {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    margin-top: var(--spacing-50);
+    overflow-wrap: normal;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-break: keep-all;
+    font-size: 16px;
+    line-height: 20px;
+  }
+}
+
+@media (max-width: 560px) {
+  .heroActions > * {
+    width: 100%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .seaStage {
+    height: 400px;
+    min-height: 400px;
+  }
+
+  .map {
+    height: 400px;
+    min-height: 400px;
+  }
+
+  .map .islandArt {
+    width: 72px;
+    height: 56px;
+  }
+
+  .map > .island:nth-of-type(1) {
+    top: 48px;
+  }
+  .map > .island:nth-of-type(2) {
+    top: 120px;
+  }
+  .map > .island:nth-of-type(3) {
+    top: 48px;
+  }
+  .map > .island:nth-of-type(4) {
+    top: 112px;
+  }
+  .map > .island:nth-of-type(5) {
+    top: 248px;
+  }
+  .map > .island:nth-of-type(6) {
+    top: 280px;
+  }
+  .map > .island:nth-of-type(7) {
+    top: 232px;
+  }
+  .map > .island:nth-of-type(8) {
+    top: 288px;
+  }
+
+  .heroKoan {
+    padding: 40px 32px 56px;
+  }
+
+  .heroQuestion {
+    font-size: 48px;
+  }
+  .listPage {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    align-items: start;
+    gap: 26px;
+    padding-top: 28px;
+  }
+
+  .listRail {
+    position: sticky;
+    top: 110px;
+    display: block;
+  }
+
+  .listHero {
+    padding: 30px 30px 26px;
+  }
+
+  .listHero h2 {
+    max-width: 20ch;
+    font-size: 31px;
+  }
+
+  .listLead h1 {
+    font-size: 27px;
+  }
+
+  .listRow {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+  }
+
+  .listQuestion {
+    flex: 1;
+    font-size: 15.5px;
+  }
+
+  .listMeta {
+    flex: none;
+    margin-top: 0;
+  }
+
+  .listCount {
+    min-width: 104px;
+    text-align: right;
+  }
+
+  .seaBackdrop {
+    background-position: center 58%;
+  }
+
+  .seaStage {
+    min-height: 400px;
+  }
+
+  .landInner {
+    padding: 0 20px 44px;
+  }
+
+  .stageInner {
+    padding: 0;
+  }
+
+  .map {
+    height: 400px;
+    min-height: 400px;
+    margin: 0;
+  }
+
+  .newIslandGrid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .island {
+    top: var(--island-y-desktop, var(--island-y));
+    left: var(--island-x-desktop, var(--island-x));
+    /* 폭은 레이아웃이 정한 칸(--island-cell-desktop)만 쓴다.
+       예전에는 여기서 120px 하한을 걸어 두어, 아래에서 폭을 104px 로 줘도
+       하한이 이겨서 실제로는 120px 로 그려졌다. 그래서 데스크톱에서만 섬이 겹쳤다
+       (2026-08-22 CI e2e "섬 버튼 1·13 겹침"). */
+    min-width: 0;
+    width: var(--island-cell-desktop, var(--island-cell, var(--spacing-1200)));
+  }
+
+  .islandName {
+    max-width: min(11em, var(--island-cell-desktop, var(--island-cell, 11em)));
+  }
+
+  .islandArt {
+    width: var(--island-size-desktop, var(--island-size));
+    height: var(--island-size-desktop, var(--island-size));
+  }
+
+  /* 데스크톱도 같다. 크기는 레이아웃이 --island-size-desktop 으로 내려준다. */
+
+  .islandHere .islandName {
+    width: 100%;
+    max-width: var(--island-cell-desktop, var(--island-cell, 11em));
+    overflow: hidden;
+    white-space: normal;
+  }
+
+  .heroKoan {
+    max-width: none;
+    padding: 40px 32px 56px;
+  }
+
+  .heroQuestion {
+    font-size: 48px;
+    line-height: 1.22;
+  }
+
+  .page {
+    padding-top: 10px;
+  }
+
+  .landArt {
+    width: 132px;
+    height: 132px;
+  }
+
+  .landTitle {
+    font-size: 34px;
+  }
+
+  .documents {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .crossings {
+    flex-direction: row;
+  }
+
+  .crossing {
+    flex: 1;
+  }
+
+  .detailPage {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    align-items: start;
+    gap: 28px;
+    padding-top: 8px;
+    padding-bottom: 60px;
+  }
+
+  .detailTitle {
+    font-size: 33px;
+  }
+
+  .detailSection {
+    padding: 24px 26px;
+  }
+
+  .rail {
+    position: sticky;
+    top: 108px;
+    display: block;
+    padding-top: 14px;
+  }
+
+  .detailMobileBar {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .island,
+  .islandArt {
+    transition: none;
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "zeroone-appintoss-packager",
+  "private": true,
+  "scripts": {
+    "package": "ait build"
+  },
+  "dependencies": {
+    "@apps-in-toss/web-framework": "3.7.0"
+  }
+}

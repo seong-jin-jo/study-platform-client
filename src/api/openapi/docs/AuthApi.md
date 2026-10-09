@@ -5,6 +5,7 @@ All URIs are relative to *https://test-api.zeroone.it.kr*
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
 |[**accessToken**](#accesstoken) | **GET** /api/v1/auth/access-token/refresh | 토큰 리프레시|
+|[**authorize**](#authorize) | **GET** /api/v1/auth/{authVendor}/authorize | 소셜 로그인 시작(authorize 리다이렉트)|
 |[**logout**](#logout) | **POST** /api/v1/auth/logout | 로그아웃|
 |[**oauth2Login**](#oauth2login) | **GET** /api/v1/auth/{authVendor}/redirect-uri | OAuth 2.0 소셜 로그인 리다이렉트 URI|
 |[**whoAmI**](#whoami) | **GET** /api/v1/auth/me | Who am I?|
@@ -58,6 +59,60 @@ const { status, data } = await apiInstance.accessToken(
 |-------------|-------------|------------------|
 |**201** | Created |  * Set-Cookie - Refresh Token; HTTP-only <br>  |
 |**400** | Bad Request |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **authorize**
+> authorize()
+
+client_id/scope/redirect_uri를 서버가 구성해 vendor 동의 화면으로 302 리다이렉트한다. 프론트 번들에 client_id를 박지 않으므로 캐시/배포와 무관하게 항상 최신 설정을 사용한다.
+
+### Example
+
+```typescript
+import {
+    AuthApi,
+    Configuration
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new AuthApi(configuration);
+
+let authVendor: string; // (default to undefined)
+let state: string; // (optional) (default to undefined)
+
+const { status, data } = await apiInstance.authorize(
+    authVendor,
+    state
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **authVendor** | [**string**] |  | defaults to undefined|
+| **state** | [**string**] |  | (optional) defaults to undefined|
+
+
+### Return type
+
+void (empty response body)
+
+### Authorization
+
+[bearer](../README.md#bearer)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: Not defined
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

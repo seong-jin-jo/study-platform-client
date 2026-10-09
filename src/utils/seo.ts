@@ -5,9 +5,10 @@ import type { Metadata } from 'next';
  */
 export const SEO_CONFIG = {
   baseUrl: 'https://www.zeroone.it.kr',
-  siteName: 'ZERO-ONE',
-  description: '매일 아침을 함께 시작하는 1:1 기상 스터디 플랫폼',
-  ogImage: '/images/banner.png',
+  siteName: 'ZERO ONE IT',
+  description:
+    '구글에 없는 질문을 나누는 곳. 0에서 1까지, 개발자가 아닌 사람들의 IT 커뮤니티.',
+  ogImage: '/images/og-image.png',
   social: {
     instagram: 'https://www.instagram.com/code_zero_to_one/',
     threads: 'https://www.threads.com/@code_zero_to_one',
@@ -22,26 +23,25 @@ export const SEO_CONFIG = {
  * 기본 Keywords
  */
 export const DEFAULT_KEYWORDS = [
-  'ZERO-ONE',
-  '스터디',
-  '기상',
-  '멘토링',
-  '1:1 스터디',
-  '개발자',
-  '면접 준비',
-  '개발자 커뮤니티',
-  '성장',
+  'ZERO ONE IT',
+  '바이브코딩',
+  '노베이스 코딩',
+  'AI 개발',
+  '비개발자',
+  '클로드 코드',
+  'IT 커뮤니티',
+  '개발 입문',
 ] as const;
 
 /**
  * 페이지별 Description 템플릿
  */
 export const PAGE_DESCRIPTIONS = {
-  home: '나의 스터디 일정을 관리하고, 진행 중인 스터디를 한눈에 확인하세요. ZERO-ONE 플랫폼에서 효율적인 스터디 관리를 시작해보세요.',
+  home: '오늘 이어갈 학습과 커뮤니티 활동을 한눈에 확인하세요. 구글에 없는 질문을 나누는 곳, ZERO ONE IT.',
   study:
-    '다양한 그룹 스터디를 찾아보고, 새로운 스터디를 개설해보세요. ZERO-ONE에서 함께할 스터디 동료를 만나세요.',
+    '관심사와 목표가 맞는 공부방을 찾아보고, 직접 방을 열어보세요. ZERO ONE IT에서 같이 만들 사람을 만나세요.',
   insights:
-    'ZERO-ONE 팀이 공유하는 개발, 취업, 성장에 관한 인사이트. 최신 기술 동향, 면접 팁, 커리어 성장 조언을 읽어보세요.',
+    '바이브코딩하다 막히는 개념을 원리부터 풀어 씁니다. 개발자가 아닌 사람 기준으로 쓴 ZERO ONE IT 학습지도.',
   notFound:
     '요청하신 페이지를 찾을 수 없습니다. 홈페이지로 이동하여 다시 시작하세요.',
 } as const;
@@ -372,6 +372,4 @@ export function getFAQSchema(items: FAQItem[]) {
 /**
  * JSON-LD 스크립트 컴포넌트를 위한 헬퍼
  */
-export function getJsonLdScript<T>(data: T): string {
-  return JSON.stringify(data);
-}
+export { serializeJsonLd as getJsonLdScript } from './json-ld';

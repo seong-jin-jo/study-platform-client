@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+# core.hooksPath로 실행되면 cwd가 git 루트이므로 패키지 루트로 이동한다.
+cd "$(dirname "$0")/.." || exit 1
+yarn build

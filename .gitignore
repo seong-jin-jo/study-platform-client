@@ -42,6 +42,46 @@ yarn-error.log*
 next-env.d.ts
 
 *storybook.log
+storybook-static/
 
 # package manager locks
 package-lock.json
+!appintoss/package-lock.json
+.appintoss-work/
+
+# Sentry build plugin (소스맵 업로드용 인증 토큰)
+.env.sentry-build-plugin
+
+
+.agents/
+.idea/*
+
+# Claude Code 개인 설정
+CLAUDE.local.md
+
+# Playwright
+e2e/fixtures/auth.json
+playwright-report/
+e2e-reports/
+test-results/
+
+.claude/commands
+.claude/agents
+.claude/skills
+.playwright-mcp
+.omc
+.codegraph/
+
+# mono import: preserve repo-tracked Claude command/skill surfaces
+!.claude/commands/
+!.claude/commands/**
+!.claude/skills/
+!.claude/skills/**
+.figma-verify/
+
+# eslint --cache 산출물
+.eslintcache
+e2e/fixtures/auth-admin.json
+
+# 시안 대조 캡처 산출물 (스크립트는 커밋, 이미지는 제외)
+visual-diff-out/

@@ -6,7 +6,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **partnerId** | **number** | 변경할 파트너 회원 ID | [optional] [default to undefined]
-**status** | **string** | 변경할 매칭 상태 (CANCELED, DONE 등) | [optional] [default to undefined]
+**status** | **string** | 변경할 매칭 상태 (PENDING, RES_ACPT, RES_AUTO, RES_REJ, AUTO, DONE, CANCEL) | [optional] [default to undefined]
 **content** | **string** | 관리자 메모 또는 변경 사유 | [optional] [default to undefined]
 
 ## Example

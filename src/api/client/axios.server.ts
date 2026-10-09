@@ -1,5 +1,6 @@
 import axios, { InternalAxiosRequestConfig } from 'axios';
-import { getServerCookie } from '../../utils/server-cookie';
+import { readServerAccessToken } from '@/features/auth/model/server-auth-session';
+import { attachApiLogger } from './api-logger';
 
 // * server-side axios 인스턴스
 
@@ -13,8 +14,10 @@ export const axiosServerInstance = axios.create({
   withCredentials: true,
 });
 
+attachApiLogger(axiosServerInstance, 'server-json');
+
 const onRequestServer = async (config: InternalAxiosRequestConfig) => {
-  const accessToken = await getServerCookie('accessToken');
+  const accessToken = await readServerAccessToken();
 
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`;

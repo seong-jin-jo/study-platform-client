@@ -3,10 +3,10 @@ import {
   HydrationBoundary,
   QueryClient,
 } from '@tanstack/react-query';
+import { getSincerityTemperatureHistoryInServer } from '@/api/endpoints/admin/sincerity-temperature-history.server';
+import SincerityTempTable from '@/components/admin/sincerity-temp-table';
 import { getSincerityPresetByLevelName } from '@/config/sincerity-temp-presets';
-import { getSincerityTemperatureHistoryInServer } from '@/features/admin/api/sincerity-temperature-history.server';
-import { GetSincerityTemperatureHistoryResponse } from '@/features/admin/api/types';
-import SincerityTempTable from '@/features/admin/ui/sincerity-temp-table';
+import { GetSincerityTemperatureHistoryResponse } from '@/types/api/admin.types';
 
 const LEVEL_NAME_MAP = {
   FIRST: '1단계',
@@ -35,12 +35,16 @@ export default async function SincerityTempPage({
       }),
   });
 
-  const data: GetSincerityTemperatureHistoryResponse =
+  const data: GetSincerityTemperatureHistoryResponse | undefined =
     await queryClient.getQueryData([
       'sincerityTemperatureHistory',
       memberId,
       1,
     ]);
+
+  if (!data) {
+    return <div>데이터를 불러올 수 없습니다.</div>;
+  }
 
   const temperPreset = getSincerityPresetByLevelName(
     LEVEL_NAME_MAP[data.sincerityTempLevel],
@@ -57,7 +61,7 @@ export default async function SincerityTempPage({
           <div className="flex items-center">
             <temperPreset.Icon className="h-400 w-400" />
             <span
-              className={`${temperPreset.textClass} font-designer-14b pl-[2px]`}
+              className={`${temperPreset.textClass} font-designer-14b pl-25`}
             >
               {data.currentSincerityTemperature} ℃
             </span>

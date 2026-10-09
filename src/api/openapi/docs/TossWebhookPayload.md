@@ -8,10 +8,10 @@ Name | Type | Description | Notes
 **eventType** | **string** |  | [optional] [default to undefined]
 **createdAt** | **string** |  | [optional] [default to undefined]
 **data** | [**PaymentData**](PaymentData.md) |  | [optional] [default to undefined]
-**paymentRelatedEvent** | **boolean** |  | [optional] [default to undefined]
-**latestCancel** | [**CancelData**](CancelData.md) |  | [optional] [default to undefined]
 **paymentStatusChanged** | **boolean** |  | [optional] [default to undefined]
 **depositCallback** | **boolean** |  | [optional] [default to undefined]
+**latestCancel** | [**CancelData**](CancelData.md) |  | [optional] [default to undefined]
+**paymentRelatedEvent** | **boolean** |  | [optional] [default to undefined]
 
 ## Example
 
@@ -22,10 +22,10 @@ const instance: TossWebhookPayload = {
     eventType,
     createdAt,
     data,
-    paymentRelatedEvent,
-    latestCancel,
     paymentStatusChanged,
     depositCallback,
+    latestCancel,
+    paymentRelatedEvent,
 };
 ```
 

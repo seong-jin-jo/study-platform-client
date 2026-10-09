@@ -1,9 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { XIcon } from 'lucide-react';
-import { Modal } from '@/components/ui/modal';
+import Button from '@/components/common/ui/button';
+import { Modal } from '@/components/common/ui/modal';
 
-const meta: Meta<typeof Modal> = {};
+const meta: Meta<typeof Modal> = {
+  title: 'Common/UI/Modal Trigger Example',
+};
 
 export default meta;
 
@@ -26,14 +29,9 @@ export const Default: Story = {
             <Modal.Body>Modal Body</Modal.Body>
             <Modal.Footer className="flex justify-end">
               <Modal.Close asChild>
-                <button
-                  className="cursor-pointer"
-                  onClick={() => {
-                    console.log('확인 요청하기');
-                  }}
-                >
+                <Button color="secondary" size="small" onClick={() => {}}>
                   확인
-                </button>
+                </Button>
               </Modal.Close>
             </Modal.Footer>
           </Modal.Content>

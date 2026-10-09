@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ZEROONE VIBE SEMINAR · 바이브코딩 체험 세미나 | ZERO ONE</title>
+<meta name="description" content="코딩을 몰라도 AI와 함께 4시간 만에 내 웹서비스를 만들고 공개 URL까지 배포하는 소규모 오프라인 핸즈온 세미나. 비개발자 환영." />
+<meta property="og:title" content="ZERO-ONE 바이브 코딩 세미나" />
+<meta property="og:description" content="유튜브 보며 혼자 삽질할 40시간을 딱 4시간으로 압축합니다." />
+<meta property="og:type" content="website" />
+
+<!-- Fonts: Archivo(영문 디스플레이) + Pretendard(한글 본문) -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,500;0,700;0,800;0,900;1,800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+<style>
+/* =================================================================
+   ZERO ONE · ZEROONE VIBE SEMINAR  랜딩
+   레퍼런스: event-us BES 2026 (다크 + 단일 액센트 구조)
+   단일 메인 컬러: ZeroOne 핑크 #F63D68  (그 외 다크 중립만)
+   에셋: 모두 [라벨+사이즈] 플레이스홀더 → 실제 에셋으로 교체
+   ================================================================= */
+:root{
+  --brand:#f63d68;
+  --brand-2:#ff6b8b;            /* 핑크 밝은 변형(그라데이션용, 동일 hue) */
+  --brand-deep:#c81e49;         /* 핑크 진한 변형 */
+  --bg:#08080c;                 /* 베이스 다크 */
+  --bg-1:#0c0c12;               /* 섹션 교차 */
+  --bg-2:#101018;               /* 카드 */
+  --line:rgba(255,255,255,.09);
+  --line-2:rgba(255,255,255,.16);
+  --tx:#f4f4f7;                 /* 본문 흰색 */
+  --tx-mut:#9a9aa6;             /* 보조 */
+  --tx-dim:#62626f;             /* 흐린 */
+  --maxw:1120px;
+  --rad:20px;
+  --glow:0 30px 80px -30px rgba(246,61,104,.55);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:Pretendard,-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);color:var(--tx);line-height:1.62;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+a{color:inherit;text-decoration:none}
+.wrap{width:100%;max-width:var(--maxw);margin:0 auto;padding:0 24px}
+section{padding:120px 0;position:relative}
+.center{text-align:center}
+
+/* 공통 섹션 헤더 (영문 eyebrow → 큰 제목 → 부제) */
+.eyebrow{
+  display:inline-block;font-family:Archivo,sans-serif;font-weight:800;
+  font-size:13px;letter-spacing:.28em;text-transform:uppercase;color:var(--brand);
+  margin-bottom:18px;
+}
+.sec-title{font-size:clamp(28px,4vw,44px);font-weight:800;letter-spacing:-.02em;line-height:1.22}
+.sec-sub{color:var(--tx-mut);font-size:17px;margin-top:16px;max-width:600px}
+.center .sec-sub{margin-left:auto;margin-right:auto}
+
+/* 플레이스홀더 (에셋 자리) */
+.ph{
+  position:relative;border:1.5px dashed rgba(246,61,104,.45);
+  border-radius:var(--rad);
+  background:
+    radial-gradient(120% 120% at 50% 0%, rgba(246,61,104,.10), transparent 60%),
+    repeating-linear-gradient(135deg, rgba(255,255,255,.02) 0 12px, transparent 12px 24px);
+  display:grid;place-items:center;text-align:center;color:var(--tx-dim);
+  overflow:hidden;
+}
+.ph::before{content:"◳";font-size:26px;color:rgba(246,61,104,.6);display:block;margin-bottom:8px}
+.ph .ph-label{font-size:13px;font-weight:600;letter-spacing:.02em;color:var(--tx-mut);padding:0 14px}
+.ph .ph-size{display:block;font-size:11px;color:var(--tx-dim);margin-top:4px;font-family:Archivo,sans-serif;letter-spacing:.06em}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1;transform:none}
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}.d5{transition-delay:.4s}
+
+/* ===== NAV ===== */
+header.nav{position:sticky;top:0;z-index:80;border-bottom:1px solid transparent;transition:background .3s,border-color .3s,backdrop-filter .3s}
+header.nav.scrolled{background:rgba(8,8,12,.72);backdrop-filter:saturate(160%) blur(14px);border-bottom-color:var(--line)}
+.nav-in{display:flex;align-items:center;justify-content:space-between;height:68px}
+.logo{font-family:Archivo,sans-serif;font-weight:900;font-size:19px;letter-spacing:-.01em}
+.logo b{color:var(--brand)}
+.nav-menu{display:flex;gap:30px}
+.nav-menu a{font-size:14.5px;color:var(--tx-mut);font-weight:500;transition:color .2s}
+.nav-menu a:hover{color:var(--tx)}
+.nav-right{display:flex;align-items:center;gap:18px}
+.nav-right .login{font-size:14px;color:var(--tx-mut)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:700;border-radius:11px;transition:transform .15s,background .2s,box-shadow .2s;cursor:pointer}
+.btn-brand{background:var(--brand);color:#fff;padding:11px 20px;font-size:14.5px;box-shadow:0 8px 24px -10px rgba(246,61,104,.7)}
+.btn-brand:hover{background:var(--brand-deep);transform:translateY(-1px)}
+
+/* ===== HERO ===== */
+.hero{min-height:calc(100vh - 68px);min-height:calc(100svh - 68px);display:flex;align-items:center;padding:48px 0 56px;text-align:center;overflow:hidden;isolation:isolate}
+.hero>.wrap{margin:auto}
+/* 히어로 배경 영상 (Higgsfield 플로우 필드 모션) — 5MB 이상 원본 영상은 CDN에서 서빙 */
+.hero .flow{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-3;display:block;pointer-events:none}
+/* 영상 위 살짝 어둡게 + 하단 페이드로 텍스트 가독성 확보 */
+.hero .flow-veil{position:absolute;inset:0;z-index:-2;pointer-events:none;
+  background:linear-gradient(180deg, rgba(8,8,12,.35) 0%, rgba(8,8,12,.15) 45%, var(--bg) 100%)}
+/* 영상 없을 때 폴백 글로우(영상 뒤) */
+.hero .glow{position:absolute;inset:-10% -10% auto -10%;height:75%;z-index:-4;pointer-events:none;
+  background:radial-gradient(55% 60% at 50% -5%, rgba(246,61,104,.22), transparent 70%)}
+.hero .grain{position:absolute;inset:0;z-index:-2;opacity:.5;background:
+  radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,.18), transparent),
+  radial-gradient(1px 1px at 70% 60%, rgba(255,255,255,.12), transparent),
+  radial-gradient(1px 1px at 40% 80%, rgba(255,255,255,.10), transparent)}
+.hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,transparent 55%,var(--bg) 100%)}
+.hero .pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line-2);
+  background:rgba(246,61,104,.10);color:var(--tx);font-size:13px;font-weight:600;
+  padding:8px 16px;border-radius:999px;margin-bottom:30px}
+.hero .pill .dot{width:7px;height:7px;border-radius:50%;background:var(--brand);box-shadow:0 0 0 4px rgba(246,61,104,.25);animation:pulse 1.8s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hero h1{font-family:Archivo,sans-serif;font-weight:900;letter-spacing:-.03em;line-height:.96;
+  font-size:clamp(46px,9vw,116px);text-transform:uppercase}
+.hero h1 .stroke{color:transparent;-webkit-text-stroke:1.5px var(--brand)}
+/* 헤드라인 리빌: 문장(줄) 전체가 왼쪽→오른쪽으로 한 번에 쭉 와이프되며 등장 */
+.hero h1 .mask{display:block;padding-bottom:.06em}
+.hero h1 .mask>span{display:inline-block;clip-path:inset(-.1em 100% -.18em 0);
+  transition:clip-path .85s cubic-bezier(.4,0,.15,1)}
+.hero h1.in .mask>span{clip-path:inset(-.1em 0 -.18em 0)}
+.hero h1.in .mask:nth-child(2)>span{transition-delay:.16s}
+.hero h1.in .mask:nth-child(3)>span{transition-delay:.32s}
+/* 히어로 전 요소 공통: 좌→우 와이프(헤드라인과 동일 결) */
+.hero .hwipe{clip-path:inset(-.12em 100% -.24em 0);transition:clip-path .8s cubic-bezier(.4,0,.15,1)}
+.hero .hwipe.in{clip-path:inset(-.12em 0 -.24em 0)}
+@media (prefers-reduced-motion: reduce){
+  .hero h1 .mask>span{clip-path:none;transition:none}
+  .hero .hwipe{clip-path:none;transition:none}
+  .reveal{transition:none}
+}
+.hero .kr{margin-top:24px;font-size:clamp(18px,2.4vw,24px);font-weight:700;letter-spacing:-.01em}
+.hero .kr b{color:var(--brand)}
+.hero .desc{margin-top:14px;color:var(--tx-mut);font-size:16px;max-width:560px;margin-left:auto;margin-right:auto}
+/* 정보 3칼럼 */
+.hero-meta{display:flex;justify-content:center;gap:0;margin:32px auto 0;max-width:720px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.02);overflow:hidden}
+.hero-meta .m{flex:1;padding:22px 16px;border-left:1px solid var(--line)}
+.hero-meta .m:first-child{border-left:none}
+.hero-meta .m .k{font-family:Archivo,sans-serif;font-size:11px;letter-spacing:.18em;color:var(--brand);text-transform:uppercase}
+.hero-meta .m .v{font-size:18px;font-weight:800;margin-top:7px}
+.hero-meta .m .s{font-size:12.5px;color:var(--tx-dim);margin-top:2px}
+.hero-cta{margin-top:28px}
+.btn-hero{background:var(--brand);color:#fff;font-size:17px;padding:17px 40px;border-radius:14px;box-shadow:var(--glow);position:relative;overflow:hidden}
+.btn-hero::before{content:"";position:absolute;top:0;left:-130%;width:55%;height:100%;
+  background:linear-gradient(110deg,transparent,rgba(255,255,255,.5),transparent);transform:skewX(-18deg);animation:shine 3.6s ease-in-out infinite}
+@keyframes shine{0%,62%{left:-130%}100%{left:140%}}
+.btn-hero:hover{transform:translateY(-2px)}
+
+/* ===== INTRO + 키비주얼 ===== */
+.intro .sec-title{max-width:760px;margin:0 auto}
+.kv{margin-top:50px;aspect-ratio:16/8;width:100%}
+
+/* ===== 추천 대상 (가로 full 카드 스택) ===== */
+.stack{display:flex;flex-direction:column;gap:16px;margin-top:50px}
+.row-card{display:flex;gap:24px;align-items:flex-start;background:var(--bg-2);border:1px solid var(--line);
+  border-radius:var(--rad);padding:30px 32px;transition:border-color .25s,transform .25s,background .25s}
+.row-card:hover{border-color:rgba(246,61,104,.5);transform:translateX(6px)}
+.row-card .num{font-family:Archivo,sans-serif;font-weight:900;font-size:30px;color:var(--brand);line-height:1;flex:0 0 auto;min-width:48px}
+.row-card h3{font-size:20px;font-weight:800}
+.row-card p{color:var(--tx-mut);margin-top:7px;font-size:15.5px}
+
+/* ===== 무엇을 만드나 (3 그리드, 이미지 플레이스홀더) ===== */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:50px}
+.gcard{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--rad);overflow:hidden;transition:transform .3s,border-color .3s}
+.gcard:hover{transform:translateY(-8px);border-color:rgba(246,61,104,.5)}
+.gcard .ph{border-radius:0;border:none;border-bottom:1px dashed rgba(246,61,104,.35);aspect-ratio:4/3}
+.gcard .gc-body{padding:22px 22px 26px}
+.gcard h3{font-size:18px;font-weight:800}
+.gcard p{color:var(--tx-mut);font-size:14.5px;margin-top:6px}
+.gcard .tag{display:inline-block;margin-top:14px;font-family:Archivo,sans-serif;font-size:11px;letter-spacing:.1em;color:var(--brand);border:1px solid rgba(246,61,104,.4);padding:5px 11px;border-radius:999px}
+
+/* ===== 프로그램 타임테이블 ===== */
+.tt{margin-top:50px;border-top:1px solid var(--line)}
+.tt .r{display:grid;grid-template-columns:150px 1fr;gap:28px;padding:24px 8px;border-bottom:1px solid var(--line);transition:background .2s}
+.tt .r:hover{background:rgba(246,61,104,.05)}
+.tt .r.lunch{opacity:.7}
+.tt .time{font-family:Archivo,sans-serif;font-weight:700;color:var(--brand);font-size:15px;letter-spacing:.02em}
+.tt .ses .t{font-size:17px;font-weight:700}
+.tt .ses .b{font-size:14px;color:var(--tx-mut);margin-top:3px}
+
+/* ===== 진행 방식 (4 step + 아이콘 플레이스홀더) ===== */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:50px}
+.step{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--rad);padding:28px 22px;text-align:center;position:relative}
+.step .ph{width:84px;height:84px;border-radius:18px;margin:0 auto 18px}
+.step .ph::before{font-size:20px;margin-bottom:4px}
+.step .step-ic{width:84px;height:84px;margin:0 auto 18px;border-radius:18px;display:grid;place-items:center;
+  color:var(--brand);
+  background:radial-gradient(120% 120% at 50% 0%, rgba(246,61,104,.18), rgba(255,255,255,.03));
+  border:1px solid rgba(246,61,104,.35)}
+.step .step-ic svg{width:34px;height:34px}
+.step .n{position:absolute;top:18px;right:20px;font-family:Archivo,sans-serif;font-weight:900;font-size:14px;color:var(--tx-dim)}
+.step h4{font-size:16.5px;font-weight:800}
+.step p{font-size:13.5px;color:var(--tx-mut);margin-top:7px}
+
+/* ===== 진행자 ===== */
+.host{display:grid;grid-template-columns:280px 1fr;gap:40px;align-items:center;margin-top:50px;
+  background:var(--bg-2);border:1px solid var(--line);border-radius:28px;padding:36px}
+.host .ph{aspect-ratio:1;border-radius:20px}
+.host h3{font-size:24px;font-weight:800}
+.host .role{color:var(--brand);font-weight:700;margin-top:4px}
+.host p{color:var(--tx-mut);margin-top:14px;font-size:15.5px}
+
+/* ===== 신청/티켓 ===== */
+.ticket{max-width:520px;margin:50px auto 0;background:var(--bg-2);border:1px solid var(--line-2);border-radius:24px;padding:38px;text-align:center;position:relative;overflow:hidden}
+.ticket::before{content:"";position:absolute;inset:0;background:radial-gradient(80% 60% at 50% 0%,rgba(246,61,104,.16),transparent 70%)}
+.ticket>*{position:relative}
+.ticket .tk{font-family:Archivo,sans-serif;letter-spacing:.16em;font-size:12px;color:var(--brand);text-transform:uppercase}
+.ticket h3{font-size:23px;font-weight:800;margin-top:10px}
+.ticket .price{font-family:Archivo,sans-serif;font-size:52px;font-weight:900;margin:18px 0 4px}
+.ticket .left{font-size:14px;color:var(--tx-mut)}
+.ticket .btn-hero{margin-top:24px;width:100%}
+
+/* ===== CTA 밴드 ===== */
+.band{margin:0 24px;border-radius:32px;padding:90px 24px;text-align:center;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,var(--brand-deep),var(--brand) 55%,var(--brand-2))}
+.band::after{content:"";position:absolute;inset:0;background:
+  radial-gradient(50% 80% at 20% 10%,rgba(255,255,255,.22),transparent 60%),
+  radial-gradient(50% 80% at 85% 90%,rgba(0,0,0,.18),transparent 60%)}
+.band>*{position:relative}
+.band h2{font-size:clamp(26px,4vw,42px);font-weight:900;letter-spacing:-.02em;color:#fff;line-height:1.25}
+.band p{color:rgba(255,255,255,.9);margin-top:14px;font-size:17px}
+.btn-white{background:#fff;color:var(--brand-deep);font-size:17px;padding:16px 38px;border-radius:14px;margin-top:30px;font-weight:800}
+.btn-white:hover{transform:translateY(-2px)}
+
+/* ===== 오시는 길 ===== */
+.map{margin-top:50px;aspect-ratio:21/9;width:100%}
+.kakao-map{position:relative;margin-top:50px;width:100%;min-height:420px;border-radius:var(--rad);overflow:hidden;border:1px solid var(--line);background:var(--bg-2)}
+.kakao-map .root_daum_roughmap{position:relative;z-index:2;width:100%!important}
+.kakao-map .map-fallback{position:absolute;inset:0;z-index:1;display:grid;place-items:center;text-align:center;
+  color:var(--tx-mut);font-size:16px;line-height:1.9;padding:24px;
+  background:radial-gradient(120% 120% at 50% 0%, rgba(246,61,104,.10), transparent 60%)}
+.kakao-map .map-fallback span{display:block;color:var(--tx-dim);font-size:13.5px;margin-top:6px}
+.addr{margin-top:20px;text-align:center;color:var(--tx-mut);font-size:15.5px}
+.addr b{color:var(--tx)}
+
+/* ===== FAQ ===== */
+.faq{margin-top:50px;border-top:1px solid var(--line)}
+.qa{border-bottom:1px solid var(--line)}
+.qa button{width:100%;background:none;border:none;cursor:pointer;color:var(--tx);font-family:inherit;
+  display:flex;justify-content:space-between;align-items:center;gap:18px;padding:26px 6px;font-size:17px;font-weight:700;text-align:left}
+.qa .arrow{color:var(--brand);font-size:24px;transition:transform .25s;flex:0 0 auto}
+.qa.open .arrow{transform:rotate(45deg)}
+.qa .ans{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.qa .ans p{padding:0 6px 26px;color:var(--tx-mut);font-size:15.5px}
+
+/* ===== FOOTER ===== */
+footer{border-top:1px solid var(--line);padding:54px 0 80px;color:var(--tx-dim);font-size:13px}
+footer .top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px;align-items:center;margin-bottom:26px}
+footer .links a{color:var(--tx-mut);margin-left:18px}
+footer .biz{line-height:1.9}
+footer .biz b{color:var(--tx-mut)}
+
+/* ===== 반응형 ===== */
+@media(max-width:900px){
+  .nav-menu{display:none}
+  .grid3,.steps{grid-template-columns:1fr 1fr}
+  .host{grid-template-columns:1fr}
+  .hero-meta{flex-direction:column}
+  .hero-meta .m{border-left:none;border-top:1px solid var(--line)}
+  .hero-meta .m:first-child{border-top:none}
+}
+@media(max-width:560px){
+  section{padding:84px 0}
+  .grid3,.steps{grid-template-columns:1fr}
+  .tt .r{grid-template-columns:1fr;gap:6px}
+  .row-card{flex-direction:column;gap:10px}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<header class="nav" id="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="#top">ZERO<b>ONE</b></a>
+    <nav class="nav-menu">
+      <a href="#about">소개</a>
+      <a href="#build">무엇을 만드나</a>
+      <a href="#program">프로그램</a>
+      <a href="#how">진행 방식</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="nav-right">
+      <a class="login" href="#apply">신청내역 확인</a>
+      <a class="btn btn-brand" href="#apply">신청하기</a>
+    </div>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="top">
+  <!-- 히어로 배경 영상: 용량이 큰 원본 영상은 CDN에서 서빙. 없으면 .glow 폴백 표시 -->
+  <video class="flow" autoplay muted loop playsinline preload="metadata" poster="/seminar/1/assets/hero/hero-poster.jpg">
+    <source src="https://d8j0ntlcm91z4.cloudfront.net/user_3EqxC7Y2r6lyY2vR25cT5zA8Leh/hf_20260629_132008_d307ca0d-7166-4d92-b85d-349c6a0508a0.mp4" type="video/mp4" />
+  </video>
+  <div class="flow-veil"></div>
+  <div class="glow"></div>
+  <div class="grain"></div>
+  <div class="wrap">
+    <span class="pill hwipe"><span class="dot"></span> 7월 11일 토요일 · 선착순 20명 · 1:5 밀착 핸즈온</span>
+    <h1><span class="mask"><span>ZERO-ONE</span></span><span class="mask"><span>VIBE</span></span><span class="mask"><span class="stroke">SEMINAR</span></span></h1>
+    <p class="kr hwipe d2">유튜브 보며 혼자 삽질할 40시간,<br><b>딱 4시간으로</b> 압축합니다</p>
+    <p class="desc hwipe d3">툴 설치부터 프롬프트 작성, 에러 해결, 공개 URL 배포까지. 코딩을 몰라도 오늘 당신의 아이디어가 진짜 주소를 가진 첫 웹서비스로 손에 남습니다.</p>
+
+    <div class="hero-meta hwipe d4">
+      <div class="m"><div class="k">Date</div><div class="v">7월 11일 14:00</div><div class="s">18:00 종료 · 약 4시간</div></div>
+      <div class="m"><div class="k">Place</div><div class="v">서울역 인근</div><div class="s">상세 장소 개별 안내</div></div>
+      <div class="m"><div class="k">Seats</div><div class="v">선착순 20명</div><div class="s">운영진 4명 · 1:5 밀착 지원</div></div>
+    </div>
+
+    <div class="hero-cta hwipe d5">
+      <a class="btn btn-hero" href="#apply">내 자리 신청하기</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROBLEM ============ -->
+<section id="problem">
+  <div class="wrap">
+    <div class="center"><span class="eyebrow reveal">Problem</span>
+    <h2 class="sec-title reveal">AI로 만들어보려다,<br>여기서 멈추지 않았나요?</h2>
+    <p class="sec-sub reveal">대부분 ‘재능’이 아니라 ‘혼자 넘기 어려운 순서’에서 막힙니다. 오늘 그 세 지점을 같이 넘습니다.</p></div>
+    <div class="stack">
+      <div class="row-card reveal"><div class="num">01</div><div><h3>툴 설치에서 이미 지친다</h3><p>Git, Cursor, Claude, 계정 연결… 환경 만들다 하루가 가고 정작 만들기도 전에 포기합니다. <b>→ 사전 설치 없이 오세요. 필요한 세팅은 현장에서 같이 합니다.</b></p></div></div>
+      <div class="row-card reveal d1"><div class="num">02</div><div><h3>AI는 쓰는데, 결과물이 안 남는다</h3><p>질문엔 답이 오는데, 내 이름으로 공유할 수 있는 서비스는 생기지 않습니다. <b>→ 오늘은 답변이 아니라 공개 URL을 만듭니다.</b></p></div></div>
+      <div class="row-card reveal d2"><div class="num">03</div><div><h3>에러 앞에서 혼자 멈춘다</h3><p>빨간 에러 메시지 한 줄에서 막히면 다시 검색과 삽질이 시작됩니다. <b>→ 운영진이 옆에서 같이 모니터를 보며 끝까지 넘깁니다.</b></p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ INTRO + 키비주얼 ============ -->
+<section id="about" class="center" style="background:var(--bg-1)">
+  <div class="wrap">
+    <span class="eyebrow reveal">Why now</span>
+    <h2 class="sec-title reveal">코딩을 ‘배우는’ 게 아니라,<br>‘만드는 사람’이 되는 4시간</h2>
+    <p class="sec-sub reveal">이론을 나열하는 강의가 아닙니다. 내 머릿속 아이디어를 뾰족하게 정하고, AI에게 설명하고, 에러를 고치고, 배포까지 해보며 <b>빌더의 감각</b>을 손에 익히는 시간입니다.</p>
+    <!-- ▼ 에셋 교체: 세미나 현장/결과물 키비주얼 (가로형) -->
+    <div class="ph kv reveal" data-ph><span class="ph-label">메인 키비주얼 이미지<span class="ph-size">1920 × 960 · JPG/WebP</span></span></div>
+  </div>
+</section>
+
+<!-- ============ 추천 대상 ============ -->
+<section>
+  <div class="wrap">
+    <div class="center"><span class="eyebrow reveal">Recommended for</span>
+    <h2 class="sec-title reveal">이런 분이라면,<br>오늘이 바로 그날입니다</h2>
+    <p class="sec-sub reveal">선착순 20명. 운영진 4명이 1인당 5명씩, 한 분도 뒤처지지 않게 끝까지 같이 갑니다.</p></div>
+    <div class="stack">
+      <div class="row-card reveal"><div class="num">01</div><div><h3>“난 문과라서, 똥손이라”며 미뤄온 분</h3><p>재능의 문제가 아니라 ‘순서’의 문제였어요. 순서대로 한 번만 따라오면, 오늘 직접 만들어집니다.</p></div></div>
+      <div class="row-card reveal d1"><div class="num">02</div><div><h3>AI는 쓰는데, 늘 ‘구경’만 하고 끝난 분</h3><p>이번엔 구경이 아니라 당신 손으로 만들고, 공유할 수 있는 링크까지 받아 갑니다.</p></div></div>
+      <div class="row-card reveal d2"><div class="num">03</div><div><h3>머릿속 아이디어를 한 번이라도 ‘내 것’으로 꺼내보고 싶은 분</h3><p>포트폴리오·사이드 프로젝트·작은 가게 페이지 — 그 첫 조각을 오늘 만들어 봅니다.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 무엇을 만드나 ============ -->
+<section id="build" style="background:var(--bg-1)">
+  <div class="wrap">
+    <div class="center"><span class="eyebrow reveal">What you build</span>
+    <h2 class="sec-title reveal">오늘 손에 쥐고 가는 것</h2>
+    <p class="sec-sub reveal">예시 화면이 아니라, ‘당신 이름이 박힌 진짜 웹서비스’입니다. 셋 중 하나를 골라 만들고 공개 URL로 가져갑니다.</p></div>
+    <div class="grid3">
+      <div class="gcard reveal">
+        <div class="ph" data-ph><span class="ph-label">결과물 예시 ①<span class="ph-size">800 × 600</span></span></div>
+        <div class="gc-body"><h3>나를 소개하는 한 페이지</h3><p>프로필·이력서·SNS에 바로 붙이는 ‘나’라는 링크 하나.</p><span class="tag">BEGINNER</span></div>
+      </div>
+      <div class="gcard reveal d1">
+        <div class="ph" data-ph><span class="ph-label">결과물 예시 ②<span class="ph-size">800 × 600</span></span></div>
+        <div class="gc-body"><h3>모임·동아리 모집 페이지</h3><p>“우리 같이 해요”를 링크 하나로 — 모으는 일이 쉬워집니다.</p><span class="tag">APPLY</span></div>
+      </div>
+      <div class="gcard reveal d2">
+        <div class="ph" data-ph><span class="ph-label">결과물 예시 ③<span class="ph-size">800 × 600</span></span></div>
+        <div class="gc-body"><h3>가게·행사 홍보 페이지</h3><p>작은 가게도 행사도, ‘있어 보이는’ 한 페이지로 알립니다.</p><span class="tag">REAL</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 프로그램 ============ -->
+<section id="program">
+  <div class="wrap">
+    <div class="center"><span class="eyebrow reveal">Program · 4H</span>
+    <h2 class="sec-title reveal">프로그램 일정</h2>
+    <p class="sec-sub reveal">전체 약 4시간. 웹 구조와 프롬프트 전략은 필요한 만큼만 잡고, 핵심 2시간은 제작과 공개 URL 배포에 씁니다.</p></div>
+    <div class="tt">
+      <div class="r reveal"><div class="time">14:00–14:40</div><div class="ses"><div class="t">비개발자를 위한 웹 서비스 구조 & 시연</div><div class="b">에이전트, 웹, 배포가 어떤 흐름으로 연결되는지 눈으로 확인</div></div></div>
+      <div class="r reveal"><div class="time">14:40–15:00</div><div class="ses"><div class="t">환경 설치 <span style="color:var(--brand)">(Git + Cursor + Claude)</span></div><div class="b">사전 설치 없이 와도 시작할 수 있게 조별 1:5로 함께 세팅</div></div></div>
+      <div class="r reveal"><div class="time">15:00–15:20</div><div class="ses"><div class="t">에러를 줄이는 AI 프롬프트 작성 전략</div><div class="b">AI에게 무엇을 어떻게 설명해야 결과물이 나오는지 핵심만 정리</div></div></div>
+      <div class="r reveal"><div class="time">15:20–15:35</div><div class="ses"><div class="t">기획 워크숍</div><div class="b">오늘 만들고 싶은 것을 한 문장으로 확정</div></div></div>
+      <div class="r reveal"><div class="time">15:35–17:35</div><div class="ses"><div class="t">핸즈온 웹 제작 & 공개 URL 배포 <span style="color:var(--brand)">(오늘의 심장)</span></div><div class="b">내 웹서비스를 제작·수정·배포. 막히면 그 자리에서 바로 해결</div></div></div>
+      <div class="r reveal"><div class="time">17:35–18:00</div><div class="ses"><div class="t">결과물 공유와 사후 커뮤니티 안내</div><div class="b">제작 의도 한마디, 후기 작성, 집에서 이어가는 법 안내</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 진행 방식 ============ -->
+<section id="how" style="background:var(--bg-1)">
+  <div class="wrap">
+    <div class="center"><span class="eyebrow reveal">How it works</span>
+    <h2 class="sec-title reveal">설치부터 배포까지,<br>옆에서 같이 갑니다</h2>
+    <p class="sec-sub reveal">비결은 단순해요. 환경을 함께 맞추고, <b>기획 → 프롬프트 → 제작 → 에러 해결 → 배포</b> 루프를 끝까지 한 번 통과합니다.</p></div>
+    <div class="steps">
+      <div class="step reveal"><span class="n">01</span><div class="step-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><h4>기획</h4><p>왜 만들지 한 문장으로 확정</p></div>
+      <div class="step reveal d1"><span class="n">02</span><div class="step-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div><h4>설치</h4><p>Git·Cursor·Claude 함께 세팅</p></div>
+      <div class="step reveal d2"><span class="n">03</span><div class="step-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></div><h4>제작</h4><p>AI와 만들고 화면으로 확인</p></div>
+      <div class="step reveal d3"><span class="n">04</span><div class="step-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 21 9-9"/><path d="M15 4V2"/><path d="M15 10V8"/><path d="M12.5 6.5h-2"/><path d="M19.5 6.5h-2"/><path d="m17 3-1.5 1.5"/><path d="M14.5 9 16 7.5"/><path d="m17 10-1.5-1.5"/><path d="M14.5 4 16 5.5"/></svg></div><h4>배포</h4><p>공개 URL로 결과물 완성</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 진행자 ============ -->
+<section>
+  <div class="wrap">
+    <div class="center"><span class="eyebrow reveal">Host</span>
+    <h2 class="sec-title reveal">오늘, 옆에 있을 사람</h2>
+    <p class="sec-sub reveal">혼자였다면 멈췄을 그 순간, 바로 옆에서 같이 풀어줄 사람입니다.</p></div>
+    <div class="host reveal">
+      <div class="ph" data-ph><span class="ph-label">진행자 사진<span class="ph-size">600 × 600</span></span></div>
+      <div>
+        <!-- ▼ 채워넣기: 진행자 실명/약력 (거짓 금지 — 실제 경험만). 예시 문구는 교체용. -->
+        <h3>진행자 이름</h3>
+        <div class="role">ZERO ONE · 바이브코딩 메이커</div>
+        <p>비개발자가 AI로 ‘진짜 결과물’을 만들도록 돕는 일을 합니다. 화려한 강의보다, 한 사람이 “내가 만들었다”고 말하게 되는 순간을 중요하게 여겨요.</p>
+        <p style="margin-top:10px;color:var(--tx-dim);font-size:14px">· (여기에 실제 경력/만든 것/진행 이력을 한두 줄 — 신뢰의 핵심입니다)</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 신청/티켓 ============ -->
+<section id="apply" style="background:var(--bg-1)">
+  <div class="wrap">
+    <div class="center"><span class="eyebrow reveal">Apply</span>
+    <h2 class="sec-title reveal">참가 신청</h2>
+    <p class="sec-sub reveal">왜 20명까지만 받냐고요? 운영진 4명이 한 분도 ‘구경만 하다 가는 일’ 없이 끝까지 챙기려면 1인당 5명, 그래서 최대 20명입니다. 그래서 일찍 닫힙니다.</p></div>
+    <div class="ticket reveal">
+      <div class="tk">1st Cohort</div>
+      <h3>바이브코딩 첫 경험 · 1회차 오픈 멤버</h3>
+      <div class="price">선착순 20명</div>
+      <div class="left">7월 11일 14:00–18:00 · 노트북 지참 · 참가 안내는 신청서에서</div>
+      <!-- ▼ 실제 구글폼 신청 링크로 교체 -->
+      <a class="btn btn-hero" href="https://forms.gle/REPLACE_WITH_YOUR_GOOGLE_FORM" target="_blank" rel="noopener">내 자리 신청하기 →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA 밴드 ============ -->
+<section style="padding-bottom:40px">
+  <div class="band reveal">
+    <h2>4시간 뒤,<br>“내가 이걸 만들었어”라고 말하게 됩니다</h2>
+    <p>코딩 0줄에서 시작해, 공개 URL을 가진 내 웹서비스 하나. 그 한 번의 경험이 ‘나도 만들 수 있는 사람’이라는 증거가 됩니다.</p>
+    <a class="btn btn-white" href="#apply">내 자리 신청하기</a>
+  </div>
+</section>
+
+<!-- ============ 오시는 길 ============ -->
+<section id="location">
+  <div class="wrap">
+    <div class="center"><span class="eyebrow reveal">Location</span>
+    <h2 class="sec-title reveal">오시는 길</h2></div>
+    <!--
+      ▼ 카카오맵 임베드 — Kakao JavaScript 키만 넣으면 서울역 지도가 바로 표시됩니다.
+      1) https://developers.kakao.com → 내 애플리케이션 → 앱 키 → "JavaScript 키" 복사
+      2) [플랫폼 > Web]에 도메인 등록 (로컬 테스트면 http://localhost:8731 도 추가)
+      3) 아래 KAKAO_JS_KEY 의 "__KAKAO_JS_KEY__" 를 그 키로 교체
+      → 키 없으면 자동으로 안내 문구(map-fallback)가 표시됩니다.
+    -->
+    <div class="kakao-map reveal">
+      <div id="kakaoMap" style="position:relative;z-index:2;width:100%;height:420px"></div>
+      <div class="map-fallback"><div>
+        <div style="font-size:20px;font-weight:800;color:var(--tx)">서울역 인근</div>
+        📍 상세 장소(회의실)는 신청 확정자에게 개별 안내드립니다
+        <span>지도가 안 보이면 아래 버튼으로 확인하세요</span>
+        <a class="btn btn-brand" style="margin-top:18px" href="https://map.kakao.com/?q=서울역" target="_blank" rel="noopener">카카오맵에서 서울역 보기 ↗</a>
+      </div></div>
+    </div>
+    <script>
+      (function(){
+        var KAKAO_JS_KEY = "__KAKAO_JS_KEY__"; // ← Kakao Developers의 JavaScript 키로 교체
+        if (KAKAO_JS_KEY.indexOf("__") === 0) return; // 키 미설정 시 폴백 유지
+        var s=document.createElement('script');
+        s.src="//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey="+KAKAO_JS_KEY;
+        s.onload=function(){
+          kakao.maps.load(function(){
+            var pos=new kakao.maps.LatLng(37.5546788,126.9706069); // 서울역
+            var map=new kakao.maps.Map(document.getElementById('kakaoMap'),{center:pos,level:4});
+            new kakao.maps.Marker({position:pos,map:map});
+            var fb=document.querySelector('.kakao-map .map-fallback'); if(fb) fb.style.display='none';
+          });
+        };
+        document.head.appendChild(s);
+      })();
+    </script>
+    <p class="addr reveal">서울역 인근 · 상세 장소(회의실)는 신청 확정자에게 안내 · 문의 <b>code0to1@gmail.com</b></p>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section id="faq" style="background:var(--bg-1)">
+  <div class="wrap">
+    <div class="center"><span class="eyebrow reveal">FAQ</span>
+    <h2 class="sec-title reveal">자주 묻는 질문</h2></div>
+    <div class="faq">
+      <div class="qa"><button>이거 배우면 뭘 할 수 있게 되나요? <span class="arrow">+</span></button><div class="ans"><p>오늘 당장 ‘내 웹서비스’ 하나를 만들어 공개 URL로 공유할 수 있게 됩니다. 더 중요한 건, 집에 가서도 AI에게 원하는 결과물을 설명하고 고쳐나가는 빌딩 감각을 갖게 된다는 점입니다.</p></div></div>
+      <div class="qa"><button>정말 코딩을 몰라도 되나요? <span class="arrow">+</span></button><div class="ans"><p>네. 코딩 문법 강의가 아니라 “AI와 함께 만들어 배포하는” 핸즈온입니다. 설치와 에러 해결은 운영진이 1:5로 옆에서 도와드립니다.</p></div></div>
+      <div class="qa"><button>참가비·준비물은요? <span class="arrow">+</span></button><div class="ans"><p>소정의 참가비가 있으며(대관비·다과·운영·사후관리 포함), 정확한 금액과 결제 방법은 신청서에서 안내드립니다. 준비물은 노트북과 충전기입니다. Git, Cursor, Claude 세팅은 당일 함께 진행합니다.</p></div></div>
+      <div class="qa"><button>노트북이 없으면 못 하나요? <span class="arrow">+</span></button><div class="ans"><p>직접 실습하려면 노트북이 필요합니다. 사정이 어려우면 신청 시 알려주세요 — 함께 보는 방식으로 도와드립니다.</p></div></div>
+      <div class="qa"><button>끝나면 무엇이 남나요? <span class="arrow">+</span></button><div class="ans"><p>직접 만든 웹서비스의 공개 URL과, “나도 아이디어를 세상에 구현할 수 있다”는 자기효능감이 남습니다.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="top">
+      <a class="logo" href="#top">ZERO<b>ONE</b></a>
+      <div class="links">
+        <a href="#apply">신청하기</a><a href="#program">프로그램</a><a href="#faq">FAQ</a>
+      </div>
+    </div>
+    <div class="biz">
+      <b>바이브코딩 체험 세미나</b> · 주최 ZERO ONE<br>
+      <b>유의사항</b> 정원이 한정되어 있어요. 참석이 어려우면 미리 연락 부탁드립니다. 준비물: 노트북·충전기. 설치는 당일 함께 진행합니다.<br>
+      <b>개인정보</b> 신청 시 수집한 이름·연락처는 세미나 운영·안내 목적으로만 사용하며 종료 후 파기합니다.<br>
+      문의 code0to1@gmail.com<br>
+      © 2026 ZERO ONE. All Rights Reserved.
+    </div>
+  </div>
+</footer>
+
+<script>
+  // sticky nav 배경
+  const nav=document.getElementById('nav');
+  const onScroll=()=>nav.classList.toggle('scrolled',window.scrollY>10);
+  onScroll();addEventListener('scroll',onScroll,{passive:true});
+
+  // scroll reveal
+  const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+  // 히어로는 즉시 등장
+  // 헤드라인을 글자 단위로 쪼개 왼→오 연속 스태거 부여
+  function splitHeroTitle(){
+    let i=0;
+    document.querySelectorAll('.hero h1 .mask > span').forEach(line=>{
+      const text=line.textContent; line.textContent='';
+      for(const c of text){
+        const s=document.createElement('span');
+        s.className='ch'; s.style.setProperty('--i', i++);
+        s.textContent = (c===' ') ? ' ' : c;
+        line.appendChild(s);
+      }
+    });
+  }
+  function heroIn(){
+    document.querySelectorAll('.hero .reveal, .hero .hwipe').forEach(el=>el.classList.add('in'));
+    const h=document.querySelector('.hero h1'); if(h) h.classList.add('in');
+  }
+  if(document.readyState!=='loading') requestAnimationFrame(heroIn);
+  else addEventListener('load',heroIn);
+
+  // FAQ 아코디언
+  document.querySelectorAll('.qa button').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const qa=btn.parentElement,ans=qa.querySelector('.ans');
+      const open=qa.classList.toggle('open');
+      ans.style.maxHeight=open?ans.scrollHeight+'px':'0';
+    });
+  });
+
+</script>
+</body>
+</html>

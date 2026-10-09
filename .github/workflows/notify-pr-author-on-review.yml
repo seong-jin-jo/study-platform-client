@@ -1,0 +1,60 @@
+name: Notify PR Review to Author
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  notify-author:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract Slack IDs and DM Text
+        id: extract_info
+        run: |
+          PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+          REVIEWER="${{ github.event.review.user.login }}"
+          REVIEW_STATE="${{ github.event.review.state }}"
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          PR_URL="${{ github.event.pull_request.html_url }}"
+
+          # PR 작성자와 리뷰어가 같은 경우, 스킵 표시
+          if [ "$PR_AUTHOR" = "$REVIEWER" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # 코드베이스의 memberMap.json에서 Slack ID 조회
+          AUTHOR_SLACK_ID=$(jq -r --arg id "$PR_AUTHOR" '.[$id].slackId // empty' .github/memberMap.json)
+          REVIEWER_SLACK_ID=$(jq -r --arg id "$REVIEWER" '.[$id].slackId // empty' .github/memberMap.json)
+
+          # slackId가 없으면 DM 전송 불가 (skip)
+          if [ -z "$AUTHOR_SLACK_ID" ] || [ -z "$REVIEWER_SLACK_ID" ] || \
+            [ "$AUTHOR_SLACK_ID" = "null" ] || [ "$REVIEWER_SLACK_ID" = "null" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          if [ "$REVIEW_STATE" = "approved" ]; then
+            TEXT="<@$REVIEWER_SLACK_ID>님이 \"<$PR_URL|$PR_TITLE>\" PR를 approve 하셨습니다!"
+          elif [ "$REVIEW_STATE" = "changes_requested" ]; then
+            TEXT="<@$REVIEWER_SLACK_ID>님이 \"<$PR_URL|$PR_TITLE>\"에 변경을 요청하셨습니다!"
+          else
+            TEXT="<@$REVIEWER_SLACK_ID>님이 \"<$PR_URL|$PR_TITLE>\"에 코멘트를 남기셨습니다!"
+          fi
+
+          echo "author_slack_id=$AUTHOR_SLACK_ID" >> $GITHUB_OUTPUT
+          echo "text=$TEXT" >> $GITHUB_OUTPUT
+
+      - name: Send Slack DM to PR Author
+        if: steps.extract_info.outputs.skip != 'true'
+        uses: slackapi/slack-github-action@v2.1.0
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          payload: |
+            channel: ${{ steps.extract_info.outputs.author_slack_id }}
+            text: ${{ steps.extract_info.outputs.text }}

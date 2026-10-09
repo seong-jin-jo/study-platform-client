@@ -1,11 +1,14 @@
 'use client';
 
+import { sendGTMEvent } from '@next/third-parties/google';
 import Image from 'next/image';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 import { StudyPaymentDetailResponse, VirtualAccountInfo } from '@/api/openapi';
-import Button from '@/components/ui/button';
-import { useConfirmTossPayment } from '@/hooks/queries/payment-user-api';
+import Button from '@/components/common/ui/button';
+import TextActionButton from '@/components/common/ui/text-action-button';
+import { useConfirmTossPayment } from '@/hooks/queries/payment/payment-user-queries';
+import { getAttributionParams } from '@/utils/attribution-tracker';
 
 function PaymentSuccessContent() {
   const searchParams = useSearchParams();
@@ -46,22 +49,29 @@ function PaymentSuccessContent() {
       try {
         setStatus('loading');
 
-        const result = await mutateAsync({
+        const request = {
           paymentId,
           paymentKey,
           orderId,
           amount: Number(amount),
-        });
+        };
+        const result = await mutateAsync(request);
 
         if (isMounted) {
-          setPaymentData(result ?? null);
+          const studyPaymentResult = result as StudyPaymentDetailResponse;
+          setPaymentData(studyPaymentResult ?? null);
 
           // 가상계좌 결제인 경우
-          if (isVirtualAccount && result?.virtualAccount) {
-            setVirtualAccount(result.virtualAccount);
+          if (isVirtualAccount && studyPaymentResult?.virtualAccount) {
+            setVirtualAccount(studyPaymentResult.virtualAccount);
             setStatus('waiting');
           } else {
             // 카드 / 간편결제 등 즉시 결제
+            sendGTMEvent({
+              event: 'purchase',
+              revenue: studyPaymentResult?.amount,
+              ...getAttributionParams(),
+            });
             setStatus('success');
           }
         }
@@ -88,6 +98,10 @@ function PaymentSuccessContent() {
     );
   }
   if (status === 'error') {
+    const handleRetry = () => {
+      router.push('/');
+    };
+
     return (
       <div className="bg-background-alternative flex min-h-dvh items-center justify-center">
         <div className="rounded-150 border-border-default bg-fill-neutral-subtle-default mx-auto max-w-md border p-600 text-center">
@@ -98,7 +112,7 @@ function PaymentSuccessContent() {
             color="primary"
             size="medium"
             className="w-full"
-            onClick={() => router.back()}
+            onClick={handleRetry}
           >
             다시 시도하기
           </Button>
@@ -112,6 +126,7 @@ function PaymentSuccessContent() {
       case 'CARD':
         return '카드결제';
       case 'VBANK':
+      case 'VIRTUAL_ACCOUNT':
         return '가상계좌';
       default:
         return method ?? '-';
@@ -132,59 +147,72 @@ function PaymentSuccessContent() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md rounded-lg bg-white p-24 shadow">
+    <div className="bg-background-alternative flex min-h-dvh items-center justify-center">
+      <div className="rounded-150 bg-fill-neutral-subtle-default shadow-2 mx-auto w-full max-w-[860px] p-500">
         {/* 상태 아이콘 영역 */}
-        <div className="mb-24 text-center">
-          <div className="mx-auto mb-12 flex h-48 w-48 items-center justify-center rounded-full bg-green-100">
-            <span className="text-24">✓</span>
+        <div className="mb-600 text-center">
+          <div className="mx-auto mb-150">
+            <Image
+              className="mx-auto"
+              src="/images/payment-success.png"
+              alt="결제 완료"
+              width={280}
+              height={280}
+            />
           </div>
-          <h1 className="text-18 font-bold">결제가 완료되었습니다</h1>
-          <p className="text-14 mt-8 text-gray-600">
-            수강/학습 내역과 결제 내역은
-            <br />
-            마이페이지에서 확인하실 수 있습니다.
+          <h1 className="font-designer-24b text-text-default mb-200">
+            결제가 완료되었습니다.
+          </h1>
+          <p className="font-designer-16m text-text-subtle">
+            수강/학습 내역과 결제 내역은 마이페이지에서 확인하실 수 있습니다.
           </p>
         </div>
 
         {/* 결제 정보 */}
-        <div className="text-14 space-y-12 rounded-md border p-16">
-          <InfoRow
-            label="주문 정보"
-            value={paymentData?.groupStudyTitle ?? '-'}
-          />
-          <InfoRow
-            label="상품 금액"
-            value={`${paymentData?.amount?.toLocaleString()}원`}
-          />
-          <InfoRow
-            label="결제 수단"
-            value={getMethodLabel(paymentData?.method)}
-          />
-          <InfoRow
-            label="총 결제 금액"
-            value={`${paymentData?.amount?.toLocaleString()}원`}
-            bold
-          />
+        <div className="border-border-default bg-background-default rounded-100 mb-200">
+          <div className="space-y-200">
+            <InfoRow
+              label="주문 정보"
+              value={paymentData?.groupStudyTitle ?? '-'}
+              bold
+            />
+
+            <p className="font-designer-18b text-text-default">결제 정보</p>
+
+            <InfoRow
+              label="상품 금액"
+              value={`${paymentData?.amount?.toLocaleString()}원`}
+            />
+
+            <div className="border-border-default space-y-200 border-t pt-200">
+              <InfoRow
+                label="결제 수단"
+                value={getMethodLabel(paymentData?.method)}
+                bold
+              />
+              <InfoRow
+                label="총 결제 금액"
+                value={`${paymentData?.amount?.toLocaleString()}원`}
+                bold
+              />
+            </div>
+          </div>
         </div>
 
-        {/* 안내 문구 */}
-        <p className="text-12 mt-16 text-center text-gray-500">
-          스터디 수강 신청이 완료되었습니다.
-        </p>
-
         {/* 하단 버튼 */}
-        <div className="mt-24 space-y-8">
+        <div className="flex gap-200">
           <Button
             className="w-full"
             color="primary"
-            onClick={() => router.push('/my-study')}
+            size="large"
+            onClick={() => router.push('/my-class')}
           >
             마이스터디로 이동
           </Button>
           <Button
             className="w-full"
             color="outlined"
+            size="large"
             onClick={() => router.push('/')}
           >
             홈으로 이동
@@ -201,7 +229,7 @@ export default function PaymentSuccessPage() {
       fallback={
         <div className="bg-background-alternative flex min-h-dvh items-center justify-center">
           <div className="text-center">
-            <div className="border-border-default mx-auto mb-400 h-12 w-12 animate-spin rounded-full border-4 border-t-transparent" />
+            <div className="border-border-default mx-auto mb-400 h-600 w-600 animate-spin rounded-full border-4 border-t-transparent" />
             <p className="font-designer-16m text-text-subtle">
               결제를 처리하고 있습니다...
             </p>
@@ -235,7 +263,7 @@ function VirtualAccountWaiting({
 
   return (
     <div className="bg-background-alternative flex min-h-dvh items-center justify-center">
-      <div className="rounded-150 border-border-default bg-fill-neutral-subtle-default shadow-2 mx-auto w-full max-w-[600px] border p-600">
+      <div className="rounded-150 border-border-default bg-fill-neutral-subtle-default shadow-2 mx-auto w-full max-w-7500 border p-600">
         {/* 상태 아이콘 영역 */}
         <div className="mb-600 text-center">
           <div className="bg-fill-warning-subtle-default mx-auto mb-300 flex h-[80px] w-[80px] items-center justify-center rounded-full">
@@ -281,7 +309,7 @@ function VirtualAccountWaiting({
             className="w-full"
             color="primary"
             size="large"
-            onClick={() => router.push('/payment-management')}
+            onClick={() => router.push('/class-payment-management')}
           >
             결제 관리로 이동
           </Button>
@@ -319,7 +347,7 @@ function InfoRow({
       <span
         className={
           bold
-            ? 'font-designer-16b text-text-default'
+            ? 'font-designer-18b text-text-default'
             : 'font-designer-16m text-text-subtle'
         }
       >
@@ -329,20 +357,21 @@ function InfoRow({
         <span
           className={
             bold
-              ? 'font-designer-16b text-text-default'
+              ? 'font-designer-18b text-text-default'
               : 'font-designer-16m text-text-default'
           }
         >
           {value}
         </span>
         {copy && (
-          <button
+          <TextActionButton
             type="button"
-            className="font-designer-14m text-text-brand hover:text-text-brand-pressed cursor-pointer transition-colors"
+            className="border-0 p-0 text-text-brand hover:text-text-brand-pressed"
+            withTransition
             onClick={handleCopy}
           >
             {copied ? '복사됨' : '복사'}
-          </button>
+          </TextActionButton>
         )}
       </div>
     </div>

@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+# core.hooksPath로 실행되면 git은 cwd를 git 루트(모노레포 루트)로 둔다.
+# study-platform-client에서 lint-staged를 돌려야 하므로 패키지 루트로 이동한다.
+cd "$(dirname "$0")/.." || exit 1
+yarn lint-staged

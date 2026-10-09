@@ -1,0 +1,33 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "paths": {
+      "@/features/auth/model/use-auth": [
+        "./src/components/appintoss/appintoss-auth.ts"
+      ],
+      "@/components/saved-resource/save-resource-button": [
+        "./src/components/appintoss/appintoss-save-resource-button.tsx"
+      ],
+      "@/api/client/auth-response-interceptor": [
+        "./src/components/appintoss/appintoss-auth-response-interceptor.ts"
+      ],
+      "next/link": ["./src/components/appintoss/appintoss-link.tsx"],
+      "@/*": ["./src/*"],
+      "public/*": ["./public/*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "svgr.d.ts",
+    "src/app/**/*.ts",
+    "src/app/**/*.tsx",
+    "src/**/*.d.ts"
+  ],
+  "exclude": [
+    "node_modules/*",
+    "build",
+    "jest",
+    "dist",
+    "apps-in-toss.config.ts"
+  ]
+}

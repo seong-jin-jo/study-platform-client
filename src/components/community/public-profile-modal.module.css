@@ -1,0 +1,24 @@
+.surface.surface {
+  inset: auto 0 0;
+  width: 100%;
+  max-width: none;
+  height: 88dvh;
+  translate: 0 0 !important;
+  transform: none;
+  border-radius: var(--spacing-250) var(--spacing-250) 0 0;
+}
+
+@media (min-width: 640px) {
+  .surface.surface {
+    top: 50%;
+    right: auto;
+    bottom: auto;
+    left: 50%;
+    width: 100%;
+    max-width: var(--spacing-7000);
+    height: auto;
+    max-height: calc(100dvh - var(--spacing-1200));
+    transform: translate(-50%, -50%);
+    border-radius: var(--spacing-200);
+  }
+}

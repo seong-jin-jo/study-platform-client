@@ -1,0 +1,33 @@
+# Notion source registry for ZERO-ONE Product SSOT / LLM wiki.
+# Secret values and private tokens must never be stored here.
+# Register source metadata first, then promote only reviewed/canonical content into domain docs.
+
+version: 1
+updated_at: "2026-05-27"
+status_values:
+  - draft
+  - reviewed
+  - active
+  - deprecated
+freshness_values:
+  - unknown
+  - imported
+  - reviewed
+  - verified
+sources: []
+
+# Example:
+# sources:
+#   - id: notion-payment-refund-policy
+#     title: "Class payment refund policy"
+#     source: notion
+#     source_url: "internal-or-redacted"
+#     source_updated_at: "2026-05-27"
+#     domain: payment
+#     status: reviewed
+#     freshness: reviewed
+#     canonical: false
+#     supersedes: []
+#     target_docs:
+#       - docs/product-ssot/payment/policies/refund-policy.md
+#     notes: "Needs human review before active promotion."

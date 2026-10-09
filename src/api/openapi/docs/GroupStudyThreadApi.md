@@ -4,19 +4,19 @@ All URIs are relative to *https://test-api.zeroone.it.kr*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**createComment**](#createcomment) | **POST** /api/v1/group-studies/{groupStudyId}/threads/{threadId}/comments | 그룹스터디 스레드 댓글 등록|
+|[**createComment1**](#createcomment1) | **POST** /api/v1/group-studies/{groupStudyId}/threads/{threadId}/comments | 그룹스터디 스레드 댓글 등록|
 |[**createThread**](#createthread) | **POST** /api/v1/group-studies/{groupStudyId}/threads | 그룹스터디 스레드 글 등록|
 |[**deleteComment**](#deletecomment) | **DELETE** /api/v1/group-studies/{groupStudyId}/threads/{threadId}/comments/{commentId} | 그룹스터디 스레드 댓글 삭제|
 |[**deleteThread**](#deletethread) | **DELETE** /api/v1/group-studies/{groupStudyId}/threads/{threadId} | 그룹스터디 스레드 글 삭제|
-|[**getComments**](#getcomments) | **GET** /api/v1/group-studies/{groupStudyId}/threads/{threadId}/comments | 그룹스터디 스레드 댓글 조회|
+|[**getComments1**](#getcomments1) | **GET** /api/v1/group-studies/{groupStudyId}/threads/{threadId}/comments | 그룹스터디 스레드 댓글 조회|
 |[**getThreads**](#getthreads) | **GET** /api/v1/group-studies/{groupStudyId}/threads | 그룹스터디 스레드 글 조회|
 |[**toggleCommentReaction**](#togglecommentreaction) | **POST** /api/v1/group-studies/comments/{threadId}/{commentId}/reactions | 스레드 및 댓글에 좋아요/싫어요 토글 눌렀을 때|
 |[**toggleThreadReaction**](#togglethreadreaction) | **POST** /api/v1/group-studies/threads/{groupStudyId}/{threadId}/reactions | 스레드 및 댓글에 좋아요/싫어요 토글 눌렀을 때|
 |[**updateComment**](#updatecomment) | **PUT** /api/v1/group-studies/{groupStudyId}/threads/{threadId}/comments/{commentId} | 그룹스터디 스레드 댓글 수정|
 |[**updateThread**](#updatethread) | **PUT** /api/v1/group-studies/{groupStudyId}/threads/{threadId} | 그룹스터디 스레드 글 수정|
 
-# **createComment**
-> ThreadCommentResponseSchema createComment(groupStudyThreadCommentRequest)
+# **createComment1**
+> ThreadCommentResponseSchema createComment1(groupStudyThreadCommentRequest)
 
 스터디 멤버가 특정 스레드에 댓글을 등록합니다.
 
@@ -36,7 +36,7 @@ let groupStudyId: number; // (default to undefined)
 let threadId: number; // (default to undefined)
 let groupStudyThreadCommentRequest: GroupStudyThreadCommentRequest; //
 
-const { status, data } = await apiInstance.createComment(
+const { status, data } = await apiInstance.createComment1(
     groupStudyId,
     threadId,
     groupStudyThreadCommentRequest
@@ -246,8 +246,8 @@ const { status, data } = await apiInstance.deleteThread(
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **getComments**
-> ThreadCommentResponseSchema getComments()
+# **getComments1**
+> ThreadCommentResponseSchema getComments1()
 
 특정 그룹스터디의 스레드 댓글을 조회합니다.
 
@@ -267,7 +267,7 @@ let groupStudyId: number; // (default to undefined)
 let threadId: number; // (default to undefined)
 let pageable: Pageable; // (default to undefined)
 
-const { status, data } = await apiInstance.getComments(
+const { status, data } = await apiInstance.getComments1(
     groupStudyId,
     threadId,
     pageable

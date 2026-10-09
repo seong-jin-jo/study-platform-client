@@ -1,14 +1,18 @@
-import { QueryClient } from '@tanstack/react-query';
-import UserAvatar from '@/components/ui/avatar';
-import Badge from '@/components/ui/badge';
+import { notFound } from 'next/navigation';
+import {
+  SERVER_USER_PROFILE_RESULT_KINDS,
+  tryGetUserProfileInServer,
+} from '@/api/endpoints/user/get-user-profile.server';
+import MemberWithdrawButton from '@/components/admin/member-withdraw-button';
+import ProfileInfoCard from '@/components/common/cards/profile-info-card';
+import UserAvatar from '@/components/common/ui/avatar';
+import Badge from '@/components/common/ui/badge';
+import CakeIcon from '@/components/my-page/icon/cake.svg';
+import GithubIcon from '@/components/my-page/icon/github-logo.svg';
+import GlobeIcon from '@/components/my-page/icon/globe-simple.svg';
+import PhoneIcon from '@/components/my-page/icon/phone.svg';
 import { getSincerityPresetByLevelName } from '@/config/sincerity-temp-presets';
-import { getUserProfileInServer } from '@/entities/user/api/get-user-profile.server';
-import { GetUserProfileResponse } from '@/entities/user/api/types';
-import ProfileInfoCard from '@/entities/user/ui/profile-info-card';
-import CakeIcon from '@/features/my-page/ui/icon/cake.svg';
-import GithubIcon from '@/features/my-page/ui/icon/github-logo.svg';
-import GlobeIcon from '@/features/my-page/ui/icon/globe-simple.svg';
-import PhoneIcon from '@/features/my-page/ui/icon/phone.svg';
+import { GetUserProfileResponse } from '@/types/api/user.types';
 
 // todo: UserProfileModal과 거의 유사하여 나중에 리팩토링하기
 export default async function ProfilePage({
@@ -16,20 +20,18 @@ export default async function ProfilePage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const queryClient = new QueryClient();
   const { id: memberId } = await params;
+  const profileResult = await tryGetUserProfileInServer(Number(memberId));
 
-  // 서버 side에서 첫 페이지 데이터 미리 가져오기
-  await queryClient.prefetchQuery({
-    queryKey: ['userProfile', memberId],
-    queryFn: () => getUserProfileInServer(Number(memberId)),
-  });
+  if (profileResult.kind === SERVER_USER_PROFILE_RESULT_KINDS.MISSING_PROFILE) {
+    notFound();
+  }
 
-  const profile: GetUserProfileResponse = await queryClient.getQueryData([
-    'userProfile',
-    memberId,
-  ]);
+  if (profileResult.kind !== SERVER_USER_PROFILE_RESULT_KINDS.SUCCESS) {
+    throw profileResult.error;
+  }
 
+  const profile: GetUserProfileResponse = profileResult.profile;
   const temperPreset = getSincerityPresetByLevelName(
     profile.sincerityTemp.levelName,
   );
@@ -69,7 +71,7 @@ export default async function ProfilePage({
             <div className="flex items-center">
               <temperPreset.Icon className="h-400 w-400" />
               <span
-                className={`${temperPreset.textClass} font-designer-14b pl-[2px]`}
+                className={`${temperPreset.textClass} font-designer-14b pl-25`}
               >
                 {profile.sincerityTemp.temperature.toFixed(1)} ℃
               </span>
@@ -125,6 +127,11 @@ export default async function ProfilePage({
           title="공부 주제 및 계획"
           content={profile.memberInfo.studyPlan}
         />
+      </div>
+
+      <div className="border-border-default flex flex-col gap-150 border-t pt-300">
+        <span className="font-designer-14b text-text-error">위험 작업</span>
+        <MemberWithdrawButton memberId={Number(memberId)} />
       </div>
     </div>
   );

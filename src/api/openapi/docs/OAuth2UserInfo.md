@@ -8,6 +8,8 @@ Name | Type | Description | Notes
 **id** | **string** |  | [optional] [default to undefined]
 **name** | **string** |  | [optional] [default to undefined]
 **profileImageUrl** | **string** |  | [optional] [default to undefined]
+**email** | **string** |  | [optional] [default to undefined]
+**phoneNumber** | **string** |  | [optional] [default to undefined]
 
 ## Example
 
@@ -18,6 +20,8 @@ const instance: OAuth2UserInfo = {
     id,
     name,
     profileImageUrl,
+    email,
+    phoneNumber,
 };
 ```
 

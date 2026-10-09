@@ -13,7 +13,7 @@ Name | Type | Description | Notes
 **startTime** | **string** | 스터디 시작 날짜 | [optional] [default to undefined]
 **endTime** | **string** | 스터디 종료 날짜 | [optional] [default to undefined]
 **studyRole** | **string** | 회원이 스터디에 참여했을 때의 역할. 리더 혹은 일반 참여자 | [optional] [default to undefined]
-**status** | **string** | 스터디의 상태. RECRUITING - 모집중, IN_PROGRESS - 진행중, COMPLETED - 종료 | [optional] [default to undefined]
+**status** | **string** | 스터디의 상태. RECRUITING - 모집중, ENDING_SOON - 마감임박, IN_PROGRESS - 진행중, COMPLETED - 종료 | [optional] [default to undefined]
 **type** | **string** | 그룹스터디인지 일대일 스터디인지 타입 | [optional] [default to undefined]
 
 ## Example

@@ -5,13 +5,40 @@ version: '3.8'
 services:
   frontend:
     container_name: frontend-prod
-    image: zerooneitkr/frontend:prod
+    image: ${FRONTEND_IMAGE:-zerooneitkr/zeroone-frontend:prod}
     # 도커허브에서 이미지 받아오니까 빌드과정은 빠짐
     # build:
     #   context: .
     #   dockerfile: Dockerfile.prod
-    ports:
-      - '3000:3000'
+    expose:
+      - '13755'
     env_file:
       - .env
     restart: unless-stopped
+    networks:
+      - default
+      - backend-shared
+
+  frontend-ingress:
+    container_name: frontend-ingress-prod
+    image: nginx:1.27-alpine
+    depends_on:
+      - frontend
+    ports:
+      - '13755:13755'
+    environment:
+      APP_RELEASE: ${FRONTEND_VERSION:-unavailable}
+      APP_COMMIT: ${FRONTEND_COMMIT:-unavailable}
+    volumes:
+      - ./deploy/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./deploy/nginx/sprint8-public-seo-errors.conf:/etc/nginx/templates/sprint8-public-seo-errors.conf.template:ro
+      - ./deploy/nginx/400.txt:/etc/nginx/error-pages/400.txt:ro
+      - ./deploy/nginx/503.txt:/etc/nginx/error-pages/503.txt:ro
+    restart: unless-stopped
+    networks:
+      - default
+
+networks:
+  backend-shared:
+    name: ${BACKEND_SHARED_NETWORK:-zeroone-net-prod}
+    external: true

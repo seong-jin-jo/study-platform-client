@@ -1,9 +1,8 @@
-@import 'tailwindcss';
-@tailwind utilities;
+@import "tailwindcss";
+@import "highlight.js/styles/github.css";
+@import "./tiptap-editor.css";
 
-/*
----break--- */
-@plugin 'tailwindcss-animate';
+@plugin "tailwindcss-animate";
 
 @layer base {
   *,
@@ -12,7 +11,7 @@
     box-sizing: border-box;
     border-width: 0;
     border-style: solid;
-    border-color: #e5e7eb;
+    border-color: var(--color-gray-200);
   }
   input,
   button,
@@ -43,41 +42,71 @@
     text-transform: none;
   }
   button,
-  [type='button'],
-  [type='reset'],
-  [type='submit'] {
+  [type="button"],
+  [type="reset"],
+  [type="submit"] {
     -webkit-appearance: button;
     background-color: transparent;
     background-image: none;
   }
 }
-/*
----break--- */
+
+@layer components {
+  .home-hero-local-scrim {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 78%;
+    background: linear-gradient(
+      to top,
+      var(--color-home-scrim-core) 0%,
+      var(--color-home-scrim-core) 46%,
+      rgb(9 11 16 / 62%) 72%,
+      rgb(9 11 16 / 0%) 100%
+    );
+  }
+
+  .home-sticky-rail {
+    max-height: calc(100vh - var(--spacing-1200));
+  }
+}
+
 @custom-variant dark (&:is(.dark *));
+@custom-variant s8 (@media (width >= 85rem));
 
 /*
-tailwind 4.0부터는 전역 변수를 여기서 설정 가능
+  tailwind 4.0부터는 전역 변수를 여기서 설정 가능
 
-4.0 달라진 설정: 
-https://velog.io/@oneook/tailwindcss-4.0-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%AC%EB%9D%BC%EC%A1%8C%EB%82%98%EC%9A%94
+  4.0 달라진 설정:
+  https://velog.io/@oneook/tailwindcss-4.0-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%AC%EB%9D%BC%EC%A1%8C%EB%82%98%EC%9A%94
 
- @theme {
-  --font-display: 'Satoshi', 'sans-serif';
-  --breakpoint-3xl: 1920px;
-  ...
- }
-  /* ... */
+  예시:
+  @theme {
+    --font-display: 'Satoshi', 'sans-serif';
+    --breakpoint-3xl: 1920px;
+    ...
+  }
+*/
 
 @theme inline {
+  /* fonts */
+  --font-signature: var(--font-thesignature);
+  --font-corinthia: var(--font-corinthia);
+
   /* colors */
   --color-*: initial;
+  --color-black: #000000;
+  --color-white: #ffffff;
 
   --color-gray-0: #ffffff;
   --color-gray-50: #fafafa;
   --color-gray-100: #f5f5f5;
   --color-gray-200: #e9eaeb;
+  --color-gray-275: #d1d2d4;
   --color-gray-300: #d5d7da;
   --color-gray-400: #a4a7ae;
+  --color-gray-450: #999999;
   --color-gray-500: #717680;
   --color-gray-600: #535862;
   --color-gray-700: #414651;
@@ -85,19 +114,19 @@ https://velog.io/@oneook/tailwindcss-4.0-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%AC%E
   --color-gray-900: #181d27;
   --color-gray-1000: #0a0d12;
 
+  /* Landing benefit-band gradient stop (Figma gradation/600, distinct from gray-600 #535862) */
+  --color-gradation-600: #575f70;
+
   --color-red-50: #fef3f2;
   --color-red-100: #fee4e2;
   --color-red-200: #fecdca;
-  --color-red-300: #fda29b;
   --color-red-400: #f97066;
   --color-red-500: #f04438;
   --color-red-600: #d92d20;
-  --color-red-700: #b42318;
-  --color-red-800: #912018;
-  --color-red-900: #7a271a;
 
   --color-rose-50: #fff1f3;
   --color-rose-100: #ffe4e8;
+  --color-rose-150: #fadfe7;
   --color-rose-200: #fecdd6;
   --color-rose-300: #fea3b4;
   --color-rose-400: #fd6f8e;
@@ -109,69 +138,51 @@ https://velog.io/@oneook/tailwindcss-4.0-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%AC%E
 
   --color-pink-50: #fdf2fa;
   --color-pink-100: #fce7f6;
-  --color-pink-200: #fcceee;
   --color-pink-300: #faa7e0;
   --color-pink-400: #f670c7;
   --color-pink-500: #ee46bc;
   --color-pink-600: #dd2590;
-  --color-pink-700: #c11574;
-  --color-pink-800: #9e165f;
-  --color-pink-900: #851651;
 
-  --color-grape-50: #f9f5ff;
-  --color-grape-100: #f4ebff;
-  --color-grape-200: #e9d7fe;
-  --color-grape-300: #d6bbfb;
-  --color-grape-400: #b692f6;
-  --color-grape-500: #9e77ed;
   --color-grape-600: #7f56d9;
-  --color-grape-700: #6941c6;
-  --color-grape-800: #53389e;
-  --color-grape-900: #42307d;
 
   --color-purple-50: #f4f3ff;
   --color-purple-100: #ebe9fe;
+  --color-purple-150: #dfe1fa;
   --color-purple-200: #d9d6fe;
-  --color-purple-300: #bdb4fe;
   --color-purple-400: #9b8afb;
   --color-purple-500: #7a5af8;
   --color-purple-600: #6938ef;
-  --color-purple-700: #5925dc;
-  --color-purple-800: #4a1fb8;
-  --color-purple-900: #3e1c96;
 
   --color-indigo-50: #eef4ff;
-  --color-indigo-100: #e0eaff;
-  --color-indigo-200: #c7d7fe;
-  --color-indigo-300: #a4bcfd;
-  --color-indigo-400: #8098f9;
   --color-indigo-500: #6172f3;
-  --color-indigo-600: #444ce7;
-  --color-indigo-700: #3538cd;
-  --color-indigo-800: #2d31a6;
-  --color-indigo-900: #2d3282;
 
   --color-blue-50: #eff8ff;
   --color-blue-100: #d1e9ff;
   --color-blue-200: #b2ddff;
-  --color-blue-300: #84caff;
   --color-blue-400: #53b1fd;
   --color-blue-500: #2e90fa;
   --color-blue-600: #1570ef;
-  --color-blue-700: #175cd3;
-  --color-blue-800: #1849a9;
   --color-blue-900: #194185;
 
   --color-green-50: #ecfdf3;
   --color-green-100: #d1fadf;
   --color-green-200: #a6f4c5;
-  --color-green-300: #6ce9a6;
   --color-green-400: #32d583;
   --color-green-500: #12b76a;
   --color-green-600: #039855;
   --color-green-700: #027a48;
-  --color-green-800: #05603a;
-  --color-green-900: #054f31;
+
+  --color-qna-answered: #02c76e;
+  --color-qna-answered-bg: #dafbe7;
+
+  --color-chip-positive: #02c76e;
+  --color-chip-positive-bg: #dafbe7;
+  --color-chip-negative: #ff4343;
+  --color-chip-negative-subtle: #f76363;
+  --color-chip-negative-bg: #fecdcd;
+
+  /* Instructor 기획팀 카드 배경 (Figma 클래스 상세) */
+  --color-mint-50: #ddf6f1;
 
   --color-yellow-50: #fffaeb;
   --color-yellow-100: #fef0c7;
@@ -180,26 +191,25 @@ https://velog.io/@oneook/tailwindcss-4.0-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%AC%E
   --color-yellow-400: #fdb022;
   --color-yellow-500: #f79009;
   --color-yellow-600: #dc6803;
-  --color-yellow-700: #b54708;
-  --color-yellow-800: #93370d;
-  --color-yellow-900: #7a2e0e;
 
   --color-orange-50: #fff6ed;
   --color-orange-100: #ffead5;
-  --color-orange-200: #fddcab;
-  --color-orange-300: #feb273;
   --color-orange-400: #fd853a;
   --color-orange-500: #fb6514;
   --color-orange-600: #ec4a0a;
-  --color-orange-700: #c4320a;
-  --color-orange-800: #9c2a10;
-  --color-orange-900: #7e2410;
+
+  /* SPRINT7 V3 home prototype v13 */
+  --color-home-card-line: #898d97;
+  --color-home-scrim-base: rgb(9 11 16 / 30%);
+  --color-home-scrim-core: rgb(9 11 16 / 90%);
 
   /* colors - semantic token */
   --color-text-subtle: var(--color-gray-600);
   --color-text-brand: var(--color-rose-500);
+  --color-text-brand-strong: var(--color-rose-700);
   --color-text-default: var(--color-gray-800);
   --color-text-disabled: var(--color-gray-300);
+  --color-text-disabled-strong: var(--color-gray-275);
   --color-text-error: var(--color-red-500);
   --color-text-strong: var(--color-gray-900);
   --color-text-subtlest: var(--color-gray-400);
@@ -208,15 +218,12 @@ https://velog.io/@oneook/tailwindcss-4.0-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%AC%E
   --color-text-information: var(--color-blue-600);
   --color-text-inverse: var(--color-gray-0);
 
-  --color-icon-subtle: var(--color-gray-600);
   --color-icon-brand: var(--color-rose-500);
   --color-icon-default: var(--color-gray-800);
   --color-icon-disabled: var(--color-gray-300);
   --color-icon-error: var(--color-red-500);
   --color-icon-strong: var(--color-gray-900);
   --color-icon-subtlest: var(--color-gray-400);
-  --color-icon-success: var(--color-green-500);
-  --color-icon-warning: var(--color-yellow-500);
   --color-icon-information: var(--color-blue-500);
   --color-icon-inverse: var(--color-gray-0);
 
@@ -232,87 +239,53 @@ https://velog.io/@oneook/tailwindcss-4.0-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%AC%E
   --color-border-information: var(--color-blue-500);
   --color-border-inverse: var(--color-gray-0);
 
+  /* Focus indicator keeps the rose-500 visual while exposing a semantic role. */
+  --color-focus-ring: var(--color-rose-500);
+
   --color-background-alternative: var(--color-gray-50);
   --color-background-default: var(--color-gray-0);
   --color-background-dimmer: rgba(24, 29, 39, 0.8);
   --color-background-disabled: var(--color-gray-100);
 
-  --color-background-danger-subtle: var(--color-red-300);
   --color-background-danger-default: var(--color-red-500);
-  --color-background-danger-strong: var(--color-red-700);
 
   --color-background-brand-subtle: var(--color-rose-300);
   --color-background-brand-default: var(--color-rose-500);
-  --color-background-brand-strong: var(--color-rose-700);
 
   --color-background-neutral-subtle: var(--color-gray-200);
-  --color-background-neutral-default: var(--color-gray-500);
   --color-background-neutral-strong: var(--color-gray-900);
 
   --color-background-accent-blue-subtle: var(--color-blue-50);
   --color-background-accent-blue-default: var(--color-blue-100);
   --color-background-accent-blue-strong: var(--color-blue-600);
-  --color-background-accent-grape-subtle: var(--color-grape-50);
-  --color-background-accent-grape-default: var(--color-grape-100);
-  --color-background-accent-grape-strong: var(--color-grape-600);
   --color-background-accent-gray-subtle: var(--color-gray-100);
   --color-background-accent-gray-default: var(--color-gray-50);
   --color-background-accent-gray-strong: var(--color-gray-600);
   --color-background-accent-green-subtle: var(--color-green-50);
-  --color-background-accent-green-default: var(--color-green-100);
-  --color-background-accent-green-strong: var(--color-green-600);
   --color-background-accent-indigo-subtle: var(--color-indigo-50);
-  --color-background-accent-indigo-default: var(--color-indigo-100);
-  --color-background-accent-indigo-strong: var(--color-indigo-600);
   --color-background-accent-orange-subtle: var(--color-orange-100);
-  --color-background-accent-orange-default: var(--color-orange-50);
   --color-background-accent-orange-strong: var(--color-orange-600);
   --color-background-accent-pink-subtle: var(--color-pink-50);
-  --color-background-accent-pink-default: var(--color-pink-100);
-  --color-background-accent-pink-strong: var(--color-pink-600);
   --color-background-accent-purple-subtle: var(--color-purple-50);
-  --color-background-accent-purple-default: var(--color-purple-100);
   --color-background-accent-purple-strong: var(--color-purple-600);
   --color-background-accent-red-subtle: var(--color-red-50);
-  --color-background-accent-red-default: var(--color-red-100);
-  --color-background-accent-red-strong: var(--color-red-600);
   --color-background-accent-rose-subtle: var(--color-rose-50);
-  --color-background-accent-rose-default: var(--color-rose-100);
   --color-background-accent-rose-strong: var(--color-rose-600);
   --color-background-accent-yellow-subtle: var(--color-yellow-50);
-  --color-background-accent-yellow-default: var(--color-yellow-100);
-  --color-background-accent-yellow-strong: var(--color-yellow-600);
-
-  --color-background-success-subtle: var(--color-green-300);
-  --color-background-success-default: var(--color-green-500);
-  --color-background-success-strong: var(--color-green-700);
 
   --color-fill-brand-default-default: var(--color-rose-500);
   --color-fill-brand-default-hover: var(--color-rose-600);
   --color-fill-brand-default-pressed: var(--color-rose-700);
   --color-fill-brand-strong-default: var(--color-rose-900);
-  --color-fill-brand-strong-hover: var(--color-rose-800);
-  --color-fill-brand-strong-pressed: var(--color-rose-700);
   --color-fill-brand-subtle-default: var(--color-rose-50);
   --color-fill-brand-subtle-hover: var(--color-rose-200);
-  --color-fill-brand-subtle-pressed: var(--color-rose-300);
 
   --color-fill-danger-default-default: var(--color-red-500);
-  --color-fill-danger-default-hover: var(--color-red-600);
-  --color-fill-danger-default-pressed: var(--color-red-700);
-  --color-fill-danger-strong-default: var(--color-red-900);
-  --color-fill-danger-strong-hover: var(--color-red-800);
-  --color-fill-danger-strong-pressed: var(--color-red-700);
   --color-fill-danger-subtle-default: var(--color-red-50);
   --color-fill-danger-subtle-hover: var(--color-red-100);
   --color-fill-danger-subtle-pressed: var(--color-red-200);
 
   --color-fill-information-default-default: var(--color-blue-500);
-  --color-fill-information-default-hover: var(--color-blue-600);
-  --color-fill-information-default-pressed: var(--color-blue-700);
-  --color-fill-information-strong-default: var(--color-blue-900);
-  --color-fill-information-strong-hover: var(--color-blue-800);
-  --color-fill-information-strong-pressed: var(--color-blue-700);
   --color-fill-information-subtle-default: var(--color-blue-50);
   --color-fill-information-subtle-hover: var(--color-blue-100);
   --color-fill-information-subtle-pressed: var(--color-blue-200);
@@ -321,106 +294,396 @@ https://velog.io/@oneook/tailwindcss-4.0-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%AC%E
   --color-fill-neutral-default-hover: var(--color-gray-200);
   --color-fill-neutral-default-pressed: var(--color-gray-300);
   --color-fill-neutral-strong-default: var(--color-gray-900);
-  --color-fill-neutral-strong-hover: var(--color-gray-800);
-  --color-fill-neutral-strong-pressed: var(--color-gray-700);
   --color-fill-neutral-subtle-default: var(--color-gray-0);
   --color-fill-neutral-subtle-hover: var(--color-gray-50);
   --color-fill-neutral-subtle-pressed: var(--color-gray-100);
 
   --color-fill-success-default-default: var(--color-green-500);
-  --color-fill-success-default-hover: var(--color-green-600);
-  --color-fill-success-default-pressed: var(--color-green-700);
-  --color-fill-success-strong-default: var(--color-green-900);
-  --color-fill-success-strong-hover: var(--color-green-800);
-  --color-fill-success-strong-pressed: var(--color-green-700);
   --color-fill-success-subtle-default: var(--color-green-50);
-  --color-fill-success-subtle-hover: var(--color-green-100);
-  --color-fill-success-subtle-pressed: var(--color-green-200);
 
   --color-fill-warning-default-default: var(--color-yellow-500);
-  --color-fill-warning-default-hover: var(--color-yellow-600);
-  --color-fill-warning-default-pressed: var(--color-yellow-700);
-  --color-fill-warning-strong-default: var(--color-yellow-900);
-  --color-fill-warning-strong-hover: var(--color-yellow-800);
-  --color-fill-warning-strong-pressed: var(--color-yellow-700);
   --color-fill-warning-subtle-default: var(--color-yellow-50);
-  --color-fill-warning-subtle-hover: var(--color-yellow-100);
-  --color-fill-warning-subtle-pressed: var(--color-yellow-200);
 
   /* button */
-  --color-button-secondary-border: #dce0e5;
-  --color-button-secondary-background: #fafbfc;
 
   /* font weight */
   --font-weight-regular: 400;
   --font-weight-medium: 500;
+  --font-weight-semibold: 600;
   --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
 
   /* radius */
   --radius-*: initial;
-  --radius-0: 0px;
   --radius-25: 2px;
   --radius-50: 4px;
   --radius-75: 6px;
   --radius-100: 8px;
+  --radius-125: 10px;
   --radius-150: 12px;
+  --radius-175: 14px;
   --radius-200: 16px;
+  --radius-250: 20px;
   --radius-300: 24px;
-  --radius-400: 32px;
+  --radius-375: 30px;
   --radius-500: 40px;
+  --radius-750: 60px;
+  --radius-2000: 160px;
 
   /* spacing */
   --spacing-*: initial;
   --spacing-0: 0px;
+  --spacing-25: 2px;
+  --spacing-30: 3px;
   --spacing-50: 4px;
+  --spacing-62: 5px;
   --spacing-75: 6px;
   --spacing-100: 8px;
+  --spacing-112: 9px;
+  --spacing-125: 10px;
   --spacing-150: 12px;
+  --spacing-160: 13px;
+  --spacing-175: 14px;
+  --spacing-188: 15px;
   --spacing-200: 16px;
+  --spacing-225: 18px;
   --spacing-250: 20px;
+  --spacing-275: 22px;
   --spacing-300: 24px;
+  --spacing-325: 26px;
   --spacing-350: 28px;
+  --spacing-375: 30px;
   --spacing-400: 32px;
+  --spacing-425: 34px;
+  --spacing-450: 36px;
   --spacing-500: 40px;
+  --spacing-525: 42px;
+  --spacing-550: 44px;
+  --spacing-575: 46px;
+  --spacing-587: 47px;
   --spacing-600: 48px;
+  --spacing-625: 50px;
+  --spacing-650: 52px;
+  --spacing-675: 54px;
+  --spacing-700: 56px;
+  --spacing-750: 60px;
+  --spacing-775: 62px;
+  --spacing-800: 64px;
+  --spacing-825: 66px;
+  --spacing-875: 70px;
+  --spacing-950: 76px;
+  --spacing-1000: 80px;
+  --spacing-1062: 85px;
+  --spacing-1100: 88px;
+  --spacing-1112: 89px;
+  --spacing-1125: 90px;
+  --spacing-1200: 96px;
+  --spacing-1250: 100px;
+  --spacing-1375: 110px;
+  --spacing-1400: 112px;
+  --spacing-1425: 114px;
+  --spacing-1500: 120px;
+  --spacing-1600: 128px;
+  --spacing-1625: 130px;
+  --spacing-home-ad-slot: 132px;
+  --spacing-1662: 133px;
+  --spacing-1750: 140px;
+  --spacing-1837: 147px;
+  --spacing-1875: 150px;
+  --spacing-2000: 160px;
+  --spacing-2125: 170px;
+  --spacing-2325: 186px;
+  --spacing-2413: 193px;
+  --spacing-2500: 200px;
+  --spacing-2525: 202px;
+  --spacing-2650: 212px;
+  --spacing-2850: 228px;
+  --spacing-home-hero-mobile: 230px;
+  --spacing-home-hero-desktop-inset: 78px;
+  --spacing-3000: 240px;
+  --spacing-3050: 244px;
+  --spacing-3400: 272px;
+  --spacing-insight-ocean-stage: 264px;
+  --spacing-3500: 280px;
+  --spacing-3625: 290px;
+  --spacing-3650: 292px;
+  --spacing-3725: 298px;
+  --spacing-3750: 300px;
+  --spacing-home-preview-mobile: 103px;
+  --spacing-home-preview-desktop: 129px;
+  --spacing-3875: 310px;
+  --spacing-3950: 316px;
+  --spacing-4000: 320px;
+  --spacing-4250: 340px;
+  --spacing-4500: 360px;
+  --spacing-4600: 368px;
+  --spacing-4875: 390px;
+  --spacing-5000: 400px;
+  --spacing-5250: 420px;
+  --spacing-5500: 440px;
+  --spacing-5950: 476px;
+  --spacing-6000: 480px;
+  --spacing-6750: 540px;
+  --spacing-7000: 560px;
+  --spacing-7125: 570px;
+  --spacing-7250: 580px;
+  --spacing-7500: 600px;
+  --spacing-7600: 608px;
+  --spacing-7850: 628px;
+  --spacing-7925: 634px;
+  --spacing-8288: 663px;
+  --spacing-8875: 710px;
+  --spacing-9175: 734px;
+  --spacing-9250: 740px;
+  /* 인사이트 바다: 섬 20개일 때 활성 섬이 화두 제목을 덮지 않는 최소 높이(dev 390 실측 역산). */
+  --spacing-9100: 728px;
+  --spacing-10000: 800px;
+  --spacing-10150: 812px;
+  --spacing-10250: 820px;
+  --spacing-10500: 840px;
+  --spacing-10700: 856px;
+  --spacing-13150: 1052px;
+  /* 인사이트 용어글 상세 xl 컨테이너: 본문 740 + 간격 48 + 레일 340
+     (insight-article-v2-spec.md §1·§5). 그리드 폭이 740 컨테이너에 눌려
+     본문이 반토막(약 352px) 나던 결함의 핫픽스(2026-09-17). */
+  --spacing-14100: 1128px;
+  --spacing-16000: 1280px;
+  --spacing-17500: 1400px;
+  /* layout max-width tokens */
 
   /* shadow */
   --shadow-*: initial;
   --shadow-1: 0px 8px 24px 0px rgba(0, 0, 0, 0.12);
   --shadow-2: 0px 8px 32px 0px rgba(0, 0, 0, 0.16);
+  --shadow-brand-card: 4px 4px 20px 0px var(--color-rose-600);
   --shadow-3:
-    0px 0px 8px 0px rgba(0, 0, 0, 0.08), 0px 8px 16px 0px rgba(0, 0, 0, 0.08),
-    0px 16px 20px 0px rgba(0, 0, 0, 0.12);
+    0px 0px 8px 0px rgba(0, 0, 0, 0.08),
+    0px 8px 16px 0px rgba(0, 0, 0, 0.08), 0px 16px 20px 0px rgba(0, 0, 0, 0.12);
   --shadow-4:
     0px 4px 32px rgba(0, 0, 0, 0.24), 0px 10px 10px rgba(0, 0, 0, 0.24);
+}
+
+/* fluid layout — utility 미생성, raw var()로만 사용 */
+:root {
+  --min-h-hero-section: clamp(260px, 30.2vw, 580px);
+  /* app-release 모바일 셸의 safe-area 값을 커스텀 프로퍼티로 한 번 더 감싼다.
+     Chromium E2E는 CDP Emulation.setSafeAreaInsetsOverride로 실제 env() 값을
+     주입해 이 경로를 검증한다. .mobile-floating-clearance는 기존 계약 테스트
+     (mobile-usability-contract.test.ts)가 리터럴 env(...)를 검사하므로 그대로
+     두고, 이 변수들은 이후에 신설한 규칙에서 쓴다. */
+  --sat-b: env(safe-area-inset-bottom, 0px);
+  --sat-t: env(safe-area-inset-top, 0px);
+  --sat-l: env(safe-area-inset-left, 0px);
+  --sat-r: env(safe-area-inset-right, 0px);
+  --app-header-safe-top: 0px;
+  /* 탭바(mobile-tab-bar.tsx)의 실제 렌더 높이. 링크 min-h-700(56px)에 nav의
+     border-t(1px)가 더해져 57px이다(실측: getBoundingClientRect().height=57,
+     computed borderTopWidth=1px — 재현독립리뷰 2026-09-26 재반려 1). --spacing-700
+     하나만 쓰면 1px 모자라 390에서 카카오 bottom 788 vs 탭바 top 787처럼 항상
+     1px 겹친다. 탭바 높이를 쓰는 모든 clearance 공식은 이 변수 하나로 통일한다. */
+  --tabbar-height: calc(var(--spacing-700) + 1px);
+  /* 스크롤 유틸 버튼(카카오 FAB·TOP)이 필요로 하는 하단 여백의 단일
+     source of truth. 탭바 높이(--tabbar-height=57px) + 버튼 간격
+     (--spacing-200=16px) + safe-area. mobile-floating-clearance와
+     mobile-floating-clearance.pb-tabbar 둘 다 이 값을 참조한다(리뷰 반려
+     2026-09-26 MINOR 3 — 72px 공식이 두 곳에 리터럴 중복돼 있었다). */
+  --floating-clearance: calc(
+    var(--tabbar-height) +
+    var(--spacing-200) +
+    var(--sat-b)
+  );
+}
+
+@media (display-mode: standalone) {
+  :root {
+    --app-header-safe-top: var(--sat-t);
+  }
+}
+
+/* E2E can stub matchMedia but cannot toggle Chromium's CSS display-mode.
+   PwaRuntime mirrors the same media query onto the root element so the tested
+   and native-installed paths share one token and one header rule. */
+:root[data-pwa-display-mode="standalone"] {
+  --app-header-safe-top: var(--sat-t);
 }
 
 @layer base {
   /* body {
     @apply bg-background text-foreground font-sans;
   } */
+  button,
+  a,
+  [role="button"],
+  label,
+  select {
+    cursor: pointer;
+  }
+}
+
+@media (hover: none) and (max-width: 1023.98px) {
+  a[href]:not([aria-disabled="true"]):not([data-disabled="true"]),
+  button:not(:disabled):not([aria-disabled="true"]):not([data-disabled="true"]),
+  [role="button"]:not([aria-disabled="true"]):not([data-disabled="true"]),
+  input:not([type="hidden"]):not(:disabled),
+  select:not(:disabled),
+  textarea:not(:disabled),
+  summary,
+  label[for] {
+    transition: opacity 120ms ease-out;
+  }
+
+  a[href]:not([aria-disabled="true"]):not([data-disabled="true"]):active,
+  button:not(:disabled):not([aria-disabled="true"]):not(
+      [data-disabled="true"]
+    ):active,
+  [role="button"]:not([aria-disabled="true"]):not(
+      [data-disabled="true"]
+    ):active,
+  input:not([type="hidden"]):not(:disabled):active,
+  select:not(:disabled):active,
+  textarea:not(:disabled):active,
+  summary:active,
+  label[for]:active {
+    opacity: 0.72;
+    transition-duration: 0ms;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .app-shell-header {
+    height: calc(var(--spacing-700) + var(--app-header-safe-top));
+    padding-top: var(--app-header-safe-top);
+  }
+
+  .app-shell-drawer {
+    padding-top: var(--app-header-safe-top);
+  }
+
+  .mobile-floating-clearance {
+    padding-bottom: var(--floating-clearance);
+  }
+}
+
+/* liquid-glass — SVG feDisplacementMap refracts the live backdrop (Chromium).
+   Safari ignores url() in backdrop-filter, so it degrades to frost-only blur.
+   Gated to sm+ : mobile bar stays solid (out of Figma desktop scope). */
+@media (min-width: 640px) {
+  .liquid-glass {
+    /* Safari/iOS/Firefox: url() backdrop-filter unsupported → degrade to frost blur */
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+  }
+  /* Chromium only: refraction (#liquid-glass) filter + frost. Only engines that
+     support url() pass this gate → others keep the blur(6px) above (progressive enhancement). */
+  @supports (backdrop-filter: url(#liquid-glass)) {
+    .liquid-glass {
+      backdrop-filter: url(#liquid-glass) blur(6px);
+    }
+  }
 }
 
 /* typography */
-@utility font-display-headings1 {
-  font-size: 72px;
-  font-weight: var(--font-weight-semibold);
-  line-height: 108px;
-  letter-spacing: 0;
+
+@utility h-500px {
+  height: 500px;
 }
 
-@utility font-display-headings2 {
-  font-size: 64px;
-  font-weight: var(--font-weight-bold);
-  line-height: 96px;
-  letter-spacing: 0;
-}
-
-@utility font-display-headings3 {
+@utility text-58px {
   font-size: 58px;
-  font-weight: var(--font-weight-bold);
-  line-height: 88px;
-  letter-spacing: 0;
+}
+
+@utility w-140px {
+  width: 140px;
+}
+
+@utility w-320px {
+  width: 320px;
+}
+
+@utility w-360px {
+  width: 360px;
+}
+
+@utility min-h-280px {
+  min-height: 280px;
+}
+
+@utility min-h-260px {
+  min-height: 260px;
+}
+
+@utility h-study-card {
+  height: 244px;
+}
+
+@utility max-w-page {
+  max-width: 1280px;
+}
+
+@utility max-w-130px {
+  max-width: 130px;
+}
+
+@utility max-w-240px {
+  max-width: 240px;
+}
+
+@utility no-number-spin {
+  appearance: textfield;
+  &::-webkit-inner-spin-button {
+    appearance: none;
+  }
+  &::-webkit-outer-spin-button {
+    appearance: none;
+  }
+}
+
+@utility max-w-study-content {
+  max-width: 1164px;
+}
+
+@utility max-w-1496 {
+  max-width: 1496px;
+}
+
+@utility max-h-modal {
+  max-height: 90vh;
+}
+
+@utility grid-cols-content-sidebar-360 {
+  grid-template-columns: minmax(0, 1fr) 360px;
+}
+
+@utility grid-cols-content-sidebar-320 {
+  grid-template-columns: minmax(0, 1fr) 20rem;
+}
+
+@utility grid-cols-fluid-120 {
+  grid-template-columns: minmax(0, 1fr) 120px;
+}
+
+@utility top-panel-offset {
+  top: var(--panel-top-offset);
+}
+
+@utility right-panel-offset {
+  right: var(--panel-right-offset);
+}
+
+@utility h-panel-height {
+  height: var(--panel-height);
+}
+
+@utility translate-y-panel {
+  transform: translate3d(0, var(--panel-translate-y, 0px), 0);
+}
+
+@utility max-h-rich-text-image {
+  max-height: none;
+}
+
+@utility max-w-rich-text-image {
+  max-width: min(100%, 800px);
 }
 
 @utility font-display-headings4 {
@@ -444,27 +707,6 @@ https://velog.io/@oneook/tailwindcss-4.0-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%AC%E
   letter-spacing: 0;
 }
 
-@utility font-bold-h1 {
-  font-size: 36px;
-  font-weight: var(--font-weight-bold);
-  line-height: 54px;
-  letter-spacing: 0;
-}
-
-@utility font-bold-h2 {
-  font-size: 32px;
-  font-weight: var(--font-weight-bold);
-  line-height: 48px;
-  letter-spacing: 0;
-}
-
-@utility font-bold-h3 {
-  font-size: 28px;
-  font-weight: var(--font-weight-bold);
-  line-height: 42px;
-  letter-spacing: 0;
-}
-
 @utility font-bold-h4 {
   font-size: 24px;
   font-weight: var(--font-weight-bold);
@@ -472,32 +714,11 @@ https://velog.io/@oneook/tailwindcss-4.0-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%AC%E
   letter-spacing: 0;
 }
 
-@utility font-bold-h5 {
-  font-size: 20px;
+@utility font-designer-62b {
+  font-size: 62px;
   font-weight: var(--font-weight-bold);
-  line-height: 30px;
-  letter-spacing: 0;
-}
-
-@utility font-bold-h6 {
-  font-size: 18px;
-  font-weight: var(--font-weight-bold);
-  line-height: 28px;
-  letter-spacing: 0;
-}
-
-@utility font-designer-36r {
-  font-size: 36px;
-  font-weight: var(--font-weight-regular);
-  line-height: 54px;
-  letter-spacing: 0;
-}
-
-@utility font-designer-36m {
-  font-size: 36px;
-  font-weight: var(--font-weight-medium);
-  line-height: 54px;
-  letter-spacing: 0;
+  line-height: 87px;
+  letter-spacing: -1.178px;
 }
 
 @utility font-designer-36b {
@@ -507,18 +728,18 @@ https://velog.io/@oneook/tailwindcss-4.0-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%AC%E
   letter-spacing: 0;
 }
 
-@utility font-designer-32r {
-  font-size: 32px;
-  font-weight: var(--font-weight-regular);
-  line-height: 48px;
-  letter-spacing: 0;
+@utility font-designer-40b {
+  font-size: 40px;
+  font-weight: var(--font-weight-bold);
+  line-height: 46.4px;
+  letter-spacing: -1.4px;
 }
 
-@utility font-designer-32m {
-  font-size: 32px;
-  font-weight: var(--font-weight-medium);
-  line-height: 48px;
-  letter-spacing: 0;
+@utility font-designer-34b {
+  font-size: 34px;
+  font-weight: var(--font-weight-bold);
+  line-height: 40.8px;
+  letter-spacing: -1.19px;
 }
 
 @utility font-designer-32b {
@@ -528,17 +749,10 @@ https://velog.io/@oneook/tailwindcss-4.0-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%AC%E
   letter-spacing: 0;
 }
 
-@utility font-designer-28r {
-  font-size: 28px;
-  font-weight: var(--font-weight-regular);
-  line-height: 42px;
-  letter-spacing: 0;
-}
-
-@utility font-designer-28m {
-  font-size: 28px;
-  font-weight: var(--font-weight-medium);
-  line-height: 42px;
+@utility font-designer-30b {
+  font-size: 30px;
+  font-weight: var(--font-weight-bold);
+  line-height: 45px;
   letter-spacing: 0;
 }
 
@@ -546,13 +760,6 @@ https://velog.io/@oneook/tailwindcss-4.0-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%AC%E
   font-size: 28px;
   font-weight: var(--font-weight-bold);
   line-height: 42px;
-  letter-spacing: 0;
-}
-
-@utility font-designer-24r {
-  font-size: 24px;
-  font-weight: var(--font-weight-regular);
-  line-height: 37px;
   letter-spacing: 0;
 }
 
@@ -570,6 +777,20 @@ https://velog.io/@oneook/tailwindcss-4.0-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%AC%E
   letter-spacing: 0;
 }
 
+@utility font-designer-24sb {
+  font-size: 24px;
+  font-weight: var(--font-weight-semibold);
+  line-height: 37px;
+  letter-spacing: 0;
+}
+
+@utility font-designer-22m {
+  font-size: 22px;
+  font-weight: var(--font-weight-medium);
+  line-height: 33px;
+  letter-spacing: 0;
+}
+
 @utility font-designer-20r {
   font-size: 20px;
   font-weight: var(--font-weight-regular);
@@ -580,6 +801,13 @@ https://velog.io/@oneook/tailwindcss-4.0-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%AC%E
 @utility font-designer-20m {
   font-size: 20px;
   font-weight: var(--font-weight-medium);
+  line-height: 30px;
+  letter-spacing: 0;
+}
+
+@utility font-designer-20sb {
+  font-size: 20px;
+  font-weight: var(--font-weight-semibold);
   line-height: 30px;
   letter-spacing: 0;
 }
@@ -633,11 +861,23 @@ https://velog.io/@oneook/tailwindcss-4.0-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%AC%E
   letter-spacing: 0;
 }
 
+@utility font-designer-16sb {
+  font-size: 16px;
+  font-weight: var(--font-weight-semibold);
+  line-height: 25px;
+  letter-spacing: 0;
+}
+
 @utility font-designer-15r {
   font-size: 15px;
   font-weight: var(--font-weight-regular);
   line-height: 23px;
   letter-spacing: 0;
+
+  @media (max-width: 1023.98px) {
+    font-size: 16px;
+    line-height: 25px;
+  }
 }
 
 @utility font-designer-15m {
@@ -645,6 +885,11 @@ https://velog.io/@oneook/tailwindcss-4.0-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%AC%E
   font-weight: var(--font-weight-medium);
   line-height: 23px;
   letter-spacing: 0;
+
+  @media (max-width: 1023.98px) {
+    font-size: 16px;
+    line-height: 25px;
+  }
 }
 
 @utility font-designer-15b {
@@ -652,6 +897,11 @@ https://velog.io/@oneook/tailwindcss-4.0-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%AC%E
   font-weight: var(--font-weight-bold);
   line-height: 23px;
   letter-spacing: 0;
+
+  @media (max-width: 1023.98px) {
+    font-size: 16px;
+    line-height: 25px;
+  }
 }
 
 @utility font-designer-14r {
@@ -659,6 +909,11 @@ https://velog.io/@oneook/tailwindcss-4.0-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%AC%E
   font-weight: var(--font-weight-regular);
   line-height: 22px;
   letter-spacing: 0;
+
+  @media (max-width: 1023.98px) {
+    font-size: 16px;
+    line-height: 25px;
+  }
 }
 
 @utility font-designer-14m {
@@ -666,6 +921,23 @@ https://velog.io/@oneook/tailwindcss-4.0-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%AC%E
   font-weight: var(--font-weight-medium);
   line-height: 22px;
   letter-spacing: 0;
+
+  @media (max-width: 1023.98px) {
+    font-size: 16px;
+    line-height: 25px;
+  }
+}
+
+@utility font-designer-14sb {
+  font-size: 14px;
+  font-weight: var(--font-weight-semibold);
+  line-height: 22px;
+  letter-spacing: 0;
+
+  @media (max-width: 1023.98px) {
+    font-size: 16px;
+    line-height: 25px;
+  }
 }
 
 @utility font-designer-14b {
@@ -673,6 +945,11 @@ https://velog.io/@oneook/tailwindcss-4.0-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%AC%E
   font-weight: var(--font-weight-bold);
   line-height: 22px;
   letter-spacing: 0;
+
+  @media (max-width: 1023.98px) {
+    font-size: 16px;
+    line-height: 25px;
+  }
 }
 
 @utility font-designer-13r {
@@ -701,6 +978,11 @@ https://velog.io/@oneook/tailwindcss-4.0-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%AC%E
   font-weight: var(--font-weight-regular);
   line-height: 19px;
   letter-spacing: 0;
+
+  @media (max-width: 1023.98px) {
+    font-size: 13px;
+    line-height: 20px;
+  }
 }
 
 @utility font-designer-12m {
@@ -708,6 +990,11 @@ https://velog.io/@oneook/tailwindcss-4.0-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%AC%E
   font-weight: var(--font-weight-medium);
   line-height: 19px;
   letter-spacing: 0;
+
+  @media (max-width: 1023.98px) {
+    font-size: 13px;
+    line-height: 20px;
+  }
 }
 
 @utility font-designer-12b {
@@ -715,6 +1002,11 @@ https://velog.io/@oneook/tailwindcss-4.0-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%AC%E
   font-weight: var(--font-weight-bold);
   line-height: 19px;
   letter-spacing: 0;
+
+  @media (max-width: 1023.98px) {
+    font-size: 13px;
+    line-height: 20px;
+  }
 }
 
 @utility font-designer-11r {
@@ -722,6 +1014,11 @@ https://velog.io/@oneook/tailwindcss-4.0-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%AC%E
   font-weight: var(--font-weight-regular);
   line-height: 18px;
   letter-spacing: 0;
+
+  @media (max-width: 1023.98px) {
+    font-size: 13px;
+    line-height: 20px;
+  }
 }
 
 @utility font-designer-11m {
@@ -729,6 +1026,11 @@ https://velog.io/@oneook/tailwindcss-4.0-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%AC%E
   font-weight: var(--font-weight-medium);
   line-height: 18px;
   letter-spacing: 0;
+
+  @media (max-width: 1023.98px) {
+    font-size: 13px;
+    line-height: 20px;
+  }
 }
 
 @utility font-designer-11b {
@@ -736,6 +1038,11 @@ https://velog.io/@oneook/tailwindcss-4.0-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%AC%E
   font-weight: var(--font-weight-bold);
   line-height: 18px;
   letter-spacing: 0;
+
+  @media (max-width: 1023.98px) {
+    font-size: 13px;
+    line-height: 20px;
+  }
 }
 
 @utility font-designer-10r {
@@ -743,6 +1050,11 @@ https://velog.io/@oneook/tailwindcss-4.0-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%AC%E
   font-weight: var(--font-weight-regular);
   line-height: 17px;
   letter-spacing: 0;
+
+  @media (max-width: 1023.98px) {
+    font-size: 13px;
+    line-height: 20px;
+  }
 }
 
 @utility font-designer-10m {
@@ -750,6 +1062,11 @@ https://velog.io/@oneook/tailwindcss-4.0-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%AC%E
   font-weight: var(--font-weight-medium);
   line-height: 17px;
   letter-spacing: 0;
+
+  @media (max-width: 1023.98px) {
+    font-size: 13px;
+    line-height: 20px;
+  }
 }
 
 @utility font-designer-10b {
@@ -757,6 +1074,22 @@ https://velog.io/@oneook/tailwindcss-4.0-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%AC%E
   font-weight: var(--font-weight-bold);
   line-height: 17px;
   letter-spacing: 0;
+  @media (max-width: 1023.98px) {
+    font-size: 13px;
+    line-height: 20px;
+  }
+}
+
+@utility max-h-markdown-img {
+  max-height: none;
+}
+
+@utility max-w-markdown-img {
+  max-width: min(100%, 800px);
+}
+
+@utility max-w-youtube-embed {
+  max-width: min(100%, 600px);
 }
 
 @layer utilities {
@@ -781,477 +1114,282 @@ https://velog.io/@oneook/tailwindcss-4.0-%EB%AC%B4%EC%97%87%EC%9D%B4-%EB%8B%AC%E
   }
 }
 
-/* 자동완성이 안되는 문제가 있어 잠시 주석처리 합니다 */
-/* @layer utilities {
-  /* typography */
-/* .font-display-headings1 {
-    font-size: 72px;
-    font-weight: var(--font-weight-semibold);
-    line-height: 108px;
-    letter-spacing: 0;
+@utility hover-lift-neutral {
+  transform: translateY(0) scale(1);
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  will-change: transform, box-shadow;
+  transition:
+    background-color 300ms ease,
+    border-color 300ms ease,
+    transform 300ms ease,
+    box-shadow 300ms ease;
+
+  &:hover,
+  &:focus-visible {
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: var(--shadow-1);
+    background-color: var(--color-background-alternative);
   }
-
-  .font-display-headings2 {
-    font-size: 64px;
-    font-weight: var(--font-weight-bold);
-    line-height: 96px;
-    letter-spacing: 0;
-  }
-
-  .font-display-headings3 {
-    font-size: 58px;
-    font-weight: var(--font-weight-bold);
-    line-height: 88px;
-    letter-spacing: 0;
-  }
-
-  .font-display-headings4 {
-    font-size: 52px;
-    font-weight: var(--font-weight-bold);
-    line-height: 78px;
-    letter-spacing: 0;
-  }
-
-  .font-display-headings5 {
-    font-size: 48px;
-    font-weight: var(--font-weight-bold);
-    line-height: 72px;
-    letter-spacing: 0;
-  }
-
-  .font-display-headings6 {
-    font-size: 40px;
-    font-weight: var(--font-weight-bold);
-    line-height: 60px;
-    letter-spacing: 0;
-  }
-
-  .font-bold-h1 {
-    font-size: 36px;
-    font-weight: var(--font-weight-bold);
-    line-height: 54px;
-    letter-spacing: 0;
-  }
-
-  .font-bold-h2 {
-    font-size: 32px;
-    font-weight: var(--font-weight-bold);
-    line-height: 48px;
-    letter-spacing: 0;
-  }
-
-  .font-bold-h3 {
-    font-size: 28px;
-    font-weight: var(--font-weight-bold);
-    line-height: 42px;
-    letter-spacing: 0;
-  }
-
-  .font-bold-h4 {
-    font-size: 24px;
-    font-weight: var(--font-weight-bold);
-    line-height: 36px;
-    letter-spacing: 0;
-  }
-
-  .font-bold-h5 {
-    font-size: 20px;
-    font-weight: var(--font-weight-bold);
-    line-height: 30px;
-    letter-spacing: 0;
-  }
-
-  .font-bold-h6 {
-    font-size: 18px;
-    font-weight: var(--font-weight-bold);
-    line-height: 28px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-36r {
-    font-size: 36px;
-    font-weight: var(--font-weight-regular);
-    line-height: 54px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-36m {
-    font-size: 36px;
-    font-weight: var(--font-weight-medium);
-    line-height: 54px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-36b {
-    font-size: 36px;
-    font-weight: var(--font-weight-bold);
-    line-height: 54px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-32r {
-    font-size: 32px;
-    font-weight: var(--font-weight-regular);
-    line-height: 48px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-32m {
-    font-size: 32px;
-    font-weight: var(--font-weight-medium);
-    line-height: 48px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-32b {
-    font-size: 32px;
-    font-weight: var(--font-weight-bold);
-    line-height: 48px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-28r {
-    font-size: 28px;
-    font-weight: var(--font-weight-regular);
-    line-height: 42px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-28m {
-    font-size: 28px;
-    font-weight: var(--font-weight-medium);
-    line-height: 42px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-28b {
-    font-size: 28px;
-    font-weight: var(--font-weight-bold);
-    line-height: 42px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-24r {
-    font-size: 24px;
-    font-weight: var(--font-weight-regular);
-    line-height: 37px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-24m {
-    font-size: 24px;
-    font-weight: var(--font-weight-medium);
-    line-height: 37px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-24b {
-    font-size: 24px;
-    font-weight: var(--font-weight-bold);
-    line-height: 37px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-20r {
-    font-size: 20px;
-    font-weight: var(--font-weight-regular);
-    line-height: 30px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-20m {
-    font-size: 20px;
-    font-weight: var(--font-weight-medium);
-    line-height: 30px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-20b {
-    font-size: 20px;
-    font-weight: var(--font-weight-bold);
-    line-height: 30px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-18r {
-    font-size: 18px;
-    font-weight: var(--font-weight-regular);
-    line-height: 29px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-18m {
-    font-size: 18px;
-    font-weight: var(--font-weight-medium);
-    line-height: 29px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-18b {
-    font-size: 18px;
-    font-weight: var(--font-weight-bold);
-    line-height: 29px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-16r {
-    font-size: 16px;
-    font-weight: var(--font-weight-regular);
-    line-height: 25px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-16m {
-    font-size: 16px;
-    font-weight: var(--font-weight-medium);
-    line-height: 25px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-16b {
-    font-size: 16px;
-    font-weight: var(--font-weight-bold);
-    line-height: 25px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-15r {
-    font-size: 15px;
-    font-weight: var(--font-weight-regular);
-    line-height: 23px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-15m {
-    font-size: 15px;
-    font-weight: var(--font-weight-medium);
-    line-height: 23px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-15b {
-    font-size: 15px;
-    font-weight: var(--font-weight-bold);
-    line-height: 23px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-14r {
-    font-size: 14px;
-    font-weight: var(--font-weight-regular);
-    line-height: 22px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-14m {
-    font-size: 14px;
-    font-weight: var(--font-weight-medium);
-    line-height: 22px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-14b {
-    font-size: 14px;
-    font-weight: var(--font-weight-bold);
-    line-height: 22px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-13r {
-    font-size: 13px;
-    font-weight: var(--font-weight-regular);
-    line-height: 20px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-13m {
-    font-size: 13px;
-    font-weight: var(--font-weight-medium);
-    line-height: 20px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-13b {
-    font-size: 13px;
-    font-weight: var(--font-weight-bold);
-    line-height: 20px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-12r {
-    font-size: 12px;
-    font-weight: var(--font-weight-regular);
-    line-height: 19px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-12m {
-    font-size: 12px;
-    font-weight: var(--font-weight-medium);
-    line-height: 19px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-12b {
-    font-size: 12px;
-    font-weight: var(--font-weight-bold);
-    line-height: 19px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-11r {
-    font-size: 11px;
-    font-weight: var(--font-weight-regular);
-    line-height: 18px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-11m {
-    font-size: 11px;
-    font-weight: var(--font-weight-medium);
-    line-height: 18px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-11b {
-    font-size: 11px;
-    font-weight: var(--font-weight-bold);
-    line-height: 18px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-10r {
-    font-size: 10px;
-    font-weight: var(--font-weight-regular);
-    line-height: 17px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-10m {
-    font-size: 10px;
-    font-weight: var(--font-weight-medium);
-    line-height: 17px;
-    letter-spacing: 0;
-  }
-
-  .font-designer-10b {
-    font-size: 10px;
-    font-weight: var(--font-weight-bold);
-    line-height: 17px;
-    letter-spacing: 0;
-  }
-
-  .scrollbar-hide {
-    &::-webkit-scrollbar {
-      display: none;
-    }
-    scrollbar-width: none;
-  }
-}  */
-
-/* shadcn 색상 테마 */
-
-:root {
-  --background: hsl(0 0% 100%);
-
-  --foreground: hsl(0 0% 3.9%);
-
-  --card: hsl(0 0% 100%);
-
-  --card-foreground: hsl(0 0% 3.9%);
-
-  --popover: hsl(0 0% 100%);
-
-  --popover-foreground: hsl(0 0% 3.9%);
-
-  --primary: hsl(0 0% 9%);
-
-  --primary-foreground: hsl(0 0% 98%);
-
-  --secondary: hsl(0 0% 96.1%);
-
-  --secondary-foreground: hsl(0 0% 9%);
-
-  --muted: hsl(0 0% 96.1%);
-
-  --muted-foreground: hsl(0 0% 45.1%);
-
-  --accent: hsl(0 0% 96.1%);
-
-  --accent-foreground: hsl(0 0% 9%);
-
-  --destructive: hsl(0 84.2% 60.2%);
-
-  --destructive-foreground: hsl(0 0% 98%);
-
-  --border: hsl(0 0% 89.8%);
-
-  --input: hsl(0 0% 89.8%);
-
-  --ring: hsl(0 0% 3.9%);
-
-  --chart-1: hsl(12 76% 61%);
-
-  --chart-2: hsl(173 58% 39%);
-
-  --chart-3: hsl(197 37% 24%);
-
-  --chart-4: hsl(43 74% 66%);
-
-  --chart-5: hsl(27 87% 67%);
-
-  --radius: 0.6rem;
 }
 
-/*
----break--- */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
 
-.dark {
-  --background: hsl(0 0% 3.9%);
+@utility animate-marquee {
+  animation: marquee 25s linear infinite;
+}
 
-  --foreground: hsl(0 0% 98%);
+@utility hover-lift-brand {
+  transform: translateY(0) scale(1);
+  box-shadow: 0 0 0 0 rgba(246, 61, 104, 0);
+  will-change: transform, box-shadow;
+  transition:
+    background-color 300ms ease,
+    border-color 300ms ease,
+    transform 300ms ease,
+    box-shadow 300ms ease;
 
-  --card: hsl(0 0% 3.9%);
+  &:hover,
+  &:focus-visible {
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 8px 20px 0 rgba(246, 61, 104, 0.25);
+    background-color: var(--color-fill-brand-subtle-hover);
+  }
+}
 
-  --card-foreground: hsl(0 0% 98%);
+@keyframes toast-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-  --popover: hsl(0 0% 3.9%);
+@keyframes toast-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
 
-  --popover-foreground: hsl(0 0% 98%);
+/* 실시간 미리보기: 폼 변경 시 해당 섹션 강조 애니메이션 */
+@keyframes preview-section-highlight {
+  0%,
+  100% {
+    background-color: transparent;
+  }
+  20%,
+  80% {
+    background-color: var(--color-fill-brand-subtle-default);
+  }
+}
 
-  --primary: hsl(0 0% 98%);
+@layer utilities {
+  .preview-section-highlight {
+    animation: preview-section-highlight 1.4s ease-in-out;
+  }
 
-  --primary-foreground: hsl(0 0% 9%);
+  .toast-enter {
+    animation: toast-enter 300ms ease-out forwards;
+  }
 
-  --secondary: hsl(0 0% 14.9%);
+  .toast-exit {
+    animation: toast-exit 200ms ease-in forwards;
+  }
+}
 
-  --secondary-foreground: hsl(0 0% 98%);
+/* dome.svg(1120x804) 두 조각으로 분할. 같은 에셋 그대로(as-is) 두 번 참조.
+   에셋 바뀌면 아래 px(아치 164 / 바닥 42)도 같이 수정.
+   @layer utilities 밖 plain CSS — border-image 가 Tailwind v4 layer 에서 누락됨. */
 
-  --muted: hsl(0 0% 14.9%);
+/* 아치 상단: 폭에 비례해 균일 스케일(찌그러짐 없음). 높이 = 폭 × 164/1120. */
+.journey-dome-arch {
+  aspect-ratio: 1120 / 164;
+  background: url("/class/journey/dome.svg") top / 100% auto no-repeat;
+}
 
-  --muted-foreground: hsl(0 0% 63.9%);
+/* 본문: 아치 아래(y164~) 수직벽만 세로로 stretch, 평평한 바닥 42px 고정.
+   top slice 는 border-top-width 0 이라 생략되고 fill 이 중간 벽을 채운다. */
+.journey-dome-body {
+  border-style: solid;
+  border-color: transparent;
+  border-width: 0 0 42px 0;
+  border-image-source: url("/class/journey/dome.svg");
+  border-image-slice: 164 0 42 0 fill;
+  border-image-width: 0 0 42px 0;
+  border-image-repeat: stretch;
+}
 
-  --accent: hsl(0 0% 14.9%);
+/* Sprint 7 V3 community detail prototype tokens. */
+.zeroone-post-back-link {
+  font-size: 13.5px;
+  font-weight: 700;
+}
 
-  --accent-foreground: hsl(0 0% 98%);
+.zeroone-post-room-tag {
+  padding: 4px 9px;
+  font-size: 11.5px;
+  font-weight: 800;
+}
 
-  --destructive: hsl(0 62.8% 30.6%);
+.zeroone-post-title {
+  font-size: 21px;
+  font-weight: 900;
+  line-height: 1.35;
+  letter-spacing: -0.03em;
+}
 
-  --destructive-foreground: hsl(0 0% 98%);
+.zeroone-post-meta {
+  font-size: 12.5px;
+  font-weight: 600;
+}
 
-  --border: hsl(0 0% 14.9%);
+.zeroone-gated-preview {
+  display: -webkit-box;
+  max-height: 103px;
+  overflow: hidden;
+  font-size: 14.5px;
+  line-height: 1.78;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
 
-  --input: hsl(0 0% 14.9%);
+.zeroone-post-gate {
+  position: relative;
+  z-index: 2;
+  margin-top: -8px;
+  padding: 17px;
+}
 
-  --ring: hsl(0 0% 83.1%);
+.zeroone-post-gate-title {
+  font-size: 14.5px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
 
-  --chart-1: hsl(220 70% 50%);
+.zeroone-post-gate-description {
+  margin-top: 6px;
+  font-size: 12.5px;
+  line-height: 1.6;
+}
 
-  --chart-2: hsl(160 60% 45%);
+.zeroone-post-gate-action {
+  min-height: 46px;
+  margin-top: 13px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 800;
+}
 
-  --chart-3: hsl(30 80% 55%);
+@media (min-width: 768px) {
+  .zeroone-gated-preview {
+    max-height: 129px;
+    -webkit-line-clamp: 5;
+  }
+}
 
-  --chart-4: hsl(280 65% 60%);
+/* app-release 하단 탭바(mobile-tab-bar.tsx) 회귀 방지.
+   탭바 높이(--tabbar-height=57px, border-t 포함) + safe-area 를 본문 하단
+   여백으로 계산해 768 미만에서만 적용한다. 하드코딩 76px 대신 실제 탭바
+   높이에 연동한다. */
+.pb-tabbar {
+  padding-bottom: 0;
+}
 
-  --chart-5: hsl(340 75% 55%);
+@media (max-width: 767px) {
+  .pb-tabbar {
+    padding-bottom: calc(var(--tabbar-height) + var(--sat-b));
+  }
+
+  /* (service)/layout.tsx 는 mobile-floating-clearance(스크롤 유틸 버튼용,
+     57+16+safe-area)와 pb-tabbar(57+safe-area)를 같은 요소에 함께 쓴다.
+     둘 다 단일 클래스 규칙(동일 우선순위)이라 소스 순서상 나중에 오는 쪽이
+     이겨서 pb-tabbar가 16px 더 작은 값으로 덮어써 왔다(리뷰 반려 2026-09-26).
+     복합 선택자는 전체 명시도가 더 높아 순서와 무관하게 항상 더 큰 값이
+     적용된다 — 두 값 중 큰 값을 명시적으로 고정한다.*/
+  .mobile-floating-clearance.pb-tabbar {
+    padding-bottom: var(--floating-clearance);
+  }
+}
+
+/* MAJOR 1 (리뷰 반려 2026-09-26): community-responsive·sprint8-responsive·
+   sprint8-flow 모드의 카카오/유틸 로우는 relative로 <main> 뒤에 렌더되므로
+   <main>의 pb-tabbar padding이 이 로우를 보호하지 못해 탭바 밑에 깔렸다
+   (390 실측 겹침 37px, safe-area 34px 포함 71px). margin-bottom으로 탭바
+   높이(--tabbar-height=57px)+safe-area만큼 로우 뒤에 공간을 더한다.
+   **padding-bottom이 아니라 margin-bottom을 쓴다** — 로우 자체엔 이미
+   py-250(상하 20px)이 있는데, 이전에 padding-bottom으로 겹쳐 쓰면
+   Tailwind 유틸(같은 우선순위)을 이 규칙이 덮어써 그 20px가 통째로
+   사라지고 56px만 남아 오히려 1px(388-390, safe-area 34 구간 754-753)
+   겹쳤다(독립 리뷰 2026-09-26 재반려 실측 1). margin-bottom은 기존
+   padding과 겹쳐 쓰지 않고 그 바깥에 순수 추가 공간만 만든다.
+   또한 **unlayered 기본값(padding-bottom:0)을 두지 않는다** — 이전 버전은
+   이 기본값이 768px 이상에서도 Tailwind py-250(레이어 규칙, 우선순위가
+   더 낮음)을 항상 이겨 실렸다가, desktop 로우 높이가 96→76px로 줄고
+   카카오가 페이지 하단에 맞닿는 회귀를 냈다(독립 리뷰 2026-09-26 재반려
+   실측 2). 이 클래스는 <768px 미디어쿼리 안에서만 선언한다. s8(1360px)
+   미만·768px 미만에서만 유효하고 768 이상은 규칙 자체가 없어 무변경이다
+   (820/1280 재실측 통과). flow 라우트(/onboarding 등)는 언제나
+   layoutMode='fixed'라 이 규칙 대상이 아니다. */
+@media (max-width: 767px) {
+  .service-utility-row-clearance {
+    margin-bottom: calc(var(--tabbar-height) + var(--sat-b));
+  }
+}
+
+/* 화면에 하단 고정 CTA(Cowork, 클래스 결제)가 탭바 위로 뜨도록
+   탭바 높이만큼 밀어올린다. sm 이상은 이 셸에 탭바가 뜨지 않으므로 그대로 둔다.
+   이 규칙은 @layer 밖(unlayered)이라 Tailwind @layer utilities 의 bottom-0
+   보다 소스 순서·!important 없이도 항상 이긴다(CSS Cascade Layers 규칙).
+   !important 는 실측 결과 불필요해 제거했다(리뷰 반려 2026-09-26 4). */
+@media (max-width: 767px) {
+  .mobile-tabbar-safe-bottom {
+    bottom: calc(var(--tabbar-height) + var(--sat-b));
+  }
+}
+
+/* 랜딩(/home) 히어로 CTA는 640 미만에서만 bottom-0 이고, 640 이상은
+   sm:bottom-1250 로 이미 탭바보다 높은 위치를 쓴다. 그 구간만 겹친다. */
+@media (max-width: 639.98px) {
+  .mobile-tabbar-safe-bottom-sm {
+    bottom: calc(var(--tabbar-height) + var(--sat-b));
+  }
+}
+
+/* 카카오 채널 FAB(floating-class-action-buttons.tsx layoutMode="fixed")의
+   390 SSR 기본값. 탭바 높이(57)+간격(16)+safe-area 위로 띄운다.
+   640 이상은 sm:bottom-2500(200px)이 이미 탭바보다 훨씬 높아 그대로 둔다.
+   JS 훅(el.style.bottom)이 마운트 직후 같은 공식으로 다시 계산해 스크롤 중
+   footer/문의 알약과의 충돌도 함께 처리한다(리뷰 반려 2026-09-26 1). */
+@media (max-width: 639.98px) {
+  .mobile-tabbar-safe-bottom-fab {
+    bottom: calc(var(--tabbar-height) + var(--spacing-200) + var(--sat-b));
+  }
+}
+
+/* 가로 모드 노치(Dynamic Island 등)가 좌우를 가리지 않도록 앱 셸의
+   고정 상단바·하단 탭바에 safe-area-inset-left/right 를 더한다.
+   본문(<main>)은 max-w-page 컨테이너가 이미 중앙 정렬이라 노치 밑에 깔리지
+   않으므로 대상에서 뺀다(리뷰 반려 2026-09-26 2). 767px 정수 경계는
+   md:(min-width:768px) 유틸리티와 사이에 767~768 사이 소수 폭(예:
+   767.5px)에서 양쪽 다 적용 안 돼 가로 패딩이 0이 되는 틈을 만들었다
+   (리뷰 반려 2026-09-26 MINOR 4). 767.98px 로 그 틈을 닫는다. */
+@media (max-width: 767.98px) {
+  .app-shell-safe-x {
+    padding-left: calc(var(--spacing-200) + var(--sat-l));
+    padding-right: calc(var(--spacing-200) + var(--sat-r));
+  }
 }

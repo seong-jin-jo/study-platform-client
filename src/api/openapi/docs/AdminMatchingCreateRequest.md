@@ -10,7 +10,7 @@ Name | Type | Description | Notes
 **status** | **string** | 매칭 상태 (PENDING, RES_ACPT, RES_AUTO, RES_REJ, AUTO, DONE, CANCEL 등) | [default to undefined]
 **type** | **string** | 매칭 종류 (AUTO, MANUAL) | [default to undefined]
 **content** | **string** | 관리자 메모 | [optional] [default to undefined]
-**weeklyPeriodIdentifier** | **string** | 주간 식별자 | [default to undefined]
+**weeklyPeriodIdentifier** | **string** | 주차 식별자 (해당 주의 월요일 날짜) | [default to undefined]
 
 ## Example
 

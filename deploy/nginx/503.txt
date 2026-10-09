@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>글을 잠시 불러오지 못했습니다 | ZERO ONE IT</title>
+</head>
+<body>
+  <main>
+    <h1>글을 잠시 불러오지 못했습니다</h1>
+    <p>안전한 요약만 표시합니다. 잠시 뒤 이 글을 다시 시도해 주세요.</p>
+    <nav aria-label="오류 복구">
+      <a href="">이 글 다시 시도</a>
+      <a href="/insights">인사이트 바다로 돌아가기</a>
+    </nav>
+  </main>
+</body>
+</html>

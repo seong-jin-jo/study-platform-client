@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**isRead** | **boolean** |  | [optional] [default to undefined]
+**hasNewNotification** | **boolean** |  | [optional] [default to undefined]
 
 ## Example
 
@@ -13,7 +13,7 @@ Name | Type | Description | Notes
 import { HasMemberNewNotificationResponse } from './api';
 
 const instance: HasMemberNewNotificationResponse = {
-    isRead,
+    hasNewNotification,
 };
 ```
 

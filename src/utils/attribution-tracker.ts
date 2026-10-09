@@ -7,7 +7,10 @@
 import { getCookie, setCookie } from '@/api/client/cookie';
 
 const ATTRIBUTION_COOKIE_NAME = 'attribution_data';
-const ATTRIBUTION_COOKIE_MAX_AGE = 30 * 24 * 60 * 60; // 30일
+// 90일. 30일이던 것을 늘렸다(2026-08-23).
+// 실제로 돈을 낸 두 사람은 첫 방문에서 결제까지 39일과 86일이 걸렸다.
+// 30일 창으로는 둘 다 유입경로가 지워진 뒤에 결제한 셈이 되어, 돈을 만든 채널을 영영 모른다.
+const ATTRIBUTION_COOKIE_MAX_AGE = 90 * 24 * 60 * 60;
 
 export interface AttributionData {
   // UTM 파라미터

@@ -4,9 +4,9 @@ import {
   QueryClient,
 } from '@tanstack/react-query';
 import { ArrowRightIcon } from 'lucide-react';
-import Badge from '@/components/ui/badge';
-import { getAccountHistoriesInServer } from '@/features/admin/api/account-history.server';
-import { GetAccountHistoriesResponse } from '@/features/admin/api/types';
+import { getAccountHistoriesInServer } from '@/api/endpoints/admin/account-history.server';
+import Badge from '@/components/common/ui/badge';
+import { GetAccountHistoriesResponse } from '@/types/api/admin.types';
 import { formatHHMM, formatYYYYMMDD } from '@/utils/time';
 
 export default async function AccountHistoryPage({
@@ -23,10 +23,12 @@ export default async function AccountHistoryPage({
     queryFn: () => getAccountHistoriesInServer({ memberId: Number(memberId) }),
   });
 
-  const data: GetAccountHistoriesResponse = await queryClient.getQueryData([
-    'accountHistory',
-    memberId,
-  ]);
+  const data: GetAccountHistoriesResponse | undefined =
+    await queryClient.getQueryData(['accountHistory', memberId]);
+
+  if (!data) {
+    return <div>데이터를 불러올 수 없습니다.</div>;
+  }
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

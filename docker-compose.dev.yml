@@ -1,6 +1,5 @@
-# 운영환경(main branch)에서 사용하는 docker-compose.yml
-
-version: '3.8'
+# 개발(QA)환경(develop branch)에서 사용하는 docker-compose
+# client-deploy-dev 워크플로우가 이 파일로 frontend-dev 를 띄운다.
 
 services:
   frontend:
@@ -10,8 +9,32 @@ services:
     # build:
     #   context: .
     #   dockerfile: Dockerfile.dev
+    # 진입점(frontend-ingress-dev)이 14855 를 발행한다. 배포 워크플로 헬스체크는
+    # 호스트 14855 를 보므로 진입점을 통과한 응답을 검사하게 된다.
+    # 14856 은 진입점을 우회하는 원본 경로다. 루프백에만 묶어 외부로 열지 않는다.
+    # 두 가지 이유로 남긴다. ①진입점이 죽어도 원본을 확인할 통로가 있어야 한다.
+    # ②원본과 진입점의 응답 헤더를 나란히 대조하는 검증에 필요하다.
     ports:
-      - '3000:3000'
+      - '127.0.0.1:14856:14855'
     env_file:
       - .env
+    restart: unless-stopped
+    # frontend-dev 는 백엔드를 공개 URL(NEXT_PUBLIC_API_BASE_URL)로만 호출하므로
+    # 백엔드 docker 네트워크(zeroone-net-qa)에 붙지 않는다. 이래야 백엔드 배포가
+    # 그 네트워크를 down/up 으로 깨끗이 재생성(자가복구)할 수 있다.
+
+  frontend-ingress:
+    container_name: frontend-ingress-dev
+    image: nginx:1.27-alpine
+    depends_on:
+      - frontend
+    ports:
+      - '14855:14855'
+    environment:
+      APP_RELEASE: ${FRONTEND_VERSION:-unavailable}
+      APP_COMMIT: ${FRONTEND_COMMIT:-unavailable}
+    volumes:
+      - ./deploy/nginx/nginx.dev.conf:/etc/nginx/nginx.conf:ro
+      - ./deploy/nginx/sprint8-public-seo-errors.conf:/etc/nginx/templates/sprint8-public-seo-errors.conf.template:ro
+      - ./deploy/nginx/400.txt:/etc/nginx/error-pages/400.txt:ro
     restart: unless-stopped
