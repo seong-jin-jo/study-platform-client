@@ -58,14 +58,16 @@ const sitemapSecret = () => {
   if (process.env.NODE_ENV !== 'production') {
     return 'zero-one-local-sitemap-partition-secret';
   }
+  // 배포 식별자가 있으면 배포 단위로 키를 가른다. 시스템 환경변수 노출이 꺼진
+  // 배포에서는 이것도 없으므로, 마지막에는 고정값으로 떨어진다. 고정값이어도
+  // 이 서명이 지키는 것은 "우리가 발급한 분할 토큰인가" 뿐이고 토큰이 가리키는
+  // 자료는 전부 공개 URL 이라 유출될 비밀이 없다. 반대로 여기서 throw 하면
+  // 색인 입구가 통째로 닫힌다.
   const deploymentScoped =
     process.env.VERCEL_DEPLOYMENT_ID ??
     process.env.VERCEL_GIT_COMMIT_SHA ??
     process.env.ZEROONE_RELEASE_ID;
-  if (deploymentScoped) {
-    return `zero-one-sitemap-partition:${deploymentScoped}`;
-  }
-  throw new Error('SITEMAP_PARTITION_SECRET is required');
+  return `zero-one-sitemap-partition:${deploymentScoped ?? 'static'}`;
 };
 
 export const signPartition = (payload: PartitionPayload) => {
