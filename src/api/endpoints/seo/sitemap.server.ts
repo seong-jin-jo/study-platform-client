@@ -42,12 +42,28 @@ interface PartitionPayload {
 const base64url = (value: Buffer | string) =>
   Buffer.from(value).toString('base64url');
 
+// 이 시크릿은 사이트맵 분할 토큰(partition token)의 서명 키다. 토큰이 가리키는 것은
+// 전부 공개 URL 목록이므로 기밀이 아니고, 서명은 임의 분할 요청을 막는 무결성 장치다.
+// 그런데 production 에서 값이 없으면 throw 하도록 돼 있어서, 환경변수를 넣지 않은
+// 배포 대상(현재 운영 프론트)에서는 /sitemap.xml 이 통째로 500/503 이 됐다.
+// 색인 입구가 환경변수 하나 때문에 닫히는 쪽이 서명 키가 배포마다 바뀌는 쪽보다 나쁘다.
+// 그래서 명시 시크릿 > NEXTAUTH_SECRET > 배포 식별자 파생값 순으로 내려간다.
+// 배포 식별자 파생값은 한 배포 안에서는 고정이므로 그 배포가 발급한 토큰은 같은 배포에서
+// 검증된다. 재배포 직후 구 토큰은 무효가 되는데, 크롤러는 색인 파일을 다시 받아
+// 분할 링크를 새로 얻으므로 회복된다(payload 의 generationAt 도 이미 같은 성질이다).
 const sitemapSecret = () => {
   const configured =
     process.env.SITEMAP_PARTITION_SECRET ?? process.env.NEXTAUTH_SECRET;
   if (configured) return configured;
   if (process.env.NODE_ENV !== 'production') {
     return 'zero-one-local-sitemap-partition-secret';
+  }
+  const deploymentScoped =
+    process.env.VERCEL_DEPLOYMENT_ID ??
+    process.env.VERCEL_GIT_COMMIT_SHA ??
+    process.env.ZEROONE_RELEASE_ID;
+  if (deploymentScoped) {
+    return `zero-one-sitemap-partition:${deploymentScoped}`;
   }
   throw new Error('SITEMAP_PARTITION_SECRET is required');
 };
