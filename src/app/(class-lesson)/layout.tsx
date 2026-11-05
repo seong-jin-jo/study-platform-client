@@ -1,5 +1,6 @@
 import { GoogleTagManager } from '@next/third-parties/google';
 import { GlobalOnboardingGate } from '@/components/auth/modals/onboarding-modal/global-onboarding-gate';
+import AdPixelsScript from '@/components/common/analytics/ad-pixels-script';
 import ClarityScript from '@/components/common/analytics/clarity-script';
 import FloatingClassActionButtons from '@/components/common/ui/floating-class-action-buttons';
 import GlobalToast from '@/components/common/ui/global-toast';
@@ -21,6 +22,7 @@ export default async function ClassLessonLayout({
     <>
       {GTM_ID && <GoogleTagManager gtmId={GTM_ID} />}
       <ClarityScript />
+      <AdPixelsScript />
       <MainProvider initialSession={initialHydrationSession}>
         {children}
         <GlobalToast />

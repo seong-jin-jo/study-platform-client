@@ -4,6 +4,7 @@ import { useMutation } from '@tanstack/react-query';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { signUp } from '@/api/endpoints/auth/auth';
+import { trackSignUp } from '@/components/common/analytics/ad-conversions';
 import Button from '@/components/common/ui/button';
 import { writeAccessTokenSession } from '@/features/auth/model/client-auth-session';
 import { useUploadProfileImageMutation } from '@/hooks/queries/auth/use-auth-mutation';
@@ -68,6 +69,9 @@ export function Step4Completion({
     onSubmittingChange(true);
     submitSignUp(request, {
       onSuccess: async (response) => {
+        if (response?.content?.generatedMemberId) {
+          trackSignUp(String(response.content.generatedMemberId));
+        }
         const newToken = response?.content?.accessToken;
         if (newToken) writeAccessTokenSession(newToken);
         const uploadUrl = response?.content?.uploadUrl;

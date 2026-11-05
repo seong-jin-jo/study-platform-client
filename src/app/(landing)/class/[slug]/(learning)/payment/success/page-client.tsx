@@ -13,6 +13,7 @@ import {
   useGetCourseDetail,
 } from '@/hooks/queries/course/course-queries';
 import type { CoursePaymentConfirmResponse } from '@/types/api/course.types';
+import { trackPurchase } from '@/components/common/analytics/ad-conversions';
 import { getAttributionParams } from '@/utils/attribution-tracker';
 import { analyzeError } from '@/utils/error-handler';
 
@@ -147,6 +148,7 @@ function SuccessContent() {
         revenue: result.amount,
         ...getAttributionParams(),
       });
+      trackPurchase(parsedOrderId, result.amount);
       setStatus('success');
     } catch (error: unknown) {
       const errorInfo = analyzeError(error);

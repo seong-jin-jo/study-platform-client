@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import LoginModal from '@/components/auth/modals/login-modal';
+import { trackLead } from '@/components/common/analytics/ad-conversions';
 import { trackGa4Event } from '@/components/common/analytics/ga4-events';
 import PhoneVerificationModal from '@/components/common/modals/phone-verification-modal';
 import Button from '@/components/common/ui/button';
@@ -145,6 +146,7 @@ export default function OnboardingCapture() {
         onSuccess: (response) => {
           trackGa4Event('signup_complete');
           trackGa4Event('lead_submit');
+          trackLead('retention_onboarding');
           if (cohortCode && !response.seminarAssigned) {
             setSeminarAssignmentFailed(true);
             return;

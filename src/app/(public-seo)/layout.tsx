@@ -1,5 +1,6 @@
 import { GoogleTagManager } from '@next/third-parties/google';
 import type { Metadata } from 'next';
+import AdPixelsScript from '@/components/common/analytics/ad-pixels-script';
 import ClarityScript from '@/components/common/analytics/clarity-script';
 import { GoogleAnalyticsCookieSafe } from '@/components/common/analytics/google-analytics-cookie-safe';
 import PageViewTracker from '@/components/common/analytics/page-view-tracker';
@@ -24,6 +25,7 @@ export default function PublicSeoLayout({
     <>
       {GTM_ID && <GoogleTagManager gtmId={GTM_ID} />}
       <ClarityScript />
+      <AdPixelsScript />
       {GA_MEASUREMENT_ID && (
         <GoogleAnalyticsCookieSafe gaId={GA_MEASUREMENT_ID} />
       )}

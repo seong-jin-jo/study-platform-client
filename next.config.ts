@@ -44,6 +44,8 @@ const cspScriptSrcHosts = [
   'https://browser.sentry-cdn.com',
   'https://static.cloudflareinsights.com',
   'https://googleads.g.doubleclick.net',
+  'https://connect.facebook.net',
+  'https://karrot-pixel.business.daangn.com',
 ] as const;
 
 const cspImgSrcHosts = [
@@ -58,6 +60,7 @@ const cspImgSrcHosts = [
   'https://www.google.co.kr',
   'https://c.clarity.ms',
   'https://c.bing.com',
+  'https://www.facebook.com',
 ] as const;
 
 const cspConnectSrcHosts = [
@@ -73,6 +76,11 @@ const cspConnectSrcHosts = [
   'https://kauth.kakao.com',
   'https://accounts.google.com',
   'https://*.ingest.sentry.io',
+  'https://www.facebook.com',
+  'https://connect.facebook.net',
+  'https://collect.daangn.com',
+  'https://karrot-dsp-conversion-event.daangn.com',
+  'https://karrot-pixel.business.daangn.com',
 ] as const;
 
 export const nextConfig: NextConfig = {

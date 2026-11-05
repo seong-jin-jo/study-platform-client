@@ -8,6 +8,7 @@ import { StudyPaymentDetailResponse, VirtualAccountInfo } from '@/api/openapi';
 import Button from '@/components/common/ui/button';
 import TextActionButton from '@/components/common/ui/text-action-button';
 import { useConfirmTossPayment } from '@/hooks/queries/payment/payment-user-queries';
+import { trackPurchase } from '@/components/common/analytics/ad-conversions';
 import { getAttributionParams } from '@/utils/attribution-tracker';
 
 function PaymentSuccessContent() {
@@ -72,6 +73,7 @@ function PaymentSuccessContent() {
               revenue: studyPaymentResult?.amount,
               ...getAttributionParams(),
             });
+            if (orderId) trackPurchase(orderId, studyPaymentResult?.amount);
             setStatus('success');
           }
         }

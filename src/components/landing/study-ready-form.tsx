@@ -1,5 +1,6 @@
 'use client';
 
+import { trackLead } from '@/components/common/analytics/ad-conversions';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -169,6 +170,7 @@ export function StudyReadyForm() {
       }
     },
     onSuccess: () => {
+      trackLead('study_ready_form');
       showToast(
         '소중한 의견 감사합니다! 코스 오픈 시 가장 먼저 알려드릴게요.',
         'success',
