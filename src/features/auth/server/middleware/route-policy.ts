@@ -146,6 +146,13 @@ const ROUTE_POLICIES: readonly RoutePolicy[] = [
     path: "/about",
     match: ROUTE_MATCH_TYPES.EXACT,
   },
+  {
+    // Google Play 계정 삭제 정책에 따라 앱을 설치하지 않은 사용자도 계정 삭제를
+    // 요청할 수 있어야 한다. 하위 경로까지 공개하지 않도록 exact로 한정한다.
+    kind: ROUTE_POLICY_KINDS.PUBLIC_SESSION,
+    path: "/account/delete",
+    match: ROUTE_MATCH_TYPES.EXACT,
+  },
 ] as const;
 
 const matchesRoutePolicy = (pathname: string, policy: RoutePolicy): boolean => {

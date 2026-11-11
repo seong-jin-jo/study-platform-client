@@ -27,7 +27,7 @@ export function Footer() {
               href={PRIVACY_POLICY_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-designer-14b underline-offset-2 transition-colors hover:underline"
+              className="inline-flex min-h-550 items-center font-designer-14b underline-offset-2 transition-colors hover:underline active:underline"
             >
               개인정보처리방침
             </a>
@@ -35,7 +35,7 @@ export function Footer() {
             <Link
               href="/about"
               lang="en"
-              className="font-designer-14b underline-offset-2 transition-colors hover:underline"
+              className="inline-flex min-h-550 items-center font-designer-14b underline-offset-2 transition-colors hover:underline active:underline"
             >
               About (English)
             </Link>

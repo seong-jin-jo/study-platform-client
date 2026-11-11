@@ -36,6 +36,13 @@ describe('retention route policy', () => {
     expect(resolveRoutePolicy('/onboarding/retention/extra')).toBeUndefined();
   });
 
+  it('ACCOUNT-DELETE-004 계정 삭제 안내만 exact 공개하고 하위 경로는 보호한다', () => {
+    expect(resolveRoutePolicy('/account/delete')).toBe(
+      ROUTE_POLICY_KINDS.PUBLIC_SESSION,
+    );
+    expect(resolveRoutePolicy('/account/delete/extra')).toBeUndefined();
+  });
+
   it('keeps public SEO negative routes out of broad public prefixes', () => {
     expect(resolveRoutePolicy('/insights/x/progress')).toBeUndefined();
     expect(resolveRoutePolicy('/community/write')).toBeUndefined();
