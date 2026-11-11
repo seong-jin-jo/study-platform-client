@@ -45,6 +45,12 @@ export const metadata: Metadata = {
   title: 'ZERO ONE IT',
   description:
     '구글에 없는 질문을 나누는 곳. 0에서 1까지, 개발자가 아닌 사람들의 IT 커뮤니티.',
+  // 네이버 서치어드바이저 소유확인(2026-11-12 그로스 세션 발급). 공개 메타라 비밀값 아님.
+  verification: {
+    other: {
+      'naver-site-verification': '082fcef8be7933255ee064050dddafc630e0c0f3',
+    },
+  },
   icons: {
     icon: [
       { url: '/favicon.ico' },
