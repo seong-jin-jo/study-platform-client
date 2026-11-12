@@ -18,9 +18,8 @@ import {
 } from '@/utils/nickname-policy';
 import type { StepProps } from '../onboarding-types';
 
-// 개인정보처리방침(확정 공개 문서).
-const PRIVACY_POLICY_URL =
-  'https://gaan.notion.site/389fbb391d798087a519cda1255fdfc1';
+// 개인정보처리방침: 이 사이트의 /privacy (현행 v0.3 안내와 링크, 시행 예정 v1.0 전문).
+const PRIVACY_POLICY_URL = '/privacy';
 // TODO(정책): 이용약관·마케팅 문서 작성 중 — 확정 시 각 실제 링크로 교체.
 const POLICY_LINK_TODO =
   'https://www.notion.so/gaan/29bfbb391d7980fba669f8d4de741021';

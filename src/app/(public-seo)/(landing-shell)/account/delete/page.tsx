@@ -3,8 +3,7 @@ import type { Metadata } from 'next';
 const ACCOUNT_DELETION_EMAIL = 'code0to1@gmail.com';
 const ACCOUNT_DELETION_EMAIL_HREF =
   'mailto:code0to1@gmail.com?subject=%EB%B0%94%EC%9D%B4%EB%B8%8C%EB%A7%81%EA%B3%A0%20%EA%B3%84%EC%A0%95%20%EC%82%AD%EC%A0%9C%20%EC%9A%94%EC%B2%AD';
-const PRIVACY_POLICY_URL =
-  'https://gaan.notion.site/389fbb391d798087a519cda1255fdfc1';
+const PRIVACY_POLICY_URL = '/privacy';
 
 // Next.js App Router가 페이지 파일의 named export로 metadata를 요구한다.
 // eslint-disable-next-line react-refresh/only-export-components
@@ -65,8 +64,8 @@ export default function AccountDeletionPage() {
                 1. 앱에서 직접 삭제
               </p>
               <p className="mt-100 break-keep font-designer-16r leading-relaxed text-text-subtle">
-                바이브링고 앱 오른쪽 위 ≡ 버튼 &gt; 계정 삭제로 이동해 안내에 따라
-                삭제합니다.
+                바이브링고 앱 오른쪽 위 ≡ 버튼 &gt; 계정 삭제로 이동해 안내에
+                따라 삭제합니다.
               </p>
             </li>
             <li className="border-t border-border-subtle pt-300">

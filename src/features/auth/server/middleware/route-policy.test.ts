@@ -53,6 +53,15 @@ describe('retention route policy', () => {
     expect(resolveRoutePolicy("/updates-archive")).toBeUndefined();
   });
 
+  it("PRIVACY-001 개인정보처리방침만 exact 공개하고 하위·유사 경로는 보호한다", () => {
+    expect(resolveRoutePolicy("/privacy")).toBe(
+      ROUTE_POLICY_KINDS.PUBLIC_SESSION,
+    );
+    expect(resolveRoutePolicy("/privacy/extra")).toBeUndefined();
+    expect(resolveRoutePolicy("/privacyX")).toBeUndefined();
+    expect(resolveRoutePolicy("/privacy-policy")).toBeUndefined();
+  });
+
   it('keeps public SEO negative routes out of broad public prefixes', () => {
     expect(resolveRoutePolicy('/insights/x/progress')).toBeUndefined();
     expect(resolveRoutePolicy('/community/write')).toBeUndefined();

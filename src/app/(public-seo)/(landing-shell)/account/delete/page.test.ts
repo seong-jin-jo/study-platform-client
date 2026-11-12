@@ -12,6 +12,8 @@ describe('바이브링고 계정 삭제 공개 페이지', () => {
     expect(html).toContain('code0to1@gmail.com');
     expect(html).toContain('mailto:code0to1@gmail.com');
     expect(html).toContain('개인정보처리방침 원문 보기');
+    expect(html).toContain('href="/privacy"');
+    expect(html).not.toContain('notion.site');
   });
 
   it('ACCOUNT-DELETE-002 삭제·법정 보관 범위와 처리 기한을 모두 고지한다', () => {

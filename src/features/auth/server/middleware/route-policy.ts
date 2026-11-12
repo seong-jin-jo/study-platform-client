@@ -160,6 +160,13 @@ const ROUTE_POLICIES: readonly RoutePolicy[] = [
     path: "/updates",
     match: ROUTE_MATCH_TYPES.EXACT,
   },
+  {
+    // 개인정보처리방침. 가입·결제·스토어 심사 전에 누구나 읽을 수 있어야 한다.
+    // 하위 경로까지 공개하지 않도록 exact로 한정한다.
+    kind: ROUTE_POLICY_KINDS.PUBLIC_SESSION,
+    path: "/privacy",
+    match: ROUTE_MATCH_TYPES.EXACT,
+  },
 ] as const;
 
 const matchesRoutePolicy = (pathname: string, policy: RoutePolicy): boolean => {

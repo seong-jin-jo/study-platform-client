@@ -1,9 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 
-const PRIVACY_POLICY_URL =
-  "https://gaan.notion.site/389fbb391d798087a519cda1255fdfc1";
-
 export function Footer() {
   return (
     <footer className="w-full border-t border-gray-300 bg-gray-100">
@@ -23,14 +20,12 @@ export function Footer() {
           </Link>
           <div className="flex flex-wrap items-center gap-x-400 gap-y-100 font-designer-14r text-gray-800">
             <span>이용약관</span>
-            <a
-              href={PRIVACY_POLICY_URL}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/privacy"
               className="inline-flex min-h-550 items-center font-designer-14b underline-offset-2 transition-colors hover:underline active:underline"
             >
               개인정보처리방침
-            </a>
+            </Link>
             <span>1:1 문의하기</span>
             <Link
               href="/updates"
