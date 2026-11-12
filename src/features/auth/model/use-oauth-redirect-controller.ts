@@ -30,6 +30,10 @@ import {
   OAuthRedirectContractError,
   parseOAuthRedirectResult,
 } from './parse-oauth-redirect-result';
+import {
+  scrubOAuthRedirectUrl,
+  takeStashedOAuthRedirectSearch,
+} from './scrub-oauth-redirect-url';
 
 interface SearchParamsLike {
   // URLSearchParams.get 계약과 맞추기 위해 null을 그대로 허용한다.
@@ -83,7 +87,7 @@ const replaceWithClearedLoginSession = (): void => {
 };
 
 export const useOAuthRedirectController = (
-  searchParams: SearchParamsLike,
+  routerSearchParams: SearchParamsLike,
 ): void => {
   const router = useRouter();
   const hasHandledRef = useRef(false);
@@ -94,6 +98,16 @@ export const useOAuthRedirectController = (
     }
 
     hasHandledRef.current = true;
+
+    // HTML 파싱 중에 인라인 스크립트가 쿼리를 보관하고 주소를 이미 지웠다면 그 값을 쓴다.
+    // (주소가 비어 있으면 Next 의 useSearchParams 도 비어 있다.) 없으면 라우터 값을 그대로 쓴다.
+    const searchParams: SearchParamsLike =
+      takeStashedOAuthRedirectSearch() ?? routerSearchParams;
+
+    // 분석 태그가 주소를 수집하기 전에 주소창의 쿼리(토큰·member-id)부터 지운다.
+    // 성공·실패·계약 위반 어느 분기든 먼저 실행해야 해서 try 밖에 둔다. 값은 아래에서
+    // 이미 쥐고 있는 searchParams 객체로 읽으므로 영향이 없다.
+    scrubOAuthRedirectUrl();
 
     try {
       const redirectResult = parseOAuthRedirectResult(searchParams);
@@ -169,5 +183,5 @@ export const useOAuthRedirectController = (
 
       replaceWithClearedLoginSession();
     }
-  }, [router, searchParams]);
+  }, [router, routerSearchParams]);
 };

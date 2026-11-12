@@ -1,4 +1,9 @@
+'use client';
+
+import { usePathname } from 'next/navigation';
 import Script from 'next/script';
+import { useState } from 'react';
+import { isOAuthRedirectPath } from '@/features/auth/model/scrub-oauth-redirect-url';
 
 /**
  * Microsoft Clarity 로더.
@@ -10,11 +15,19 @@ import Script from 'next/script';
  *
  * 값이 없으면 아무것도 렌더하지 않는다. 로컬 개발과 비밀값 미설정 환경에서
  * 콘솔 에러를 내지 않기 위해서다.
+ *
+ * 로그인 복귀(/redirection) 주소에는 access-token·member-id 가 실려 있고 Clarity 는 주소를
+ * 통째로 녹화한다. 그 경로에서는 로드하지 않고(AdPixelsScript 와 같은 방식), 다른 경로로
+ * 넘어간 뒤에 한 번 로드한다.
  */
 const CLARITY_PROJECT_ID = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID;
 
 export default function ClarityScript() {
-  if (!CLARITY_PROJECT_ID) return null;
+  const pathname = usePathname();
+  const [started, setStarted] = useState(false);
+  const allowed = !isOAuthRedirectPath(pathname);
+  if (allowed && !started) setStarted(true);
+  if (!CLARITY_PROJECT_ID || (!started && !allowed)) return null;
 
   return (
     <Script id="ms-clarity" strategy="afterInteractive">

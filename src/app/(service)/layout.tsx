@@ -8,6 +8,7 @@ import { GlobalOnboardingGate } from '@/components/auth/modals/onboarding-modal/
 import AdPixelsScript from '@/components/common/analytics/ad-pixels-script';
 import ClarityScript from '@/components/common/analytics/clarity-script';
 import { GoogleAnalyticsCookieSafe } from '@/components/common/analytics/google-analytics-cookie-safe';
+import OAuthRedirectUrlGuard from '@/components/common/analytics/oauth-redirect-url-guard';
 import PageViewTracker from '@/components/common/analytics/page-view-tracker';
 import Header from '@/components/common/layout/home-header';
 import MobileTabBar from '@/components/common/layout/mobile-tab-bar';
@@ -38,6 +39,8 @@ export default async function ServiceLayout({
 
   return (
     <>
+      {/* 분석 로더보다 먼저. 로그인 복귀 주소의 토큰 쿼리를 하이드레이션 전에 지운다. */}
+      <OAuthRedirectUrlGuard />
       {GTM_ID && <GoogleTagManager gtmId={GTM_ID} />}
       <ClarityScript />
       <AdPixelsScript />

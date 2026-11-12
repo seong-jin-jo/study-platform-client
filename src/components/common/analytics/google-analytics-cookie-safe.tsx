@@ -24,6 +24,14 @@ import Script from 'next/script';
  */
 const GA_COOKIE_DOMAIN = 'zeroone.it.kr';
 
+/**
+ * 로그인 복귀(/redirection)는 주소에 access-token·member-id 가 실려 있다. gtag.js 가 로드되면
+ * config 의 자동 page_view 가 그 주소를 dl(page_location)로 보내므로, 이 경로에서는 끈다.
+ * 이후 화면 전환(history 변경)은 향상된 측정이 새 주소로 page_view 를 보낸다.
+ * 서버 렌더 문자열 안에서 실행되는 식이라 SSR 값이 아니라 브라우저 주소로 판정한다.
+ */
+const OAUTH_REDIRECT_PATH_TEST = `/^\\/redirection(\\/|$)/.test(location.pathname)`;
+
 export function GoogleAnalyticsCookieSafe({ gaId }: { gaId: string }) {
   return (
     <>
@@ -35,7 +43,7 @@ export function GoogleAnalyticsCookieSafe({ gaId }: { gaId: string }) {
           function gtag(){window.dataLayer.push(arguments);}
           window.gtag = gtag;
           gtag('js', new Date());
-          gtag('config', '${gaId}', { cookie_domain: '${GA_COOKIE_DOMAIN}' });`,
+          gtag('config', '${gaId}', { cookie_domain: '${GA_COOKIE_DOMAIN}', send_page_view: !${OAUTH_REDIRECT_PATH_TEST} });`,
         }}
       />
       <Script
