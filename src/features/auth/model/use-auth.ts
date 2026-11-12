@@ -181,6 +181,13 @@ function getCurrentClientAuthSnapshot(): ClientAuthSnapshot {
   });
 }
 
+/**
+ * 훅 없이(프로바이더·세션 복구 부작용 없이) 지금 브라우저에 회원 세션이 있는지만 읽는다.
+ * 루트 레이아웃처럼 AuthHydrationProvider 밖에서 쓰는 화면용이다.
+ */
+export const hasClientMemberSession = (): boolean =>
+  getCurrentClientAuthSnapshot().isAuthenticated;
+
 const isSameSnapshot = (
   currentSnapshot: ClientAuthSnapshot,
   nextSnapshot: ClientAuthSnapshot,

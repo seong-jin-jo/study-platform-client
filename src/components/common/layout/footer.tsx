@@ -21,7 +21,7 @@ export function Footer() {
               height={25}
             />
           </Link>
-          <div className="flex gap-400 font-designer-14r text-gray-800">
+          <div className="flex flex-wrap items-center gap-x-400 gap-y-100 font-designer-14r text-gray-800">
             <span>이용약관</span>
             <a
               href={PRIVACY_POLICY_URL}
@@ -32,6 +32,12 @@ export function Footer() {
               개인정보처리방침
             </a>
             <span>1:1 문의하기</span>
+            <Link
+              href="/updates"
+              className="inline-flex min-h-550 items-center font-designer-14r underline-offset-2 transition-colors hover:underline active:underline"
+            >
+              업데이트 소식
+            </Link>
             <Link
               href="/about"
               lang="en"

@@ -14,11 +14,20 @@ function pushGtagCommand(..._command: unknown[]) {
   (window.dataLayer as unknown[]).push(arguments);
 }
 
-export function trackGa4Event(name: 'signup_complete' | 'lead_submit') {
+export type Ga4EventName =
+  | 'signup_complete'
+  | 'lead_submit'
+  | 'whats_new_view'
+  | 'whats_new_try'
+  | 'whats_new_feedback';
+
+export type Ga4EventParams = Record<string, string | number | boolean>;
+
+export function trackGa4Event(name: Ga4EventName, params?: Ga4EventParams) {
   const measurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
   if (!measurementId) return;
   if (typeof window === 'undefined') return;
 
   // GTM 의 G-Q02V90592K 로 새지 않게 수집기가 읽는 페이지 속성으로만 보낸다(ad-conversions.ts 와 같은 규칙).
-  pushGtagCommand('event', name, { send_to: measurementId });
+  pushGtagCommand('event', name, { ...params, send_to: measurementId });
 }

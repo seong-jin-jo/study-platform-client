@@ -153,6 +153,13 @@ const ROUTE_POLICIES: readonly RoutePolicy[] = [
     path: "/account/delete",
     match: ROUTE_MATCH_TYPES.EXACT,
   },
+  {
+    // 공개 업데이트 기록. 비회원도 "이 서비스는 계속 고쳐지고 있다"를 볼 수 있어야 한다.
+    // 하위 경로까지 공개하지 않도록 exact로 한정한다.
+    kind: ROUTE_POLICY_KINDS.PUBLIC_SESSION,
+    path: "/updates",
+    match: ROUTE_MATCH_TYPES.EXACT,
+  },
 ] as const;
 
 const matchesRoutePolicy = (pathname: string, policy: RoutePolicy): boolean => {

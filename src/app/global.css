@@ -1393,3 +1393,19 @@
     padding-right: calc(var(--spacing-200) + var(--sat-r));
   }
 }
+
+/* "새로운 기능" 카드(features/whats-new). 모바일(<768px)에서는 하단 탭바와
+   카카오 채널 FAB(56px + 간격 16px) 위에 얹어 둘 다 가리지 않게 한다.
+   768px 이상은 탭바가 없고 FAB 이 오른쪽에 있으므로 왼쪽 아래에 둔다.
+   unlayered 규칙이라 Tailwind utilities 의 bottom-* 보다 항상 이긴다. */
+@media (max-width: 767.98px) {
+  .whats-new-card-position {
+    bottom: calc(
+      var(--tabbar-height) +
+      var(--sat-b) +
+      var(--spacing-200) +
+      var(--spacing-700) +
+      var(--spacing-100)
+    );
+  }
+}

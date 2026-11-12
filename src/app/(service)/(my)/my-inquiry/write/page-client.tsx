@@ -87,10 +87,30 @@ function inquiryFormReducer(
   }
 }
 
-export default function MyInquiryWritePage() {
+interface MyInquiryWritePageProps {
+  /** "새로운 기능" 카드에서 넘어온 버전. 있으면 제목에 미리 채운다. */
+  whatsNewVersion?: string;
+}
+
+function buildInitialInquiryForm(whatsNewVersion?: string): InquiryForm {
+  if (!whatsNewVersion) return INITIAL_INQUIRY_FORM;
+  return {
+    ...INITIAL_INQUIRY_FORM,
+    category: 'OTHER',
+    title: `[업데이트 ${whatsNewVersion}] 의견`,
+  };
+}
+
+export default function MyInquiryWritePage({
+  whatsNewVersion,
+}: MyInquiryWritePageProps) {
   const router = useRouter();
   const showToast = useToastStore((state) => state.showToast);
-  const [form, dispatch] = useReducer(inquiryFormReducer, INITIAL_INQUIRY_FORM);
+  const [form, dispatch] = useReducer(
+    inquiryFormReducer,
+    whatsNewVersion,
+    buildInitialInquiryForm,
+  );
   const { category, title, content, images, notifyEmail, notifyKakao } = form;
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);

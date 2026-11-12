@@ -8,6 +8,7 @@ import type React from 'react';
 import { cn } from '@/components/common/ui/(shadcn)/lib/utils';
 import PwaRuntime from '@/components/pwa/pwa-runtime';
 import { PWA_COLORS, PWA_NAME } from '@/config/pwa';
+import { WhatsNewCard } from '@/features/whats-new/ui/whats-new-card';
 import MotionProvider from '@/providers/motion-provider';
 import {
   PWA_INSTALL_MENU_MEDIA_QUERY,
@@ -150,6 +151,7 @@ export default function RootLayout({
       >
         <PwaRuntime />
         <MotionProvider>{children}</MotionProvider>
+        <WhatsNewCard />
       </body>
     </html>
   );
