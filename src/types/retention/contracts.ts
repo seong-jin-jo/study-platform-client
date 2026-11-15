@@ -111,6 +111,8 @@ export interface HomeDiscoveryFeed {
         thumbnailUrl?: string;
         authorName?: string;
         authorAvatarUrl?: string;
+        /** 글쓴이 공개 프로필 ID. 있으면 이름을 눌러 /members/{id} 프로필을 연다. */
+        authorPublicProfileUuid?: string;
         roomName?: string;
         createdAt?: string;
         stats: {

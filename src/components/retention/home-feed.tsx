@@ -287,6 +287,7 @@ function CommunityPostCard({
         createdAt: item.createdAt,
         authorName: item.authorName?.trim() || null,
         authorAvatarUrl: item.authorAvatarUrl,
+        authorPublicProfileUuid: item.authorPublicProfileUuid,
         title: item.title,
         preview: item.excerpt,
         thumbnailUrl: item.thumbnailUrl,
@@ -946,6 +947,7 @@ function createGuestFeed(
     thumbnailUrl: post.previewImageUrl ?? undefined,
     authorName: post.author.name,
     authorAvatarUrl: post.author.profileImageUrl ?? undefined,
+    authorPublicProfileUuid: post.author.publicProfileUuid ?? undefined,
     createdAt: post.createdAt,
     stats: {
       viewCount: post.stats.viewCount,

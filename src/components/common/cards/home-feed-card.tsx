@@ -68,6 +68,7 @@ export interface HomeFeedCommunityCardData {
   createdAt?: string;
   authorName?: string | null;
   authorAvatarUrl?: string | null;
+  authorPublicProfileUuid?: string | null;
   title: string;
   preview?: string | null;
   thumbnailUrl?: string | null;
@@ -227,16 +228,39 @@ export function HomeFeedCommunityPostCard({
           aria-label={`글쓴이 ${data.authorName}`}
           className="font-designer-11m mt-150 flex items-center gap-75 text-text-subtle"
         >
-          <AuthorAvatar
-            name={data.authorName}
-            avatarUrl={data.authorAvatarUrl}
-          />
-          <span
-            title={data.authorName}
-            className="font-designer-12b max-w-1500 min-w-0 truncate text-text-strong"
-          >
-            {data.authorName}
-          </span>
+          {data.authorPublicProfileUuid ? (
+            <Link
+              href={`/members/${data.authorPublicProfileUuid}`}
+              scroll={false}
+              aria-label={`${data.authorName} 프로필 보기`}
+              data-testid="home-feed-author-link"
+              className="flex min-w-0 items-center gap-75 rounded-50 underline decoration-transparent underline-offset-4 transition-colors hover:decoration-current focus-visible:outline-none focus-visible:decoration-current"
+            >
+              <AuthorAvatar
+                name={data.authorName}
+                avatarUrl={data.authorAvatarUrl}
+              />
+              <span
+                title={data.authorName}
+                className="font-designer-12b max-w-1500 min-w-0 truncate text-text-strong"
+              >
+                {data.authorName}
+              </span>
+            </Link>
+          ) : (
+            <>
+              <AuthorAvatar
+                name={data.authorName}
+                avatarUrl={data.authorAvatarUrl}
+              />
+              <span
+                title={data.authorName}
+                className="font-designer-12b max-w-1500 min-w-0 truncate text-text-strong"
+              >
+                {data.authorName}
+              </span>
+            </>
+          )}
           <span>멤버</span>
           {(data.commentCount ?? 0) > 0 ? (
             <span className="font-designer-12b ml-auto rounded-full bg-background-accent-rose-subtle px-125 py-50 text-text-brand-strong max-lg:font-designer-16m">
