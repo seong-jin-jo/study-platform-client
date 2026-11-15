@@ -14,7 +14,9 @@ test('D13 SEA 390은 OCEAN 8개, today hero, NEW 섬을 렌더하고 dialog focu
   const worldmap = page.getByTestId('insight-worldmap');
   await expect(worldmap).toBeVisible({ timeout: 30_000 });
   const ocean = worldmap.locator('button[data-testid^="island-"]');
-  await expect(ocean).toHaveCount(8);
+  // 2026-11-15: NEW 섬도 바다에 올라가므로 OCEAN 8곳 이상이다.
+  await expect(ocean.nth(7)).toBeVisible();
+  expect(await ocean.count()).toBeGreaterThanOrEqual(8);
   await expect(
     worldmap.getByText('오늘의 화두', { exact: true }),
   ).toBeVisible();

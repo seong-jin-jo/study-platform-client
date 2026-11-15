@@ -415,7 +415,12 @@ test('SEA 390 opened 3개와 390·1024 limit 20은 card 교차·clipping이 없�
   // 픽스처에 들어오기 전 값이라 정상 화면에서도 어긋났다(2026-08-31 CI 실측:
   // Expected 9, Received 8).
   const oceanCount = (islandList: Array<Record<string, unknown>>) =>
-    islandList.filter((island) => island.presentationTier === 'OCEAN').length;
+    // 2026-11-15 회장 지시로 NEW 섬도 바다에 올린다. 알 수 없는 등급만 뺀다.
+    islandList.filter(
+      (island) =>
+        island.presentationTier === 'OCEAN' ||
+        island.presentationTier === 'NEW',
+    ).length;
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/insights', { waitUntil: 'networkidle' });

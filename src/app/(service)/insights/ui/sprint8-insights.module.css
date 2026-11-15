@@ -2247,7 +2247,11 @@
     grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 
-  .island {
+  /* 처음 시안의 8곳 고정 자리(.map > .island:nth-of-type(1~8))가 레이아웃 계산값을
+     덮어써서, 섬이 9곳 이상이면 겹쳤다(2026-11-15 NEW 섬 2곳을 지도에 올리며 실측:
+     네트워크 기초·클라우드 입문 겹침). 같은 우선순위 선택자를 뒤에 두어 계산값이 이긴다. */
+  .island,
+  .map > .island:nth-of-type(n) {
     top: var(--island-y-desktop, var(--island-y));
     left: var(--island-x-desktop, var(--island-x));
     /* 폭은 레이아웃이 정한 칸(--island-cell-desktop)만 쓴다.

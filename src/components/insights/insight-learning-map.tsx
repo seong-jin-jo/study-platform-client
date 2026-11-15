@@ -18,6 +18,7 @@ import {
 } from '@/app/(service)/insights/ui/sprint8-v10-island-layout';
 import { cn } from '@/components/common/ui/(shadcn)/lib/utils';
 import Button from '@/components/common/ui/button';
+import { formatIslandMapLabel } from '@/components/insights/insight-island-map-label';
 import { getReadOnlyIslandArticleHref } from '@/components/insights/insight-learning-map-links';
 import { useAuth } from '@/features/auth/model/use-auth';
 import { useInsightMapQuery } from '@/hooks/queries/insights/use-insight-worldmap-query';
@@ -125,13 +126,30 @@ export default function InsightLearningMap({
       console.error('[insight-map] unknown presentationTier; fail-closed');
     }
   }, [hasUnknownPresentationTier]);
+  // 지도에는 등급(OCEAN·NEW)과 상관없이 모든 섬을 올린다. 예전에는 NEW 섬을
+  // 지도 밖 목록에만 두어서, 글이 있는 섬이 정작 지도에서 안 보였다
+  // (회장 2026-11-15 "새로 열린 섬 2곳이 섬 목록에는 없거든").
+  // 글이 있는 섬을 앞에 두어 시작 섬과 배치 우선순위를 받게 한다.
   const oceanIslands = useMemo(
-    () => islands.filter((island) => island.presentationTier === 'OCEAN'),
+    () =>
+      islands
+        .filter(
+          (island) =>
+            island.presentationTier === 'OCEAN' ||
+            island.presentationTier === 'NEW',
+        )
+        .map((island, index) => ({ island, index }))
+        .sort(
+          (a, b) =>
+            Number(b.island.articles.length > 0) -
+              Number(a.island.articles.length > 0) || a.index - b.index,
+        )
+        .map(({ island }) => island),
     [islands],
   );
   const newIslands = useMemo(
-    () => islands.filter((island) => !oceanIslands.includes(island)),
-    [islands, oceanIslands],
+    () => islands.filter((island) => island.presentationTier === 'NEW'),
+    [islands],
   );
   const hereIsland =
     oceanIslands.find(
@@ -277,7 +295,11 @@ export default function InsightLearningMap({
 
   useEffect(() => {
     if (selectedIslandId === null) return;
-    dialogPrimaryRef.current?.focus();
+    // 미개척 섬은 들어갈 링크가 없으니 닫기 버튼으로 초점을 보낸다.
+    (
+      dialogPrimaryRef.current ??
+      dialogRef.current?.querySelector<HTMLButtonElement>('button')
+    )?.focus();
   }, [selectedIslandId]);
 
   const closeDialog = () => {
@@ -415,8 +437,7 @@ export default function InsightLearningMap({
               생각의 바다에서 나만의 길을 찾으세요
             </h2>
             <p className="font-designer-16r">
-              여덟 섬을 둘러보고 첫 글부터 읽어 보세요. 잠긴 내용은 이유를
-              알려드립니다.
+              {`섬 ${oceanIslands.length}곳을 둘러보고 첫 글부터 읽어 보세요. 잠긴 내용은 이유를 알려드립니다.`}
             </p>
           </div>
           <div
@@ -489,7 +510,7 @@ export default function InsightLearningMap({
                     className={cn(styles.islandSub, 'max-md:font-designer-13b')}
                     data-testid={`island-progress-${island.slug}`}
                   >
-                    {`${island.articles.length}편 중 ${island.progress?.read ?? 0}편 열림`}
+                    {formatIslandMapLabel(island, isAuthenticated)}
                   </span>
                 </button>
               );
@@ -537,9 +558,7 @@ export default function InsightLearningMap({
           aria-labelledby="new-islands-title"
         >
           <h2 id="new-islands-title">새로 열린 섬 {newIslands.length}곳</h2>
-          <p>
-            활성 글이 연결되면 사람 승인 없이 이 목록에 자동으로 나타납니다.
-          </p>
+          <p>최근 첫 글이 올라와 열린 섬입니다.</p>
           <div className={styles.newIslandGrid}>
             {newIslands.map((island) => {
               const content = (
@@ -591,11 +610,16 @@ export default function InsightLearningMap({
               {selected.name}
             </b>
             <span className={styles.popoverSubtitle}>
-              {isAuthenticated
-                ? `${selected.articles.length}편 중 ${selected.progress?.read ?? 0}편 열림`
-                : `개념글 ${selected.articles.length}편`}
+              {formatIslandMapLabel(selected, isAuthenticated)}
             </span>
-            {!readOnly ? (
+            {selected.articles.length === 0 ? (
+              <p
+                className={styles.popoverSubtitle}
+                data-testid="island-unexplored-notice"
+              >
+                아직 개척되지 않은 섬입니다. 첫 글이 올라오면 이 섬이 열립니다.
+              </p>
+            ) : !readOnly ? (
               <Link
                 ref={dialogPrimaryRef}
                 href={`/insights/land/${selected.slug}`}
