@@ -2426,7 +2426,7 @@
   border-radius: 999px;
   background: var(--green-700);
   color: var(--gray-0);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: var(--font-weight-extrabold);
   line-height: 16px;
 }
@@ -2485,7 +2485,7 @@
   border-radius: 999px;
   background: var(--green-50);
   color: var(--green-700);
-  font-size: 12px;
+  font-size: 13px;
   font-style: normal;
   line-height: 18px;
 }

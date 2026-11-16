@@ -220,8 +220,9 @@ describe('SPRINT8 주요 화면 렌더', () => {
       createElement(KoanDetail, { koanId: 1 }),
     );
 
-    expect(mapMarkup).toContain('편 중');
+    // 회장 2026-11-16 "0편 중 0편 열림" 반복 제거 지시(6c6e0d3) 이후 '편 중' 문구는 지도에서 빠졌다.
     expect(mapMarkup).not.toContain('개념글 1편 중');
+    expect(mapMarkup).not.toContain('0편 중 0편');
     expect(listMarkup).toContain('메일로 받아보기');
     expect(listMarkup).toContain('분야별로 들어가기');
     expect(detailMarkup).toContain('사람이 검토함');
