@@ -149,6 +149,12 @@ test.describe('인사이트 섬 선택 패널', () => {
           path: `${SHOT_DIR}/unexplored-${vp.width}x${vp.height}.png`,
         });
       }
+
+      // 시트 바깥(어두운 배경)을 누르면 닫힌다.
+      if (vp.sheet) {
+        await page.mouse.click(vp.width / 2, 10);
+        await expect(worldmap.getByTestId('island-sheet')).toHaveCount(0);
+      }
     });
   }
 });

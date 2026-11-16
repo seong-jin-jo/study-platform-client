@@ -722,12 +722,14 @@ export default function InsightLearningMap({
       )}
 
       {sheetVisible && selected && (
-        <div
-          className={styles.sheetBackdrop}
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) closeDialog();
-          }}
-        >
+        <div className={styles.sheetBackdrop}>
+          <button
+            type="button"
+            tabIndex={-1}
+            aria-hidden
+            className={styles.sheetScrim}
+            onClick={closeDialog}
+          />
           <div
             ref={dialogRef}
             className={styles.sheet}

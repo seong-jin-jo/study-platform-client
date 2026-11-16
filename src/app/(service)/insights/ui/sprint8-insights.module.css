@@ -2613,7 +2613,17 @@
   background: var(--stage-name-surface);
 }
 
+.sheetScrim {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: transparent;
+  cursor: default;
+}
+
 .sheet {
+  position: relative;
+  z-index: 1;
   width: min(100%, 640px);
   max-height: 82vh;
   padding-bottom: calc(20px + env(safe-area-inset-bottom));
