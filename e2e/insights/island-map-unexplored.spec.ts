@@ -76,11 +76,9 @@ test.describe('인사이트 섬 지도: 미개척 섬과 새 섬', () => {
     await worldmap
       .locator(`button[data-testid="island-${empty.slug}"]`)
       .click();
-    const dialog = worldmap.getByRole('dialog');
-    await expect(dialog.getByTestId('island-unexplored-notice')).toBeVisible();
-    await expect(
-      dialog.getByRole('link', { name: /개척지 들어가기/ }),
-    ).toHaveCount(0);
-    await expect(dialog.getByRole('button', { name: '닫기' })).toBeFocused();
+    // 1440 폭은 PC 라 오른쪽 패널에 안내가 뜬다(대화 상자가 아니다).
+    const panel = worldmap.getByTestId('island-panel');
+    await expect(panel.getByTestId('island-unexplored-notice')).toBeVisible();
+    await expect(panel.getByTestId('island-enter')).toHaveCount(0);
   });
 });

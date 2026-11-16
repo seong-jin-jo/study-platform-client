@@ -19,7 +19,6 @@ import {
 import { cn } from '@/components/common/ui/(shadcn)/lib/utils';
 import Button from '@/components/common/ui/button';
 import { formatIslandMapLabel } from '@/components/insights/insight-island-map-label';
-import { getReadOnlyIslandArticleHref } from '@/components/insights/insight-learning-map-links';
 import { useAuth } from '@/features/auth/model/use-auth';
 import { useInsightMapQuery } from '@/hooks/queries/insights/use-insight-worldmap-query';
 import { useKoansQuery } from '@/hooks/queries/insights/use-koan-query';
@@ -94,6 +93,8 @@ export default function InsightLearningMap({
   const koansQuery = useKoansQuery({ size: 7 });
   const { isAuthenticated } = useAuth();
   const [selectedIslandId, setSelectedIslandId] = useState<number | null>(null);
+  // 휴대폰·태블릿(1024 미만)에서만 쓰는 아래 시트의 열림 상태. PC 패널은 항상 떠 있다.
+  const [sheetOpen, setSheetOpen] = useState(false);
   const islandTriggerRefs = useRef(new Map<number, HTMLButtonElement>());
   const dialogRef = useRef<HTMLDivElement>(null);
   const dialogPrimaryRef = useRef<HTMLAnchorElement>(null);
@@ -145,10 +146,6 @@ export default function InsightLearningMap({
               Number(a.island.articles.length > 0) || a.index - b.index,
         )
         .map(({ island }) => island),
-    [islands],
-  );
-  const newIslands = useMemo(
-    () => islands.filter((island) => island.presentationTier === 'NEW'),
     [islands],
   );
   const hereIsland =
@@ -214,9 +211,25 @@ export default function InsightLearningMap({
   const selected = islands.find(
     (island) => island.islandId === selectedIslandId,
   );
-  const selectedReadOnlyArticleHref = selected
-    ? getReadOnlyIslandArticleHref(selected)
-    : null;
+  const isDesktop = mapMetrics.desktop;
+  const openedCount = oceanIslands.filter(
+    (island) => island.articles.length > 0,
+  ).length;
+  const articleTotal = oceanIslands.reduce(
+    (sum, island) => sum + island.articles.length,
+    0,
+  );
+  // PC 첫 진입: 글이 가장 많은 열린 섬을 미리 골라 패널이 비어 있지 않게 한다.
+  // 동수면 앞선 섬(oceanIslands 는 글 있는 섬이 앞)을 쓴다.
+  const defaultIslandId = oceanIslands.reduce<InsightIsland | undefined>(
+    (best, island) =>
+      !best || island.articles.length > best.articles.length ? island : best,
+    undefined,
+  )?.islandId;
+  useEffect(() => {
+    if (!isDesktop || selectedIslandId !== null) return;
+    if (defaultIslandId !== undefined) setSelectedIslandId(defaultIslandId);
+  }, [defaultIslandId, isDesktop, selectedIslandId]);
   const koans = koansQuery.data?.items ?? [];
   const today = koans[0];
   useEffect(() => {
@@ -293,21 +306,22 @@ export default function InsightLearningMap({
     return () => cancelAnimationFrame(frame);
   }, [islandLayouts, mapMetrics, mapNode, skyOffsetPx, stageNode]);
 
+  const sheetVisible = sheetOpen && !isDesktop && selected !== undefined;
   useEffect(() => {
-    if (selectedIslandId === null) return;
+    if (!sheetVisible) return;
     // 미개척 섬은 들어갈 링크가 없으니 닫기 버튼으로 초점을 보낸다.
     (
       dialogPrimaryRef.current ??
       dialogRef.current?.querySelector<HTMLButtonElement>('button')
     )?.focus();
-  }, [selectedIslandId]);
+  }, [sheetVisible]);
 
   const closeDialog = () => {
     const trigger =
       selectedIslandId === null
         ? null
         : islandTriggerRefs.current.get(selectedIslandId);
-    setSelectedIslandId(null);
+    setSheetOpen(false);
     requestAnimationFrame(() => trigger?.focus());
   };
 
@@ -419,103 +433,255 @@ export default function InsightLearningMap({
     );
   }
 
+  const levelLabel = {
+    BEGINNER: '입문',
+    INTERMEDIATE: '중급',
+    ADVANCED: '고급',
+  };
+  const renderPanelBody = (island: InsightIsland) => {
+    const unexplored = island.articles.length === 0;
+    const isNew = island.presentationTier === 'NEW' && !unexplored;
+    return (
+      <>
+        <div className={styles.panelHead}>
+          <Image
+            unoptimized
+            src={getIslandArt(island.slug)}
+            alt=""
+            width={64}
+            height={64}
+            className={styles.panelArt}
+          />
+          <div className={styles.panelHeadText}>
+            <span className={styles.panelEyebrow}>
+              선택한 섬{isNew && <em className={styles.panelNew}>NEW</em>}
+            </span>
+            <b id="island-panel-title" className={styles.panelTitle}>
+              {island.name}
+            </b>
+            <span className={styles.panelMeta}>
+              {formatIslandMapLabel(island, isAuthenticated)}
+              {!unexplored && ` · 탐험자 ${island.explorerCount}명`}
+            </span>
+          </div>
+        </div>
+        <div className={styles.panelKeeper} data-testid="island-keeper">
+          <span>지킴이</span>
+          <b>지킴이 모집 중</b>
+        </div>
+        {unexplored ? (
+          <p
+            className={styles.panelNotice}
+            data-testid="island-unexplored-notice"
+          >
+            아직 개척되지 않은 섬입니다. 첫 글이 올라오면 이 섬이 열립니다.
+          </p>
+        ) : (
+          <ul className={styles.panelArticles} data-testid="island-articles">
+            {island.articles.map((article) => {
+              const firstFree =
+                article.accessLevel === 'FREE' ||
+                island.firstFreeDocumentId === article.documentId;
+              const locked =
+                !firstFree &&
+                (article.accessLevel === 'LOCKED' ||
+                  article.state === 'LOCKED' ||
+                  (!isAuthenticated && article.accessLevel !== 'UNLOCKED'));
+              const href = readOnly
+                ? firstFree
+                  ? `/insights/read?slug=${encodeURIComponent(article.slug)}`
+                  : null
+                : `/insights/${article.slug}`;
+              const row = (
+                <>
+                  <span className={styles.panelArticleTags}>
+                    <span>{levelLabel[article.level]}</span>
+                    {firstFree && (
+                      <span className={styles.panelFree}>첫 편 무료</span>
+                    )}
+                    {locked && (
+                      <span className={styles.panelLock}>
+                        {isAuthenticated ? '잠김' : '로그인하면 이어서 엽니다'}
+                      </span>
+                    )}
+                  </span>
+                  <span className={styles.panelArticleTitle}>
+                    {article.title}
+                  </span>
+                </>
+              );
+              return (
+                <li key={article.documentId}>
+                  {href ? (
+                    <Link
+                      href={href}
+                      className={styles.panelArticle}
+                      data-testid="island-article-link"
+                    >
+                      {row}
+                    </Link>
+                  ) : (
+                    <div className={styles.panelArticle}>{row}</div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+        <div className={styles.panelRoom} data-testid="island-room">
+          <span>공부방</span>
+          {island.bridgeRoomId && !readOnly ? (
+            <Link
+              href={`/community/rooms/${island.bridgeRoomId}?from=${encodeURIComponent(island.slug)}`}
+            >
+              {island.bridgeRoomName ?? '공부방'} 들어가기
+            </Link>
+          ) : (
+            <p>
+              아직 연결된 공부방이 없어요.{' '}
+              {!readOnly && <Link href="/community">커뮤니티 둘러보기</Link>}
+            </p>
+          )}
+        </div>
+        {!unexplored && !readOnly && (
+          <Link
+            ref={isDesktop ? undefined : dialogPrimaryRef}
+            href={`/insights/land/${island.slug}`}
+            className={styles.panelCta}
+            data-testid="island-enter"
+          >
+            섬 들어가기
+            <small>{isAuthenticated ? '내 물길' : '첫 편 무료'}</small>
+          </Link>
+        )}
+      </>
+    );
+  };
+
   return (
     <div className={styles.root} data-testid="insight-worldmap">
       <section
         ref={setStageNode}
         className={styles.seaStage}
-        aria-label="시작 섬 8개"
+        aria-label={`열린 섬 ${openedCount}곳`}
       >
         <div className={styles.seaBackdrop} aria-hidden />
         <div className={styles.seaScrim} aria-hidden />
-        <div className={styles.stageInner}>
-          <div className={styles.stageHead}>
-            <p className={cn(styles.stageLabel, 'font-designer-13b')}>
-              INSIGHT SEA
-            </p>
-            <h2 className="font-designer-28b">
-              생각의 바다에서 나만의 길을 찾으세요
-            </h2>
-            <p className="font-designer-16r">
-              {`섬 ${oceanIslands.length}곳을 둘러보고 첫 글부터 읽어 보세요. 잠긴 내용은 이유를 알려드립니다.`}
-            </p>
-          </div>
-          <div
-            ref={setMapNode}
-            className={styles.map}
-            data-island-density={islandDensity}
-            style={
-              getResponsiveIslandMapStyle(
-                islandLayouts.mobile.requiredHeight,
-                islandLayouts.desktop.requiredHeight,
-              ) as CSSProperties
-            }
-          >
-            {islandLayouts.mobile.items.map((layout) => {
-              const island = layout.item;
-              const desktopLayout = desktopLayoutByKey.get(layout.key);
-              if (!desktopLayout) return null;
+        <div className={cn(styles.stageInner, styles.stageLayout)}>
+          <div className={styles.stageMain}>
+            <div className={cn(styles.stageHead, styles.stageHeadShown)}>
+              <p className={cn(styles.stageLabel, 'font-designer-13b')}>
+                INSIGHT SEA
+              </p>
+              <h2 className="font-designer-28b">
+                생각의 바다에서 나만의 길을 찾으세요
+              </h2>
+              <ul className={styles.stageChips} data-testid="sea-summary">
+                <li>열린 섬 {openedCount}곳</li>
+                <li>개념글 {articleTotal}편</li>
+                {oceanIslands.length - openedCount > 0 && (
+                  <li>개척 대기 {oceanIslands.length - openedCount}곳</li>
+                )}
+              </ul>
+            </div>
+            <div
+              ref={setMapNode}
+              className={styles.map}
+              data-island-density={islandDensity}
+              style={
+                getResponsiveIslandMapStyle(
+                  islandLayouts.mobile.requiredHeight,
+                  islandLayouts.desktop.requiredHeight,
+                ) as CSSProperties
+              }
+            >
+              {islandLayouts.mobile.items.map((layout) => {
+                const island = layout.item;
+                const desktopLayout = desktopLayoutByKey.get(layout.key);
+                if (!desktopLayout) return null;
 
-              return (
-                <button
-                  key={island.islandId}
-                  type="button"
-                  data-layout-key={layout.key}
-                  className={cn(
-                    styles.island,
-                    layout.band === 'here' && styles.islandHere,
-                    layout.band === 'opened' && styles.islandOpened,
-                    layout.band === 'started' && styles.islandStarted,
-                    layout.band === 'far' && styles.islandFar,
-                    layout.row > 0 && styles.islandBack,
-                    styles[`islandTone${getIslandArtIndex(island.slug)}`],
-                  )}
-                  onClick={() => setSelectedIslandId(island.islandId)}
-                  ref={(node) => {
-                    if (node)
-                      islandTriggerRefs.current.set(island.islandId, node);
-                    else islandTriggerRefs.current.delete(island.islandId);
-                  }}
-                  aria-haspopup="dialog"
-                  aria-expanded={selectedIslandId === island.islandId}
-                  aria-label={`${island.name} 개척지 열기`}
-                  data-testid={`island-${island.slug}`}
-                  style={
-                    getResponsiveIslandNodeStyle(
-                      layout,
-                      desktopLayout,
-                    ) as CSSProperties
-                  }
-                >
-                  <Image
-                    unoptimized
-                    src={getIslandArt(island.slug)}
-                    alt=""
-                    width={176}
-                    height={176}
-                    className={styles.islandArt}
-                  />
-                  <span
+                return (
+                  <button
+                    key={island.islandId}
+                    type="button"
+                    data-layout-key={layout.key}
                     className={cn(
-                      styles.islandName,
-                      'max-md:font-designer-13b',
+                      styles.island,
+                      layout.band === 'here' && styles.islandHere,
+                      layout.band === 'opened' && styles.islandOpened,
+                      layout.band === 'started' && styles.islandStarted,
+                      layout.band === 'far' && styles.islandFar,
+                      layout.row > 0 && styles.islandBack,
+                      island.articles.length === 0 && styles.islandUnexplored,
+                      selectedIslandId === island.islandId &&
+                        styles.islandSelected,
+                      styles[`islandTone${getIslandArtIndex(island.slug)}`],
                     )}
-                    data-testid={`island-label-${island.slug}`}
+                    onClick={() => {
+                      setSelectedIslandId(island.islandId);
+                      setSheetOpen(true);
+                    }}
+                    ref={(node) => {
+                      if (node)
+                        islandTriggerRefs.current.set(island.islandId, node);
+                      else islandTriggerRefs.current.delete(island.islandId);
+                    }}
+                    aria-pressed={selectedIslandId === island.islandId}
+                    aria-label={`${island.name} 개척지 열기`}
+                    data-testid={`island-${island.slug}`}
+                    style={
+                      getResponsiveIslandNodeStyle(
+                        layout,
+                        desktopLayout,
+                      ) as CSSProperties
+                    }
                   >
-                    {island.name}
-                  </span>
-                  {/* 이름 아래 진행 문구. 섬 dialog 와 같은 문구 형식을 쓴다.
-                      분류 이름을 앞에 붙이지 않는다. 칸이 좁아 이름과 겹친다. */}
-                  <span
-                    className={cn(styles.islandSub, 'max-md:font-designer-13b')}
-                    data-testid={`island-progress-${island.slug}`}
-                  >
-                    {formatIslandMapLabel(island, isAuthenticated)}
-                  </span>
-                </button>
-              );
-            })}
+                    <Image
+                      unoptimized
+                      src={getIslandArt(island.slug)}
+                      alt=""
+                      width={176}
+                      height={176}
+                      className={styles.islandArt}
+                    />
+                    <span
+                      className={cn(
+                        styles.islandName,
+                        'max-md:font-designer-13b',
+                      )}
+                      data-testid={`island-label-${island.slug}`}
+                    >
+                      {island.name}
+                    </span>
+                    {island.presentationTier === 'NEW' &&
+                      island.articles.length > 0 && (
+                        <span className={styles.islandNewBadge}>NEW</span>
+                      )}
+                    {/* 이름 아래 진행 문구. 섬 dialog 와 같은 문구 형식을 쓴다.
+                        분류 이름을 앞에 붙이지 않는다. 칸이 좁아 이름과 겹친다. */}
+                    <span
+                      className={cn(
+                        styles.islandSub,
+                        'max-md:font-designer-13b',
+                      )}
+                      data-testid={`island-progress-${island.slug}`}
+                    >
+                      {formatIslandMapLabel(island, isAuthenticated)}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
+          {isDesktop && selected && (
+            <aside
+              className={styles.panel}
+              aria-labelledby="island-panel-title"
+              data-testid="island-panel"
+            >
+              {renderPanelBody(selected)}
+            </aside>
+          )}
         </div>
       </section>
 
@@ -546,106 +712,33 @@ export default function InsightLearningMap({
           </div>
         </section>
       ) : (
-        <section className={styles.heroKoan}>
-          <div className={styles.heroKicker}>오늘의 화두</div>
-          <p className={styles.heroQuestion}>오늘 걸린 화두가 없습니다.</p>
+        <section className={styles.koanEmpty} data-testid="koan-empty">
+          <span className={styles.koanEmptyKicker}>오늘의 화두</span>
+          <span className={styles.koanEmptyText}>걸린 화두가 없어요</span>
+          <Link href="/insights/koans" className={styles.koanEmptyLink}>
+            지난 화두 보기
+          </Link>
         </section>
       )}
 
-      {newIslands.length > 0 && (
-        <section
-          className={styles.newIslands}
-          aria-labelledby="new-islands-title"
-        >
-          <h2 id="new-islands-title">새로 열린 섬 {newIslands.length}곳</h2>
-          <p>최근 첫 글이 올라와 열린 섬입니다.</p>
-          <div className={styles.newIslandGrid}>
-            {newIslands.map((island) => {
-              const content = (
-                <>
-                  <Image
-                    unoptimized
-                    src={getIslandArt(island.slug)}
-                    alt=""
-                    width={40}
-                    height={32}
-                  />
-                  <span>{island.name}</span>
-                </>
-              );
-              return readOnly ? (
-                <div key={island.islandId} className={styles.newIslandTile}>
-                  {content}
-                </div>
-              ) : (
-                <Link
-                  key={island.islandId}
-                  href={`/insights/land/${island.slug}`}
-                  className={styles.newIslandTile}
-                >
-                  {content}
-                </Link>
-              );
-            })}
-          </div>
-        </section>
-      )}
-
-      {selected && (
+      {sheetVisible && selected && (
         <div
-          className={styles.popoverBackdrop}
+          className={styles.sheetBackdrop}
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) closeDialog();
           }}
         >
           <div
             ref={dialogRef}
-            className={styles.popover}
+            className={styles.sheet}
             role="dialog"
             aria-modal="true"
-            aria-labelledby="island-dialog-title"
+            aria-labelledby="island-panel-title"
+            data-testid="island-sheet"
             onKeyDown={handleDialogKeyDown}
           >
-            <b id="island-dialog-title" className={styles.popoverTitle}>
-              {selected.name}
-            </b>
-            <span className={styles.popoverSubtitle}>
-              {formatIslandMapLabel(selected, isAuthenticated)}
-            </span>
-            {selected.articles.length === 0 ? (
-              <p
-                className={styles.popoverSubtitle}
-                data-testid="island-unexplored-notice"
-              >
-                아직 개척되지 않은 섬입니다. 첫 글이 올라오면 이 섬이 열립니다.
-              </p>
-            ) : !readOnly ? (
-              <Link
-                ref={dialogPrimaryRef}
-                href={`/insights/land/${selected.slug}`}
-                className={styles.popoverLink}
-              >
-                개척지 들어가기
-                <small>{isAuthenticated ? '내 물길' : '첫 편 무료'}</small>
-              </Link>
-            ) : selectedReadOnlyArticleHref ? (
-              <Link
-                ref={dialogPrimaryRef}
-                href={selectedReadOnlyArticleHref}
-                className={styles.popoverLink}
-              >
-                개념글 읽기
-                <small>앱에서 바로 읽기</small>
-              </Link>
-            ) : null}
-            {selected.bridgeRoomId && !readOnly && (
-              <Link
-                href={`/community/rooms/${selected.bridgeRoomId}?from=${encodeURIComponent(selected.slug)}`}
-                className={styles.popoverLink}
-              >
-                공부방 들어가기 <small>바로 방 안으로</small>
-              </Link>
-            )}
+            <div className={styles.sheetGrip} aria-hidden />
+            {renderPanelBody(selected)}
             <Button
               type="button"
               color="secondary"

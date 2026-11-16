@@ -2352,3 +2352,352 @@
     transition: none;
   }
 }
+
+/* ===== C안: 바다 지도 + 섬 선택 패널 (회장 2026-11-16 17:59 확정) =====
+   기존 규칙을 덮어쓰므로 파일 맨 끝에 둔다. 색은 위의 지역 별칭만 쓴다. */
+
+.stageHeadShown {
+  z-index: 1;
+  display: block;
+  padding: 0;
+}
+
+.stageHeadShown h2 {
+  margin-top: var(--spacing-100);
+  color: var(--gray-0);
+  word-break: keep-all;
+}
+
+.stageChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  margin: 12px 0 0;
+  list-style: none;
+}
+
+.stageChips li {
+  padding: 6px 12px;
+  border: 1px solid color-mix(in srgb, var(--gray-0) 40%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--gray-900) 38%, transparent);
+  color: var(--gray-0);
+  font-size: 13px;
+  font-weight: var(--font-weight-bold);
+}
+
+.stageLayout {
+  display: flex;
+  flex-direction: column;
+}
+
+.stageMain {
+  position: relative;
+  min-width: 0;
+  flex: 1;
+}
+
+/* 열린 섬이 아닌 곳은 작고 흐리게(P6). 눌러서 '아직 개척 전' 안내를 볼 수 있다. */
+.islandUnexplored .islandArt {
+  opacity: 0.55;
+  transform: scale(0.72);
+}
+
+.islandUnexplored .islandName,
+.islandUnexplored .islandSub {
+  opacity: 0.78;
+}
+
+.islandSelected {
+  outline: 2px solid var(--yellow-400);
+  outline-offset: 2px;
+}
+
+.islandSelected .islandName {
+  color: var(--yellow-100);
+}
+
+.islandNewBadge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--green-700);
+  color: var(--gray-0);
+  font-size: 11px;
+  font-weight: var(--font-weight-extrabold);
+  line-height: 16px;
+}
+
+/* 선택 패널(PC 오른쪽 고정) + 아래 시트(휴대폰·태블릿) 공통 본문 */
+.panel,
+.sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  background: var(--gray-0);
+  color: var(--gray-900);
+}
+
+.panel {
+  z-index: 1;
+  width: 360px;
+  flex: none;
+  max-height: 100%;
+  overflow-y: auto;
+  border-radius: 20px;
+  box-shadow: 0 16px 40px rgb(24 29 39 / 24%);
+}
+
+.panelHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.panelArt {
+  width: 64px;
+  height: 64px;
+  flex: none;
+  object-fit: contain;
+}
+
+.panelHeadText {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.panelEyebrow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--rose-600);
+  font-size: 13px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.panelNew {
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--green-50);
+  color: var(--green-700);
+  font-size: 12px;
+  font-style: normal;
+  line-height: 18px;
+}
+
+.panelTitle {
+  color: var(--gray-900);
+  font-size: 22px;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.25;
+  word-break: keep-all;
+}
+
+.panelMeta {
+  color: var(--gray-600);
+  font-size: 14px;
+}
+
+.panelKeeper,
+.panelRoom {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--gray-50);
+  color: var(--gray-600);
+  font-size: 13px;
+}
+
+.panelKeeper b {
+  color: var(--gray-900);
+  font-size: 15px;
+}
+
+.panelRoom p {
+  margin: 0;
+  color: var(--gray-900);
+  font-size: 14px;
+}
+
+.panelRoom a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  color: var(--rose-600);
+  font-size: 14px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.panelNotice {
+  margin: 0;
+  color: var(--gray-700);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.panelArticles {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.panelArticle {
+  display: flex;
+  min-height: 56px;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 0;
+  border-top: 1px solid var(--gray-200);
+  color: var(--gray-900);
+}
+
+.panelArticleTags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  color: var(--gray-600);
+  font-size: 13px;
+  font-weight: var(--font-weight-bold);
+}
+
+.panelFree {
+  color: var(--green-700);
+}
+
+.panelLock {
+  color: var(--gray-600);
+}
+
+.panelArticleTitle {
+  font-size: 15px;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.4;
+  word-break: keep-all;
+}
+
+.panelCta {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  border-radius: 12px;
+  background: var(--rose-500);
+  color: var(--gray-0);
+  font-size: 15px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.panelCta small {
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.sheetBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: var(--stage-name-surface);
+}
+
+.sheet {
+  width: min(100%, 640px);
+  max-height: 82vh;
+  padding-bottom: calc(20px + env(safe-area-inset-bottom));
+  overflow-y: auto;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -12px 40px rgb(24 29 39 / 24%);
+}
+
+.sheetGrip {
+  width: 40px;
+  height: 4px;
+  flex: none;
+  align-self: center;
+  border-radius: 999px;
+  background: var(--gray-300);
+}
+
+/* 오늘의 화두가 없으면 한 줄로 접는다(P3) */
+.koanEmpty {
+  display: flex;
+  max-width: 1120px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 14px 16px;
+  margin: 16px auto;
+  border: 1px solid var(--gray-200);
+  border-radius: 16px;
+  background: var(--gray-0);
+}
+
+.koanEmptyKicker {
+  color: var(--rose-600);
+  font-size: 14px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+.koanEmptyText {
+  color: var(--gray-600);
+  font-size: 15px;
+}
+
+.koanEmptyLink {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  margin-left: auto;
+  color: var(--gray-900);
+  font-size: 14px;
+  font-weight: var(--font-weight-extrabold);
+}
+
+/* 1023 이하(휴대폰·태블릿): 제목 → 지도 한 줄 세로 쌓기. 태블릿 2단 배치를 되돌린다. */
+@media (max-width: 1023px) {
+  .stageInner.stageLayout {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-200);
+  }
+
+  .islandNewBadge {
+    top: -2px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .seaStage {
+    height: auto;
+    min-height: 0;
+  }
+
+  .stageInner.stageLayout {
+    height: auto;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 24px;
+    padding: 28px 24px 32px;
+  }
+
+  .stageHeadShown {
+    padding-bottom: 8px;
+  }
+
+  .koanEmpty {
+    margin: 16px auto;
+  }
+}
