@@ -23,18 +23,21 @@ import ToggleButton from '@/components/common/ui/toggle/button';
 import HomeHeroBanner from '@/components/home/home-hero-banner';
 import { useAuthReady } from '@/features/auth/model/use-auth';
 import { useIntersectionObserver } from '@/hooks/common/use-intersection-observer';
+import { useCommunityRoomHubQuery } from '@/hooks/queries/community/use-community-room-hub-query';
 import {
   useHomeFeedQuery,
   useUnifiedSearchQuery,
 } from '@/hooks/queries/retention/use-retention-queries';
 import type { UnifiedSearchItem } from '@/types/api/search.types';
 import type { CommunityPostFeedResponse } from '@/types/community/post';
+import type { CommunityRoomSummary } from '@/types/community/room-hub';
 import type {
   HomeDiscoveryFeed,
   HomeDiscoverySort,
   HomeFeed as HomeFeedData,
   PublicHomeFeed,
 } from '@/types/retention/contracts';
+import { pickRecommendedRooms, roomOneLiner } from '@/utils/recommended-rooms';
 import {
   ACTIVITY_PROGRESS_TARGETS,
   clampActivityProgress,
@@ -59,6 +62,8 @@ const AVATARS = [
   '/community/rooms/avatars/avatar-seojin.jpg',
   '/community/rooms/avatars/avatar-taeo.jpg',
 ] as const;
+
+const EMPTY_ROOM_FILTERS = {};
 
 type DiscoveryItem = HomeDiscoveryFeed['items'][number];
 type CommunityItem = Extract<DiscoveryItem, { type: 'COMMUNITY_POST' }>;
@@ -763,14 +768,65 @@ function ActivityCard({
   );
 }
 
-function PopularRooms({ rooms }: { rooms: HomeFeedData['myRooms'] }) {
+function RecommendedRoomRows({ rooms }: { rooms: CommunityRoomSummary[] }) {
+  return (
+    <div data-testid="recommended-rooms">
+      {rooms.map((room, index) => {
+        const oneLiner = roomOneLiner(room.description);
+        return (
+          <div
+            key={room.roomId}
+            data-testid="recommended-room"
+            className="flex items-center gap-100 border-t border-gray-100 py-100 first:border-t-0"
+          >
+            <RoomIcon index={index} label={room.name} size="lg" />
+            <div className="min-w-0 flex-1">
+              <p className="truncate font-designer-13b font-extrabold text-gray-900 max-lg:font-designer-16b max-lg:font-extrabold">
+                {room.name}
+              </p>
+              {oneLiner && (
+                <p className="mt-25 truncate font-designer-12m font-medium text-gray-500 max-lg:font-designer-16r">
+                  {oneLiner}
+                </p>
+              )}
+              <p className="mt-25 font-designer-12m font-semibold tabular-nums text-gray-500 max-lg:font-designer-16r">
+                멤버 {room.memberCount}명
+              </p>
+            </div>
+            <Link
+              href={getRoomHref(room.roomId)}
+              className="flex min-h-550 min-w-550 flex-none items-center justify-center rounded-full border border-gray-200 px-125 py-75 font-designer-12b font-extrabold text-gray-700 transition-colors hover:border-gray-300 hover:bg-gray-50 max-lg:font-designer-16m"
+            >
+              둘러보기
+            </Link>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function PopularRooms({
+  rooms,
+  recommendedRooms = [],
+}: {
+  rooms: HomeFeedData['myRooms'];
+  recommendedRooms?: CommunityRoomSummary[];
+}) {
   return (
     <section className="rounded-200 border border-gray-200 bg-white p-200">
       <h2 className="font-designer-12b font-black tracking-[0.02em] text-gray-500 max-lg:font-designer-20b max-lg:font-black">
         인기 방, 목표가 같은 사람들
       </h2>
       <div className="mt-100">
-        {rooms.length === 0 ? (
+        {rooms.length === 0 && recommendedRooms.length > 0 ? (
+          <>
+            <p className="pb-75 font-designer-12m font-medium text-gray-500 max-lg:font-designer-16r">
+              아직 입장한 방이 없어요. 지금 멤버가 가장 많은 방부터 둘러보세요.
+            </p>
+            <RecommendedRoomRows rooms={recommendedRooms} />
+          </>
+        ) : rooms.length === 0 ? (
           <p className="py-150 font-designer-12m font-medium text-gray-500 max-lg:font-designer-16r">
             아직 입장한 방이 없어요. 목표가 같은 방부터 둘러보세요.
           </p>
@@ -892,23 +948,47 @@ function PublicInsightRail({
   );
 }
 
-function GuestRoomRail({ roomLimit }: { roomLimit: number }) {
+function GuestRoomRail({
+  roomLimit,
+  recommendedRooms = [],
+}: {
+  roomLimit: number;
+  recommendedRooms?: CommunityRoomSummary[];
+}) {
   return (
-    <section className="rounded-200 border border-gray-200 bg-white p-200">
+    <section
+      data-testid="guest-room-rail"
+      className="rounded-200 border border-gray-200 bg-white p-200"
+    >
       <h2 className="font-designer-12b flex items-center justify-between text-text-subtle max-lg:font-designer-20b">
         <span>입장한 방</span>
         <strong className="font-designer-14b text-text-strong">
           0/{roomLimit}
         </strong>
       </h2>
-      <div className="mt-125 rounded-150 bg-background-alternative p-175">
-        <p className="font-designer-14b text-text-strong">
-          아직 소속된 방이 없어요
-        </p>
-        <p className="font-designer-13m mt-75 break-keep text-text-subtle max-lg:font-designer-16r">
-          목표가 가장 가까운 방 하나를 먼저 골라보세요. 읽기만 해도 괜찮아요.
-        </p>
-      </div>
+      {recommendedRooms.length > 0 ? (
+        <div className="mt-100">
+          <p className="pb-75 font-designer-13m break-keep text-text-subtle max-lg:font-designer-16r">
+            지금 멤버가 가장 많은 인기 방이에요. 읽기만 해도 괜찮아요.
+          </p>
+          <RecommendedRoomRows rooms={recommendedRooms} />
+          <Link
+            href="/community"
+            className="mt-100 flex min-h-550 w-full items-center justify-center rounded-150 border border-gray-200 py-125 font-designer-12b font-extrabold text-gray-800 hover:bg-gray-50 max-lg:font-designer-16m"
+          >
+            방 전부 둘러보기
+          </Link>
+        </div>
+      ) : (
+        <div className="mt-125 rounded-150 bg-background-alternative p-175">
+          <p className="font-designer-14b text-text-strong">
+            아직 소속된 방이 없어요
+          </p>
+          <p className="font-designer-13m mt-75 break-keep text-text-subtle max-lg:font-designer-16r">
+            목표가 가장 가까운 방 하나를 먼저 골라보세요. 읽기만 해도 괜찮아요.
+          </p>
+        </div>
+      )}
     </section>
   );
 }
@@ -991,10 +1071,12 @@ export function GuestHomeFeedBody({
   postFeed,
   publicFeed,
   roomLimit,
+  recommendedRooms = [],
 }: {
   postFeed: CommunityPostFeedResponse;
   publicFeed: PublicHomeFeed;
   roomLimit: number;
+  recommendedRooms?: CommunityRoomSummary[];
 }) {
   const [sort, setSort] = useState<HomeDiscoverySort>('NEW');
   const feed = createGuestFeed(postFeed, publicFeed, sort);
@@ -1012,6 +1094,7 @@ export function GuestHomeFeedBody({
           onLoadMore={() => undefined}
           publicInsights={publicFeed.topInsights}
           guestRoomLimit={roomLimit}
+          recommendedRooms={recommendedRooms}
         />
       </main>
     </div>
@@ -1029,6 +1112,7 @@ export function HomeFeedBody({
   audience = 'member',
   publicInsights = [],
   guestRoomLimit = 3,
+  recommendedRooms = [],
 }: {
   feed: HomeFeedData;
   sort: HomeDiscoverySort;
@@ -1040,6 +1124,7 @@ export function HomeFeedBody({
   audience?: 'guest' | 'member';
   publicInsights?: PublicHomeFeed['topInsights'];
   guestRoomLimit?: number;
+  recommendedRooms?: CommunityRoomSummary[];
 }) {
   const orderedItems = [...feed.discoveryFeed.items];
   const firstInsightIndex = orderedItems.findIndex(
@@ -1172,17 +1257,23 @@ export function HomeFeedBody({
           )}
         </div>
 
-        <aside className="home-sticky-rail space-y-150 px-175 pt-300 pb-300 sm:px-200 md:px-300 lg:sticky lg:top-950 lg:overflow-y-auto lg:px-0 lg:pt-0">
+        <aside className="home-sticky-rail min-w-0 space-y-150 px-175 pt-300 pb-300 sm:px-200 md:px-300 lg:sticky lg:top-950 lg:overflow-y-auto lg:px-0 lg:pt-0">
           {audience === 'guest' ? (
             <>
               <PublicInsightRail items={publicInsights} />
-              <GuestRoomRail roomLimit={guestRoomLimit} />
+              <GuestRoomRail
+                roomLimit={guestRoomLimit}
+                recommendedRooms={recommendedRooms}
+              />
             </>
           ) : (
             <>
               <InsightRail items={feed.discoveryFeed.items} />
               <ActivityCard feed={feed} />
-              <PopularRooms rooms={feed.myRooms} />
+              <PopularRooms
+                rooms={feed.myRooms}
+                recommendedRooms={recommendedRooms}
+              />
               <NewMembersCard week={feed.newMembersWeek} />
               <AdSlot insight={insightForAd} />
             </>
@@ -1279,6 +1370,14 @@ export default function HomeFeed({
   const loadNextPage = useCallback(() => {
     fetchNextPage().catch(() => undefined);
   }, [fetchNextPage]);
+  // 입장한 방이 0개일 때만 인기 방 추천에 쓸 방 목록을 가져온다.
+  const roomHubQuery = useCommunityRoomHubQuery(
+    EMPTY_ROOM_FILTERS,
+    Boolean(data) && data?.myRooms.length === 0,
+  );
+  const recommendedRooms = pickRecommendedRooms(
+    roomHubQuery.data?.exploreRooms,
+  );
 
   if (!isHydrated) {
     return <HomeFeedLoading />;
@@ -1317,6 +1416,7 @@ export default function HomeFeed({
           hasNextPage={Boolean(hasNextPage)}
           isFetchingNextPage={isFetchingNextPage}
           onLoadMore={loadNextPage}
+          recommendedRooms={recommendedRooms}
         />
       </main>
     </div>

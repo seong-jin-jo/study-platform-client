@@ -8,6 +8,7 @@ import {
   HomeFeedBody,
 } from '@/components/retention/home-feed';
 import type { CommunityPostFeedResponse } from '@/types/community/post';
+import type { CommunityRoomSummary } from '@/types/community/room-hub';
 import type {
   HomeFeed as HomeFeedData,
   PublicHomeFeed,
@@ -243,5 +244,106 @@ describe('public home feed design parity', () => {
     expect(body.textContent).toContain('Top');
     expect(body.textContent).not.toContain('여기는 뭐 하는 곳인가요');
     expect(body.textContent).not.toContain('입장한 방0/3');
+  });
+});
+
+const recommendedRoom = (
+  roomId: number,
+  name: string,
+  memberCount: number,
+): CommunityRoomSummary =>
+  ({
+    roomId,
+    name,
+    description: `${name} 소개 첫 줄\n둘째 줄`,
+    memberCount,
+    newPostsToday: 0,
+    membership: { state: 'NONE', canJoin: true },
+  }) as unknown as CommunityRoomSummary;
+
+describe('REC-ROOM 빈 방 상태는 인기 방 추천', () => {
+  const rooms = [
+    recommendedRoom(16, '일단 깔아는 봤습니다', 9),
+    recommendedRoom(17, '자동화 여러 개 굴리는 중', 8),
+  ];
+
+  it('REC-ROOM-101 비회원 홈은 소속된 방 없음 대신 인기 방 이름·한 줄 설명·멤버 수·둘러보기를 보인다', () => {
+    const body = renderMarkup(
+      createElement(GuestHomeFeedBody, {
+        postFeed,
+        publicFeed,
+        roomLimit: 3,
+        recommendedRooms: rooms,
+      }),
+    );
+
+    expect(body.textContent).toContain('0/3');
+    expect(body.textContent).not.toContain('아직 소속된 방이 없어요');
+    expect(body.textContent).toContain('일단 깔아는 봤습니다');
+    expect(body.textContent).toContain('일단 깔아는 봤습니다 소개 첫 줄');
+    expect(body.textContent).not.toContain('둘째 줄');
+    expect(body.textContent).toContain('멤버 9명');
+    const links = body.querySelectorAll('[data-testid="recommended-room"] a');
+    expect(links).toHaveLength(2);
+    expect(links[0]?.getAttribute('href')).toBe('/community/rooms/16');
+  });
+
+  it('REC-ROOM-102 추천할 방이 없으면 기존 안내 문구로 되돌아간다', () => {
+    const body = renderMarkup(
+      createElement(GuestHomeFeedBody, {
+        postFeed,
+        publicFeed,
+        roomLimit: 3,
+        recommendedRooms: [],
+      }),
+    );
+
+    expect(body.textContent).toContain('아직 소속된 방이 없어요');
+    expect(body.querySelector('[data-testid="recommended-rooms"]')).toBeNull();
+  });
+
+  it('REC-ROOM-103 방이 0개인 회원 홈도 인기 방을 보이고, 방이 있으면 추천하지 않는다', () => {
+    const empty = renderMarkup(
+      createElement(HomeFeedBody, {
+        feed: memberFeed,
+        sort: 'NEW',
+        onSortChange: vi.fn(),
+        hasNextPage: false,
+        isFetchingNextPage: false,
+        onLoadMore: vi.fn(),
+        recommendedRooms: rooms,
+      }),
+    );
+    expect(empty.textContent).toContain('아직 입장한 방이 없어요');
+    expect(empty.textContent).toContain('멤버 8명');
+    expect(
+      empty.querySelectorAll('[data-testid="recommended-room"]'),
+    ).toHaveLength(2);
+
+    const joined = renderMarkup(
+      createElement(HomeFeedBody, {
+        feed: {
+          ...memberFeed,
+          myRooms: [
+            {
+              id: 3,
+              badge: '바이브',
+              goalLabel: '내 방',
+              memberCount: 2,
+              newPostsCount: 0,
+            },
+          ] as unknown as HomeFeedData['myRooms'],
+        },
+        sort: 'NEW',
+        onSortChange: vi.fn(),
+        hasNextPage: false,
+        isFetchingNextPage: false,
+        onLoadMore: vi.fn(),
+        recommendedRooms: rooms,
+      }),
+    );
+    expect(
+      joined.querySelector('[data-testid="recommended-rooms"]'),
+    ).toBeNull();
   });
 });

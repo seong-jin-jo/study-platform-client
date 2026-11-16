@@ -20,9 +20,11 @@ import { cn } from '@/components/common/ui/(shadcn)/lib/utils';
 import Button from '@/components/common/ui/button';
 import { formatIslandMapLabel } from '@/components/insights/insight-island-map-label';
 import { useAuth } from '@/features/auth/model/use-auth';
+import { useCommunityRoomHubQuery } from '@/hooks/queries/community/use-community-room-hub-query';
 import { useInsightMapQuery } from '@/hooks/queries/insights/use-insight-worldmap-query';
 import { useKoansQuery } from '@/hooks/queries/insights/use-koan-query';
 import type { InsightIsland } from '@/types/insight-worldmap';
+import { pickRecommendedRooms, roomOneLiner } from '@/utils/recommended-rooms';
 
 const PINNED_ART: Record<string, string> = {
   algorithm: 'isl-web',
@@ -74,6 +76,8 @@ const getIslandArtIndex = (slug: string) => {
   return hash % ART.length;
 };
 
+const EMPTY_ROOM_FILTERS = {};
+
 export const getIslandArt = (slug: string) =>
   `/insights/worldmap/${ART[getIslandArtIndex(slug)]}.png`;
 
@@ -92,6 +96,20 @@ export default function InsightLearningMap({
   const mapQuery = useInsightMapQuery();
   const koansQuery = useKoansQuery({ size: 7 });
   const { isAuthenticated } = useAuth();
+  // 공부방 칸에 방 이름·회원 수를 보이고, 연결된 방이 없으면 인기 방을 추천하려고
+  // 방 목록(공개 API)을 함께 읽는다. 실패해도 지도는 그대로 뜬다.
+  const roomHubQuery = useCommunityRoomHubQuery(EMPTY_ROOM_FILTERS);
+  const roomHubRooms = useMemo(
+    () => [
+      ...(roomHubQuery.data?.myRooms ?? []),
+      ...(roomHubQuery.data?.exploreRooms ?? []),
+    ],
+    [roomHubQuery.data],
+  );
+  const recommendedRooms = useMemo(
+    () => pickRecommendedRooms(roomHubQuery.data?.exploreRooms, 2),
+    [roomHubQuery.data?.exploreRooms],
+  );
   const [selectedIslandId, setSelectedIslandId] = useState<number | null>(null);
   // 휴대폰·태블릿(1024 미만)에서만 쓰는 아래 시트의 열림 상태. PC 패널은 항상 떠 있다.
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -530,12 +548,60 @@ export default function InsightLearningMap({
         )}
         <div className={styles.panelRoom} data-testid="island-room">
           <span>공부방</span>
-          {island.bridgeRoomId && !readOnly ? (
-            <Link
-              href={`/community/rooms/${island.bridgeRoomId}?from=${encodeURIComponent(island.slug)}`}
-            >
-              {island.bridgeRoomName ?? '공부방'} 들어가기
-            </Link>
+          {island.bridgeRoomId ? (
+            (() => {
+              const linked = roomHubRooms.find(
+                (room) => room.roomId === island.bridgeRoomId,
+              );
+              const roomName =
+                island.bridgeRoomName ?? linked?.name ?? '공부방';
+              return (
+                <div className={styles.panelRoomRow}>
+                  <div className={styles.panelRoomText}>
+                    <b data-testid="island-room-name">{roomName}</b>
+                    {linked && (
+                      <small data-testid="island-room-members">
+                        멤버 {linked.memberCount}명
+                      </small>
+                    )}
+                  </div>
+                  {!readOnly && (
+                    <Link
+                      href={`/community/rooms/${island.bridgeRoomId}?from=${encodeURIComponent(island.slug)}`}
+                    >
+                      들어가기
+                    </Link>
+                  )}
+                </div>
+              );
+            })()
+          ) : recommendedRooms.length > 0 ? (
+            <>
+              <p>아직 연결된 공부방이 없어요. 지금 인기 있는 방은 여기예요.</p>
+              <ul
+                className={styles.panelRoomList}
+                data-testid="island-room-recommend"
+              >
+                {recommendedRooms.map((room) => (
+                  <li key={room.roomId} className={styles.panelRoomRow}>
+                    <div className={styles.panelRoomText}>
+                      <b>{room.name}</b>
+                      <small>
+                        멤버 {room.memberCount}명 ·{' '}
+                        {roomOneLiner(room.description)}
+                      </small>
+                    </div>
+                    {!readOnly && (
+                      <Link
+                        href={`/community/rooms/${room.roomId}?from=${encodeURIComponent(island.slug)}`}
+                      >
+                        둘러보기
+                      </Link>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </>
           ) : (
             <p>
               아직 연결된 공부방이 없어요.{' '}

@@ -2535,6 +2535,49 @@
   font-weight: var(--font-weight-extrabold);
 }
 
+.panelRoomRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.panelRoomText {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.panelRoomText b {
+  overflow: hidden;
+  color: var(--gray-900);
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.panelRoomText small {
+  overflow: hidden;
+  color: var(--gray-600);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.panelRoomList {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  flex-direction: column;
+  gap: 4px;
+  list-style: none;
+}
+
+.panelRoomRow a {
+  flex: none;
+}
+
 .panelNotice {
   margin: 0;
   color: var(--gray-700);

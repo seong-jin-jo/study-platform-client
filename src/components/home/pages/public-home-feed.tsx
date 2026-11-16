@@ -8,6 +8,7 @@ import {
 import { useCommunityRoomHubQuery } from '@/hooks/queries/community/use-community-room-hub-query';
 import { usePublicCommunityPostsQuery } from '@/hooks/queries/community/use-community-room-posts-query';
 import { usePublicHomeFeedQuery } from '@/hooks/queries/retention/use-retention-queries';
+import { pickRecommendedRooms } from '@/utils/recommended-rooms';
 
 const EMPTY_ROOM_FILTERS = {};
 
@@ -50,6 +51,7 @@ export default function PublicHomeFeed() {
       postFeed={postFeedQuery.data}
       publicFeed={publicFeedQuery.data}
       roomLimit={roomHubQuery.data.activeRoomLimit}
+      recommendedRooms={pickRecommendedRooms(roomHubQuery.data.exploreRooms)}
     />
   );
 }
