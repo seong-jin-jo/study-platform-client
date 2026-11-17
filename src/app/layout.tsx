@@ -52,6 +52,11 @@ export const metadata: Metadata = {
       'naver-site-verification': '082fcef8be7933255ee064050dddafc630e0c0f3',
     },
   },
+  // 구글 애드센스 사이트 확인(2026-11-18). 공개 게시자 ID 라 비밀값 아님.
+  // 광고 스크립트(adsbygoogle.js)는 광고 위치 확정 전까지 넣지 않는다.
+  other: {
+    'google-adsense-account': 'ca-pub-6725736681852729',
+  },
   icons: {
     icon: [
       { url: '/favicon.ico' },
