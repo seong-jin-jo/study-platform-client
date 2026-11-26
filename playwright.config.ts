@@ -5,6 +5,7 @@ const authFile = 'e2e/fixtures/auth.json';
 const baseURL = process.env.E2E_BASE_URL ?? 'https://test.zeroone.it.kr';
 const isStaging = baseURL.includes('zeroone.it.kr');
 const proxyServer = process.env.E2E_PROXY_SERVER?.trim();
+const hostResolverRules = process.env.E2E_HOST_RESOLVER_RULES?.trim();
 // CI 스킵 게이트(scripts/e2e/fail-on-skipped.mjs)가 읽는 JSON 리포트 경로.
 // 같은 CI job 안에서 non-auth run과 auth run이 순차로 도므로, run마다 다른
 // 파일명을 지정해 서로 덮어쓰지 않게 한다(see 루트 .github/workflows/client-ci.yml,
@@ -43,6 +44,9 @@ export default defineConfig({
   ],
   use: {
     baseURL,
+    launchOptions: hostResolverRules
+      ? { args: [`--host-resolver-rules=${hostResolverRules}`] }
+      : undefined,
     proxy: proxyServer ? { server: proxyServer } : undefined,
     storageState: isStaging && existsSync(authFile) ? authFile : undefined,
     trace: 'on-first-retry',

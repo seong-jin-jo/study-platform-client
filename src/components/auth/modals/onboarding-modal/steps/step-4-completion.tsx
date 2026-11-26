@@ -3,8 +3,10 @@
 import { useMutation } from '@tanstack/react-query';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useRef } from 'react';
 import { signUp } from '@/api/endpoints/auth/auth';
 import { trackSignUp } from '@/components/common/analytics/ad-conversions';
+import { trackGa4Event } from '@/components/common/analytics/ga4-events';
 import Button from '@/components/common/ui/button';
 import { writeAccessTokenSession } from '@/features/auth/model/client-auth-session';
 import { useUploadProfileImageMutation } from '@/hooks/queries/auth/use-auth-mutation';
@@ -50,6 +52,7 @@ export function Step4Completion({
     mutationFn: signUp,
   });
   const { mutateAsync: uploadImage } = useUploadProfileImageMutation();
+  const hasTrackedSignupRef = useRef(false);
 
   const recommendation = resolveCompletionRecommendation(data.goals);
 
@@ -71,6 +74,10 @@ export function Step4Completion({
       onSuccess: async (response) => {
         if (response?.content?.generatedMemberId) {
           trackSignUp(String(response.content.generatedMemberId));
+        }
+        if (!hasTrackedSignupRef.current) {
+          trackGa4Event('signup_complete');
+          hasTrackedSignupRef.current = true;
         }
         const newToken = response?.content?.accessToken;
         if (newToken) writeAccessTokenSession(newToken);
